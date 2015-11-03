@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Fantasy Football Test</title>
+
+  <script src = "d3/d3.min.js"></script>
+  <script src = "crossfilter/crossfilter.min.js" type="text/javascript"></script>
+  <script src = "dc/dc.min.js" type="text/javascript"></script>
+  <script src = "js/jquery-1.11.3.min.js" type="text/javascript"></script>
+  <script src = "bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+
+  <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="dc/dc.css" rel="stylesheet" type="text/css">
+  <link href="css/dashboard.css" rel="stylesheet">
+  <link href="css/layout.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand">Armchair Fantasy Football</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="index.html">Overview</a></li>
+          <li><a href="career_view.html">Career View</a></li>
+          <li><a href="single_season_view.html">Single Season View</a></li>
+          <li><a href="single_week_view.html">Single Week View</a></li>
+        </ul>
+        <form class="navbar-form navbar-right">
+          <input type="text" class="form-control" placeholder="Search Player Name">
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <div class = "container-fluid">
+    <div class="row">
+      <div class="col-sm-3 col-md-2 sidebar">
+        <div class="nav nav-sidebar">
+          <div class="list-group">
+            <a href="#" class="list-group-item">
+              Filter 1
+            </a>
+            <a href="#" class="list-group-item">
+              Filter 2
+            </a>
+            <a href="#" class="list-group-item">
+              Filter 3
+            </a>
+          </div>
+        </div>
+        <div class="nav nav-sidebar">
+          <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Filter
+            <span class="caret"></span></button>
+            <ul class="dropdown-menu">
+              <li><a href="#">Filter Selection 1</a></li>
+              <li><a href="#">Filter Selection 2</a></li>
+              <li><a href="#">Filter Selection 3</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="nav nav-sidebar">
+          <div class="btn-group-vertical btn-group-lg">
+            <button type="button" class="btn btn-primary" href="#">Filter 1</button>
+            <button type="button" class="btn btn-primary" href="#">Filter 2</button>
+            <button type="button" class="btn btn-primary" href="#">Filter 3</button>
+          </div>
+        </div>
+
+        <ul class="nav nav-sidebar">
+          <li><a href="#">Filter 1</a></li>
+          <li><a href="#">Filter 2</a></li>
+          <li><a href="#">Filter 3</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+      <div class="row">
+        <div class="col-sm-12" id="large-section">
+          <h4>Game CDF (Win Pct vs Points)</h4>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <h4>Game Points Line Chart</h4>
+        </div>
+        <div class="col-sm-6">
+          <h4>Parallel Coordinates Chart</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<script>
+
+
+</script>
+
+</body>
+</html>
