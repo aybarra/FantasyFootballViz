@@ -1,222 +1,296 @@
 <!DOCTYPE html>
-<html lang = "en">
+<html lang="en">
 <head>
-  <meta charset="utf-8">
+    <meta charset="utf-8">
 
-  <title>Fantasy Football Test</title>
+    <title>Fantasy Football Test</title>
 
-  <script src = "d3/d3.min.js"></script>
-  <script src = "crossfilter/crossfilter.min.js" type="text/javascript"></script>
-  <script src = "dc/dc.min.js" type="text/javascript"></script>
-  <script src = "js/jquery-1.11.3.min.js" type="text/javascript"></script>
-  <script src = "bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="d3/d3.min.js"></script>
+    <script src="crossfilter/crossfilter.min.js" type="text/javascript"></script>
+    <script src="dc/dc.min.js" type="text/javascript"></script>
+    <script src="js/jquery-1.11.3.min.js" type="text/javascript"></script>
+    <script src="bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
 
-  <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-  <link href="dc/dc.css" rel="stylesheet" type="text/css">
-  <link href="css/dashboard.css" rel="stylesheet">
-  <link href="css/layout.css" rel="stylesheet">
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="dc/dc.css" rel="stylesheet" type="text/css">
+    <link href="css/dashboard.css" rel="stylesheet">
+    <link href="css/layout.css" rel="stylesheet">
 
 </head>
 
 <body>
 
-  <!-- Create Navigation Bar -->
-  <nav class="navbar navbar-inverse navbar-fixed-top">
+<!-- Create Navigation Bar -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand">Armchair Fantasy Football</a>
-      </div>
-      <div id="navbar" class="navbar-collapse collapse">
-        <ul class="nav navbar-nav navbar-right">
-          <li><a href="index.html">Overview</a></li>
-          <li><a href="career_view.html">Career View</a></li>
-          <li><a href="single_season_view.html">Single Season View</a></li>
-          <li><a href="single_week_view.html">Single Week View</a></li>
-        </ul>
-        <form class="navbar-form navbar-right">
-          <input type="text" class="form-control" placeholder="Search Player Name">
-        </form>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Create filters -->
-  <div class = "container-fluid">
-    <div class="row">
-      <div class="col-sm-2 col-md-1 sidebar">
-        <!-- Outlined filters -->
-        <div class="nav nav-sidebar">
-          <div class="list-group">
-            <a href="#" class="list-group-item">
-              Filter 1
-            </a>
-            <a href="#" class="list-group-item">
-              Filter 2
-            </a>
-            <a href="#" class="list-group-item">
-              Filter 3
-            </a>
-          </div>
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand">Armchair Fantasy Football</a>
         </div>
-        <!-- Dropdown Filters -->
-        <div class="nav nav-sidebar">
-          <div class="dropdown">
-            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Filter
-            <span class="caret"></span></button>
-            <ul class="dropdown-menu">
-              <li><a href="#">Filter Selection 1</a></li>
-              <li><a href="#">Filter Selection 2</a></li>
-              <li><a href="#">Filter Selection 3</a></li>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="index.html">Overview</a></li>
+                <li><a href="career_view.html">Career View</a></li>
+                <li><a href="single_season_view.html">Single Season View</a></li>
+                <li><a href="single_week_view.html">Single Week View</a></li>
             </ul>
-          </div>
+            <form class="navbar-form navbar-right">
+                <input type="text" class="form-control" placeholder="Search Player Name">
+            </form>
         </div>
-        <!-- Button Group Filters -->
-        <div class="nav nav-sidebar">
-          <div class="btn-group-vertical btn-group-md">
-            <button type="button" class="btn btn-primary" href="#">Filter 1</button>
-            <button type="button" class="btn btn-primary" href="#">Filter 2</button>
-            <button type="button" class="btn btn-primary" href="#">Filter 3</button>
-          </div>
+    </div>
+</nav>
+
+<!-- Create filters -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-2 col-md-1 sidebar">
+            <!-- Outlined filters -->
+            <div class="nav nav-sidebar">
+                <div class="list-group">
+                    <a href="#" class="list-group-item">
+                        Filter 1
+                    </a>
+                    <a href="#" class="list-group-item">
+                        Filter 2
+                    </a>
+                    <a href="#" class="list-group-item">
+                        Filter 3
+                    </a>
+                </div>
+            </div>
+            <!-- Dropdown Filters -->
+            <div class="nav nav-sidebar">
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Filter
+                        <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Filter Selection 1</a></li>
+                        <li><a href="#">Filter Selection 2</a></li>
+                        <li><a href="#">Filter Selection 3</a></li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Button Group Filters -->
+            <div class="nav nav-sidebar">
+                <div class="btn-group-vertical btn-group-md">
+                    <button type="button" class="btn btn-primary" href="#">Filter 1</button>
+                    <button type="button" class="btn btn-primary" href="#">Filter 2</button>
+                    <button type="button" class="btn btn-primary" href="#">Filter 3</button>
+                </div>
+            </div>
+            <!-- Boring filters -->
+            <ul class="nav nav-sidebar">
+                <li><a href="#">Filter 1</a></li>
+                <li><a href="#">Filter 2</a></li>
+                <li><a href="#">Filter 3</a></li>
+            </ul>
         </div>
-        <!-- Boring filters -->
-        <ul class="nav nav-sidebar">
-          <li><a href="#">Filter 1</a></li>
-          <li><a href="#">Filter 2</a></li>
-          <li><a href="#">Filter 3</a></li>
-        </ul>
-      </div>
     </div>
 
     <!-- Create Chart Display Areas -->
     <div class="col-sm-10 col-sm-offset-2 col-md-10 col-md-offset-1 main">
-      <div class="row" id="large-section">
-        <div class="col-sm-12" id="large-section">
-          <h4>Large Section</h4>
+        <div class="row" id="large-section">
+            <div class="col-sm-12" id="large-section">
+                <h4>Large Section</h4>
+            </div>
         </div>
-      </div>
 
-      <div class="row">
-        <div class="col-md-6" id="box-whisker-chart">
-          <h4>Box and Whisker Plot</h4>
+        <div class="row">
+            <div class="col-md-6" id="box-whisker-chart">
+                <h4>Box and Whisker Plot</h4>
+            </div>
+            <div class="col-md-6" id="histogram">
+                <h4>Histogram</h4>
+            </div>
         </div>
-        <div class="col-md-6" id="histogram">
-          <h4>Histogram</h4>
+
+
+        <!-- Player Filters -->
+        <div class="row">
+            <div class="col-md-6" id="group_filter_1">
+                <h4>Grouping Filter</h4>
+            </div>
         </div>
-      </div>
 
     </div>
-  </div>
+</div>
 
 
 <script>
 
-var yearFormat = d3.time.format('%Y');
+    var yearFormat = d3.time.format( '%Y' );
 
-var box_margin = {top: 10, right: 30, bottom: 20, left: 30};
-var box_width = 600// - box_margin.left - box_margin.right;
-var box_height = 150// - box_margin.top - box_margin.bottom;
-var box_chart = dc.boxPlot("#box-whisker-chart");
+    var box_margin = { top: 10, right: 30, bottom: 20, left: 30 };
+    var box_width = 600// - box_margin.left - box_margin.right;
+    var box_height = 150// - box_margin.top - box_margin.bottom;
+    var box_chart = dc.boxPlot( "#box-whisker-chart" );
 
-var scatter_margin = {top: 10, right: 30, bottom: 20, left: 30};
-var scatter_width = 1200;
-var scatter_height = 500;
-var scatter_chart = dc.scatterPlot("#large-section");
+    var scatter_margin = { top: 10, right: 30, bottom: 20, left: 30 };
+    var scatter_width = 1200;
+    var scatter_height = 500;
+    var scatter_chart = dc.scatterPlot( "#large-section" );
 
-var hist_margin = {top: 10, right: 30, bottom: 20, left: 30};
-var hist_width = 600;
-var hist_height = 150;
-var hist_chart = dc.barChart("#histogram");
+    var hist_margin = { top: 10, right: 30, bottom: 20, left: 30 };
+    var hist_width = 600;
+    var hist_height = 150;
+    var hist_chart = dc.barChart( "#histogram" );
 
-d3.csv("data/data.csv", function(error,data){
+    //GROUP FILTERING
+    var grouping_filter_chart_1 = dc.barChart( "#group_filter_1" );
+    var grouping_margin = { top: 10, right: 30, bottom: 20, left: 30 };
+    var grouping_width = 600;
+    var grouping_height = 150;
+
+    d3.csv( "data/data.csv", function ( error, data )
+    {
 
 //var sum = 0;
 
-  data.forEach(function(x){
-    x.year = yearFormat.parse(x.Year);
-    x.name = x.Name;
-    x.fantPt = +x.Fantasy_Pts;
-    x.winPct = +x.Win_Pct;
-  });
+        data.forEach( function ( x )
+        {
+            x.year = yearFormat.parse( x.Year );
+            x.name = x.Name;
+            x.fantPt = +x.Fantasy_Pts;
+            x.winPct = +x.Win_Pct;
+        } );
 
-  var ndx = crossfilter(data);
+        var ndx = crossfilter( data );
 
-  var box_dimension = ndx.dimension(function(d){return new Date(new Date(d.year).setDate(1));});
-  var box_group = box_dimension.group().reduce(
-    function(p,v){
-      p.push(v.fantPt);
-      return p;
-    },
-    function(p,v){
-      p.splice(p.indexOf(v.fantPt),1);
-      return p;
-    },
-    function(){
-      return [];
-    }
-  );
+        var box_dimension = ndx.dimension( function ( d )
+        {
+            return new Date( new Date( d.year ).setDate( 1 ) );
+        } );
+        var box_group = box_dimension.group().reduce(
+                function ( p, v )
+                {
+                    p.push( v.fantPt );
+                    return p;
+                },
+                function ( p, v )
+                {
+                    p.splice( p.indexOf( v.fantPt ), 1 );
+                    return p;
+                },
+                function ()
+                {
+                    return [];
+                }
+        );
 
-  box_chart
-    .width(box_width)
-    .height(box_height)
-    .margins(box_margin)
-    .dimension(box_dimension)
-    .group(box_group)
-    .boxWidth(5)
-    .colors("red")
-    .x(d3.time.scale().domain([new Date("1918"), new Date("2016")]))
-    .round(d3.time.year.round)
-    .xUnits(d3.time.year)
-    .yAxisLabel("Fantasy Points")
-    .xAxisLabel("Year")
-    .elasticY(true)
-    .elasticX(true)
-    .on("renderlet",function(box_chart){
+        box_chart
+                .width( box_width )
+                .height( box_height )
+                .margins( box_margin )
+                .dimension( box_dimension )
+                .group( box_group )
+                .boxWidth( 5 )
+                .colors( "red" )
+                .x( d3.time.scale().domain( [ new Date( "1918" ), new Date( "2016" ) ] ) )
+                .round( d3.time.year.round )
+                .xUnits( d3.time.year )
+                .yAxisLabel( "Fantasy Points" )
+                .xAxisLabel( "Year" )
+                .elasticY( true )
+                .elasticX( true )
+                .on( "renderlet", function ( box_chart )
+                {
 
-      var gLabels = box_chart.selectAll("text");
-      gLabels.remove();
+                    var gLabels = box_chart.selectAll( "text" );
+                    gLabels.remove();
 
-    });
+                } );
 
-  var scatterDimension = ndx.dimension(function(d){ return [d.winPct,d.fantPt];});
-  var scatterGroup = scatterDimension.group();
+        var scatterDimension = ndx.dimension( function ( d )
+        {
+            return [ d.winPct, d.fantPt ];
+        } );
+        var scatterGroup = scatterDimension.group();
 
-  scatter_chart
-    .width(scatter_width)
-    .height(scatter_height)
-    .symbolSize(8)
-    .clipPadding(10)
-    .x(d3.scale.linear().domain([0,100]))
-    .dimension(scatterDimension)
-    .group(scatterGroup)
-    .brushOn(false)
-    .title(function(p){
-      return "Name: "
-        + p.name
-        + "\n"
-        + "Fant Pts: "
-        + p.fantPt;
-    })
-    .yAxisLabel("Fantasy Points")
-    .xAxisLabel("Win Percentage");
+        scatter_chart
+                .width( scatter_width )
+                .height( scatter_height )
+                .symbolSize( 8 )
+                .clipPadding( 10 )
+                .x( d3.scale.linear().domain( [ 0, 100 ] ) )
+                .dimension( scatterDimension )
+                .group( scatterGroup )
+                .brushOn( false )
+                .title( function ( p )
+                {
+                    return "Name: "
+                            + p.name
+                            + "\n"
+                            + "Fant Pts: "
+                            + p.fantPt;
+                } )
+                .yAxisLabel( "Fantasy Points" )
+                .xAxisLabel( "Win Percentage" );
 
-  var histDimension = ndx.dimension(function(d){return d.fantPt;});
-  var histGroup = histDimension.group().reduceCount();
+        var histDimension = ndx.dimension( function ( d )
+        {
+            return d.fantPt;
+        } );
+        var histGroup = histDimension.group().reduceCount();
 
-  hist_chart
-    .width(hist_width)
-    .height(hist_height)
-    .x(d3.scale.linear().domain([0,2550]))
-    .dimension(histDimension)
-    .group(histGroup);
+        hist_chart
+                .width( hist_width )
+                .height( hist_height )
+                .x( d3.scale.linear().domain( [ 0, 2550 ] ) )
+                .dimension( histDimension )
+                .group( histGroup );
 
-  dc.renderAll();
-})
+        dc.renderAll();
+    } )
+
+    //TODO fix bug where the chart below is trying to be rendered before setup
+    d3.csv( "data/player_filter_test_data.csv", function ( error, data )
+    {
+
+        //Crossfilter reference https://github.com/square/crossfilter/wiki/API-Reference
+        //https://dc-js.github.io/dc.js/docs/stock.html
+        //http://dc-js.github.io/dc.js/
+        //https://becomingadatascientist.wordpress.com/tag/dc-js/
+
+        //Create a multi-dimensional dataset for crossfilter use
+        var groupingCrossFilter = crossfilter( data );
+
+        //Get the min and max year for use as x-axis
+        var maxYear = d3.max( data, function ( d )
+        {
+            return +d.year;
+        } );
+        var minYear = d3.min( data, function ( d )
+        {
+            return +d.year;
+        } );
+
+        var pointsDimension = groupingCrossFilter.dimension( function ( d )
+        {
+            return d.total_fantasy_points;
+        } );
+
+        var pointsGroup = pointsDimension.group().reduceCount();
+
+        grouping_filter_chart_1
+                .width( grouping_width )
+                .height( grouping_height )
+                .yAxisLabel( "Total Fantasy Points" )
+                .xAxisLabel( "Year" )
+                .x( d3.scale.linear().domain( [ minYear, maxYear ] ) )
+                .dimension( pointsDimension )
+                .group( pointsGroup );
+
+//                .elasticY( true )
+//                .xAxis().tickFormat( d3.format( "d" ) )
+        dc.renderAll();
+    } )
 
 
 </script>
