@@ -5,7 +5,7 @@
 
     <title>Fantasy Football Test</title>
 
-    <script src="d3/d3.min.js"></script>
+    <script src="d3/d3.js"></script>
     <script src="crossfilter/crossfilter.min.js" type="text/javascript"></script>
     <script src="dc/dc.min.js" type="text/javascript"></script>
     <script src="js/jquery-1.11.3.min.js" type="text/javascript"></script>
@@ -119,6 +119,21 @@
             </div>
         </div>
 
+        <!-- Data Table -->
+        <div class="row">
+          <div class="col-md-6">
+            <h4>Player Data Table</h4>
+            <table class="table table-hover" id="data_table">
+              <thead>
+                <tr class="header">
+                  <th>Name</th>
+                  <th>Year</th>
+                  <th>Fantasy Points</th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+        </div>
     </div>
 </div>
 
@@ -127,26 +142,30 @@
 
     var yearFormat = d3.time.format( '%Y' );
 
-    var box_margin = { top: 10, right: 30, bottom: 20, left: 30 };
-    var box_width = 600// - box_margin.left - box_margin.right;
+    var box_margin = { top: 10, right: 30, bottom: 33, left: 45 };
+    var box_width = 500// - box_margin.left - box_margin.right;
     var box_height = 150// - box_margin.top - box_margin.bottom;
     var box_chart = dc.boxPlot( "#box-whisker-chart" );
 
-    var scatter_margin = { top: 10, right: 30, bottom: 20, left: 30 };
-    var scatter_width = 1200;
+    var scatter_margin = { top: 10, right: 30, bottom: 33, left: 45 };
+    var scatter_width = 1000;
     var scatter_height = 500;
-    var scatter_chart = dc.scatterPlot( "#large-section" );
+   var scatter_chart = dc.scatterPlot( "#large-section" );
 
-    var hist_margin = { top: 10, right: 30, bottom: 20, left: 30 };
-    var hist_width = 600;
+    var hist_margin = { top: 10, right: 30, bottom: 33, left: 45 };
+    var hist_width = 500;
     var hist_height = 150;
-    var hist_chart = dc.barChart( "#histogram" );
+   var hist_chart = dc.barChart( "#histogram" );
 
     //GROUP FILTERING
-    var grouping_filter_chart_1 = dc.barChart( "#group_filter_1" );
-    var grouping_margin = { top: 10, right: 30, bottom: 20, left: 30 };
-    var grouping_width = 600;
+   var grouping_filter_chart_1 = dc.barChart( "#group_filter_1" );
+    var grouping_margin = { top: 10, right: 30, bottom: 50, left: 50 };
+    var grouping_width = 500;
     var grouping_height = 150;
+
+
+    //DATATABLE
+    var data_chart = dc.dataTable("#data_table");
 
     d3.csv( "data/data.csv", function ( error, data )
     {
@@ -155,6 +174,7 @@
 
         data.forEach( function ( x )
         {
+            x.short_year = x.Year;
             x.year = yearFormat.parse( x.Year );
             x.name = x.Name;
             x.fantPt = +x.Fantasy_Pts;
@@ -190,20 +210,24 @@
                 .margins( box_margin )
                 .dimension( box_dimension )
                 .group( box_group )
-                .boxWidth( 5 )
+                .boxWidth( 3 )
                 .colors( "red" )
                 .x( d3.time.scale().domain( [ new Date( "1918" ), new Date( "2016" ) ] ) )
                 .round( d3.time.year.round )
                 .xUnits( d3.time.year )
                 .yAxisLabel( "Fantasy Points" )
                 .xAxisLabel( "Year" )
-                .elasticY( true )
-                .elasticX( true )
+                // .elasticY( true )
+                // .elasticX( true )
+                .keyAccessor(function (d) {return d.key;})
+                .valueAccessor(function (d) {return d.value;})
                 .on( "renderlet", function ( box_chart )
                 {
 
-                    var gLabels = box_chart.selectAll( "text" );
-                    gLabels.remove();
+                    var gBoxLabels = box_chart.selectAll( "text.box" );
+                    var gWhiskLabels = box_chart.selectAll("text.whisker");
+                    gBoxLabels.remove();
+                    gWhiskLabels.remove();
 
                 } );
 
@@ -216,20 +240,18 @@
         scatter_chart
                 .width( scatter_width )
                 .height( scatter_height )
-                .symbolSize( 8 )
+                .margins(scatter_margin)
+                .symbolSize( 5 )
                 .clipPadding( 10 )
                 .x( d3.scale.linear().domain( [ 0, 100 ] ) )
                 .dimension( scatterDimension )
                 .group( scatterGroup )
-                .brushOn( false )
-                .title( function ( p )
-                {
-                    return "Name: "
-                            + p.name
-                            + "\n"
-                            + "Fant Pts: "
-                            + p.fantPt;
-                } )
+                //.brushOn( false )
+                .renderTitle(true)
+                .title(function(p){
+                  return
+                    d.name;
+                })
                 .yAxisLabel( "Fantasy Points" )
                 .xAxisLabel( "Win Percentage" );
 
@@ -242,17 +264,42 @@
         hist_chart
                 .width( hist_width )
                 .height( hist_height )
+                .margins(hist_margin)
                 .x( d3.scale.linear().domain( [ 0, 2550 ] ) )
                 .dimension( histDimension )
-                .group( histGroup );
+                .group( histGroup )
+                .yAxisLabel("Number of Players")
+                .xAxisLabel("Fantasy Points");
 
-        dc.renderAll();
+        var table_dimension = ndx.dimension( function (d) {return d.name;});
+
+        data_chart
+          .width(500)
+          .height(500)
+          .dimension(table_dimension)
+          .group(function(d) {return "Player Selection";})
+           .size(data.length)
+          .columns([
+                    function(d){return d.name},
+                    function(d){return d.short_year},
+                    function(d){return d.fantPt}
+            ])
+          .sortBy(function(d){ return d.name; })
+          .order(d3.ascending);
+
+
+       dc.renderAll();
     } )
 
     //TODO fix bug where the chart below is trying to be rendered before setup
     d3.csv( "data/player_filter_test_data.csv", function ( error, data )
     {
 
+      data.forEach( function ( x )
+      {
+          x.year = yearFormat.parse( x.year );
+          x.total_fantasy_points = +x.total_fantasy_points;
+      } );
         //Crossfilter reference https://github.com/square/crossfilter/wiki/API-Reference
         //https://dc-js.github.io/dc.js/docs/stock.html
         //http://dc-js.github.io/dc.js/
@@ -264,26 +311,34 @@
         //Get the min and max year for use as x-axis
         var maxYear = d3.max( data, function ( d )
         {
-            return +d.year;
+            return d.year;
         } );
         var minYear = d3.min( data, function ( d )
         {
-            return +d.year;
+            return d.year;
         } );
 
-        var pointsDimension = groupingCrossFilter.dimension( function ( d )
-        {
-            return d.total_fantasy_points;
-        } );
+        // var pointsDimension = groupingCrossFilter.dimension( function ( d )
+        // {
+        //     return d.total_fantasy_points;
+        // } );
 
-        var pointsGroup = pointsDimension.group().reduceCount();
+        var pointsDimension = groupingCrossFilter.dimension(function (d) {
+          return d.year;
+        });
+
+        var pointsGroup = pointsDimension.group().reduceSum(function(d){
+          return +d.total_fantasy_points;
+        });
 
         grouping_filter_chart_1
                 .width( grouping_width )
                 .height( grouping_height )
                 .yAxisLabel( "Total Fantasy Points" )
                 .xAxisLabel( "Year" )
-                .x( d3.scale.linear().domain( [ minYear, maxYear ] ) )
+                .x( d3.time.scale().domain( [ minYear, maxYear ] ) )
+                .round( d3.time.year.round )
+                .xUnits( d3.time.year )
                 .dimension( pointsDimension )
                 .group( pointsGroup );
 
