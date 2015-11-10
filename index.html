@@ -142,40 +142,25 @@
 
     var yearFormat = d3.time.format( '%Y' );
 
-<<<<<<< HEAD
     var box_margin = { top: 10, right: 30, bottom: 33, left: 45 };
-=======
-    var box_margin = { top: 10, right: 30, bottom: 20, left: 30 };
->>>>>>> origin/master
     var box_width = 500// - box_margin.left - box_margin.right;
     var box_height = 150// - box_margin.top - box_margin.bottom;
     var box_chart = dc.boxPlot( "#box-whisker-chart" );
 
-<<<<<<< HEAD
     var scatter_margin = { top: 10, right: 30, bottom: 33, left: 45 };
-=======
-    var scatter_margin = { top: 10, right: 30, bottom: 20, left: 30 };
->>>>>>> origin/master
     var scatter_width = 1000;
     var scatter_height = 500;
    var scatter_chart = dc.scatterPlot( "#large-section" );
 
-<<<<<<< HEAD
+
     var hist_margin = { top: 10, right: 30, bottom: 33, left: 45 };
-=======
-    var hist_margin = { top: 10, right: 30, bottom: 20, left: 30 };
->>>>>>> origin/master
     var hist_width = 500;
     var hist_height = 150;
    var hist_chart = dc.barChart( "#histogram" );
 
     //GROUP FILTERING
    var grouping_filter_chart_1 = dc.barChart( "#group_filter_1" );
-<<<<<<< HEAD
     var grouping_margin = { top: 10, right: 30, bottom: 50, left: 50 };
-=======
-    var grouping_margin = { top: 10, right: 30, bottom: 20, left: 30 };
->>>>>>> origin/master
     var grouping_width = 500;
     var grouping_height = 150;
 
@@ -264,17 +249,12 @@
                 .x( d3.scale.linear().domain( [ 0, 100 ] ) )
                 .dimension( scatterDimension )
                 .group( scatterGroup )
-<<<<<<< HEAD
                 //.brushOn( false )
                 .renderTitle(true)
                 .title(function(p){
                   return
                     d.name;
                 })
-=======
-                // .brushOn( false )
-
->>>>>>> origin/master
                 .yAxisLabel( "Fantasy Points" )
                 .xAxisLabel( "Win Percentage" );
 
@@ -290,7 +270,6 @@
                 .margins(hist_margin)
                 .x( d3.scale.linear().domain( [ 0, 2550 ] ) )
                 .dimension( histDimension )
-<<<<<<< HEAD
                 .group( histGroup )
                 .yAxisLabel("Number of Players")
                 .xAxisLabel("Fantasy Points");
@@ -310,10 +289,6 @@
             ])
           .sortBy(function(d){ return d.name; })
           .order(d3.ascending);
-
-=======
-                .group( histGroup );
->>>>>>> origin/master
 
        dc.renderAll();
     } )
@@ -349,19 +324,11 @@
         // {
         //     return d.total_fantasy_points;
         // } );
-<<<<<<< HEAD
 
         var pointsDimension = groupingCrossFilter.dimension(function (d) {
           return d.year;
         });
 
-=======
-
-        var pointsDimension = groupingCrossFilter.dimension(function (d) {
-          return d.year;
-        });
-
->>>>>>> origin/master
         var pointsGroup = pointsDimension.group().reduceSum(function(d){
           return +d.total_fantasy_points;
         });
