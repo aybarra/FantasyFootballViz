@@ -165,7 +165,6 @@
     </div>
 </div>
 
-
 <script>
 
     var yearFormat = d3.time.format( '%Y' );
@@ -186,20 +185,42 @@
     var hist_chart = dc.barChart( "#histogram" );
 
     //DATATABLE
+// <<<<<<< Updated upstream
     // var data_chart = dc.dataTable( "#data_table" );
 
+    httpGetAsync('http://localhost:8000/careers', showdata);
 
-    d3.csv( "data/data.csv", function ( error, data )
-        {
+    function httpGetAsync(theUrl, callback)
+    {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function() { 
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                callback(xmlHttp.responseText);
+        }
+        xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+        xmlHttp.send(null);
+    }
 
+    function showdata(some_data){
+        var some_json_string = JSON.stringify(eval("(" + some_data + ")"));
+        var some_json = JSON.parse(some_json_string);
+        var arrayLength = some_json.results.length;
+        var data = [];
+        for (var i = 0; i < arrayLength; i++) {
+            data.push(some_json.results[i]);
+        }
+        
         data.forEach( function ( x )
-        {
-            x.short_year = x.Year;
-            x.year = yearFormat.parse( x.Year );
-            x.name = x.Name;
-            x.fantPt = +x.Fantasy_Pts;
-            x.winPct = +x.Win_Pct;
-        } );
+    {
+        console.log(x.start_year);
+
+        var s_year = x.start_year.toString();
+        x.short_year = x.start_year;
+        x.year = yearFormat.parse( s_year );
+        x.name = x.player_name;
+        x.fantPt = +x.ff_pts;
+        x.winPct = +x.win_pct*100;
+    } );
 
         var ndx = crossfilter( data );
 
@@ -336,7 +357,7 @@
         }
 
         dc.renderAll();
-    } )
+    }
 
     drawSelectionFilter();
 
