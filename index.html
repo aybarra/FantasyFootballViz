@@ -99,7 +99,7 @@
 
     <!-- Create Chart Display Areas -->
     <div class="col-sm-10 col-sm-offset-2 col-md-10 col-md-offset-1 main">
-        <div class="row" id="large-section">
+        <div class="row">
             <div class="col-sm-12" id="large-section">
                 <h4>Large Section</h4>
             </div>
@@ -184,20 +184,16 @@
     var hist_height = 150;
     var hist_chart = dc.barChart( "#histogram" );
 
-    //DATATABLE
-// <<<<<<< Updated upstream
-    // var data_chart = dc.dataTable( "#data_table" );
-
     httpGetAsync('http://localhost:8000/careers', showdata);
 
     function httpGetAsync(theUrl, callback)
     {
         var xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function() { 
+        xmlHttp.onreadystatechange = function() {
             if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
                 callback(xmlHttp.responseText);
         }
-        xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+        xmlHttp.open("GET", theUrl, true); // true for asynchronous
         xmlHttp.send(null);
     }
 
@@ -209,10 +205,10 @@
         for (var i = 0; i < arrayLength; i++) {
             data.push(some_json.results[i]);
         }
-        
+
         data.forEach( function ( x )
     {
-        console.log(x.start_year);
+        // console.log(x.start_year);
 
         var s_year = x.start_year.toString();
         x.short_year = x.start_year;
@@ -258,8 +254,8 @@
                 .xUnits( d3.time.year )
                 .yAxisLabel( "Fantasy Points" )
                 .xAxisLabel( "Year" )
-            // .elasticY( true )
-            // .elasticX( true )
+            .elasticY( true )
+            .elasticX( true )
                 .keyAccessor( function ( d )
                 {
                     return d.key;
@@ -288,8 +284,9 @@
                 .width( scatter_width )
                 .height( scatter_height )
                 .margins( scatter_margin )
-                .symbolSize( 5 )
+                .symbolSize( 8 )
                 .clipPadding( 10 )
+                .mouseZoomable(true)
                 .x( d3.scale.linear().domain( [ 0, 100 ] ) )
                 .dimension( scatterDimension )
                 .group( scatterGroup )
@@ -301,7 +298,8 @@
                     d.name;
                 } )
                 .yAxisLabel( "Fantasy Points" )
-                .xAxisLabel( "Win Percentage" );
+                .xAxisLabel( "Win Percentage" )
+                .xAxisPadding (10);
 
         var histDimension = ndx.dimension( function ( d )
         {
