@@ -1,117 +1,15 @@
 var yearsSelectionText = '';
 var pointsSelectionText = '';
 var positionsSelectionText = '';
+var FILTER_CHARTS_GROUP = "date_filter_group";
 
 function drawSelectionFilter()
 {
-    //Create the Year Filter Graph with Average Fantasy point values as Y values.
-    var dateSelectionChart = dc.barChart( "#filter_years", "date_filter_group" );
-    d3.csv( "data/player_filter_test_data.csv", function ( error, data )
-    {
-        //Format the Year AND convert the fantasy points values to numbers.
-        data.forEach( function ( x )
-        {
-            x.year = yearFormat.parse( x.year );
-            x.total_fantasy_points = +x.total_fantasy_points;
-        } );
+    //Draw the two main charts
+    drawFilterYearsChart();
+    drawFilterPointsChart();
 
-        //Create a multi-dimensional dataset for crossfilter use
-        var groupingCrossFilter = crossfilter( data );
-
-        //Get the min and max year for use as x-axis
-        var maxYear = d3.max( data, function ( d )
-        {
-            return d.year;
-        } );
-        var minYear = d3.min( data, function ( d )
-        {
-            return d.year;
-        } );
-
-        //Create a dimension (Y) for points
-        var pointsDimension = groupingCrossFilter.dimension( function ( d )
-        {
-            return d.year;
-        } );
-
-        //Create a grouping (X) for points
-        var pointsGroup = pointsDimension.group().reduceSum( function ( d )
-        {
-            return +d.total_fantasy_points;
-        } );
-
-        //Add a callback for when the chart selection is changed
-        dateSelectionChart.on( "filtered", onDateChartFiltered );
-
-        //Generate the Chart
-        dateSelectionChart.width( 500 )
-            .height( 40 )
-            .margins( { top: 0, right: 50, bottom: 20, left: 40 } )
-            .dimension( pointsDimension )
-            .group( pointsGroup )
-            .centerBar( true )
-            .x( d3.time.scale().domain( [ minYear, maxYear ] ) )
-            .round( d3.time.year.round )
-            .xUnits( d3.time.year )/*to get thicker lines function(){return 10;} but it throws off handles..*/
-            .yAxis().ticks( 0 );
-
-        //Only render charts in the current group.
-        dc.renderAll( "date_filter_group" );
-    } )
-
-    //Create the Fantasy Point Range Chart with Y being # of players with that career fantasy points
-    var fantasyPointSelectionChart = dc.barChart( "#filter_dates", "date_filter_group" );
-    d3.csv( "data/fantasy_points_test_data2.csv", function ( error, data )
-    {
-        //Format the data to numbers
-        data.forEach( function ( x )
-        {
-            x.points = +x.points;
-            x.num_player_with_points = +x.num_player_with_points;
-        } );
-
-        //Create a multi-dimensional dataset for crossfilter use
-        var groupingCrossFilter = crossfilter( data );
-
-        //Get the min and max year for use as x-axis
-        var maxPoints = d3.max( data, function ( d )
-        {
-            return d.points;
-        } );
-        var minPoints = d3.min( data, function ( d )
-        {
-            return d.points;
-        } );
-
-        //Create a dimension (Y) for points
-        var pointsDimension = groupingCrossFilter.dimension( function ( d )
-        {
-            return d.points;
-        } );
-
-        //Create a grouping (X) for points
-        var countGroup = pointsDimension.group().reduceSum( function ( d )
-        {
-            return +d.num_player_with_points;
-        } );
-
-        //Add a callback for when the chart selection is changed
-        fantasyPointSelectionChart.on( "filtered", onPointsChartFiltered );
-
-        //Generate the Chart
-        fantasyPointSelectionChart.width( 500 )
-            .height( 40 )
-            .margins( { top: 0, right: 50, bottom: 20, left: 40 } )
-            .centerBar( true )
-            .dimension( pointsDimension )
-            .group( countGroup )
-            .x( d3.scale.linear().domain( [ minPoints, maxPoints ] ) )
-            .yAxis().ticks( 0 );
-
-        //Only render charts in the current group.
-        dc.renderAll( "date_filter_group" );
-    } )
-
+    //Setup the filter positions onChange Listener
     $( "#filter_position" ).find( ":checkbox" ).change( function ()
     {
         onPositionToggled();
@@ -195,21 +93,6 @@ function onPointsChartFiltered( chart )
 function onPositionToggled()
 {
 
-    //$.ajax( {
-    //    url: 'http://localhost:8000/careers',
-    //    data: {
-    //        format: 'json'
-    //    },
-    //    error: function ()
-    //    {
-    //        alert( '<p>An error has occurred</p>' );
-    //    },
-    //    success: function ( data )
-    //    {
-    //        alert( data );
-    //    },
-    //    type: 'GET'
-    //} );
     positionsSelectionText = '<b>Positions:</b> ';
 
     //Check if any are checked
@@ -260,3 +143,134 @@ function clearAll()
     $( "#filter_position" ).find( ":checkbox" ).attr( "checked", false );
 }
 
+/**
+ * Draw the Filter Years Chart. Uses an Ajax call to get the data.
+ */
+function drawFilterYearsChart()
+{
+    //Create the Year Filter Graph with Average Fantasy point values as Y values.
+    var dateSelectionChart = dc.barChart( "#filter_years", "date_filter_group" );
+    $.ajax( {
+        url: 'http://localhost:8000/season-ffpt-averages/',
+        type: 'GET',
+        data: {
+            format: 'json'
+        },
+        error: function ()
+        {
+            console.log( "Error populating Filter Years selection table." )
+        },
+        success: function ( data )
+        {
+            //Format the Year AND convert the fantasy points values to numbers.
+            data = data[ 'results' ];
+            data.forEach( function ( x )
+            {
+                x.year = yearFormat.parse( x.year + "" );
+                x.ff_pt_average = +x.ff_pt_average;
+            } );
+
+            //Create a multi-dimensional dataset for crossfilter use
+            var groupingCrossFilter = crossfilter( data );
+
+            //Get the min and max year for use as x-axis
+            var maxYear = d3.max( data, function ( d )
+            {
+                return d.year;
+            } );
+            var minYear = d3.min( data, function ( d )
+            {
+                return d.year;
+            } );
+
+            //Create a dimension (Y) for points
+            var pointsDimension = groupingCrossFilter.dimension( function ( d )
+            {
+                return d.year;
+            } );
+
+            //Create a grouping (X) for points
+            var pointsGroup = pointsDimension.group().reduceSum( function ( d )
+            {
+                return +d.ff_pt_average;
+            } );
+
+            //Add a callback for when the chart selection is changed
+            dateSelectionChart.on( "filtered", onDateChartFiltered );
+
+            //Generate the Chart
+            dateSelectionChart.width( 500 )
+                .height( 40 )
+                .margins( { top: 0, right: 50, bottom: 20, left: 40 } )
+                .dimension( pointsDimension )
+                .group( pointsGroup )
+                .centerBar( true )
+                .x( d3.time.scale().domain( [ minYear, maxYear ] ) )
+                .round( d3.time.year.round )
+                .xUnits( d3.time.year )/*to get thicker lines function(){return 10;} but it throws off handles..*/
+                .yAxis().ticks( 0 );
+
+            //Only render charts in the current group.
+            dc.renderAll( FILTER_CHARTS_GROUP );
+        }
+    } );
+}
+
+/**
+ * Draw the filter points chart. Info if retrieved from the CSV file.
+ */
+function drawFilterPointsChart()
+{
+    //Create the Fantasy Point Range Chart with Y being # of players with that career fantasy points
+    var fantasyPointSelectionChart = dc.barChart( "#filter_dates", "date_filter_group" );
+    d3.csv( "data/fantasy_points_test_data2.csv", function ( error, data )
+    {
+        //Format the data to numbers
+        data.forEach( function ( x )
+        {
+            x.points = +x.points;
+            x.num_player_with_points = +x.num_player_with_points;
+        } );
+
+        //Create a multi-dimensional dataset for crossfilter use
+        var groupingCrossFilter = crossfilter( data );
+
+        //Get the min and max year for use as x-axis
+        var maxPoints = d3.max( data, function ( d )
+        {
+            return d.points;
+        } );
+        var minPoints = d3.min( data, function ( d )
+        {
+            return d.points;
+        } );
+
+        //Create a dimension (Y) for points
+        var pointsDimension = groupingCrossFilter.dimension( function ( d )
+        {
+            return d.points;
+        } );
+
+        //Create a grouping (X) for points
+        var countGroup = pointsDimension.group().reduceSum( function ( d )
+        {
+            return +d.num_player_with_points;
+        } );
+
+        //Add a callback for when the chart selection is changed
+        fantasyPointSelectionChart.on( "filtered", onPointsChartFiltered );
+
+        //Generate the Chart
+        fantasyPointSelectionChart.width( 500 )
+            .height( 40 )
+            .margins( { top: 0, right: 50, bottom: 20, left: 40 } )
+            .centerBar( true )
+            .dimension( pointsDimension )
+            .group( countGroup )
+            .x( d3.scale.linear().domain( [ minPoints, maxPoints ] ) )
+            .yAxis().ticks( 0 );
+
+        //Only render charts in the current group.
+        dc.renderAll( FILTER_CHARTS_GROUP );
+    } );
+}
