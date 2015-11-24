@@ -12,6 +12,7 @@
     <script src="bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
     <script src="js/datatables.min.js" type="text/javascript"></script>
     <script src="js/filter_grouping.js"></script>
+    <script src="js/jquery.jpanelmenu.js" type="text/javascript"></script>
 
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link href="dc/dc.css" rel="stylesheet" type="text/css">
@@ -25,7 +26,7 @@
 
 <!-- Create Navigation Bar -->
 <nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container-fluid">
+    <div class="container-fluid ">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
                     aria-expanded="false" aria-controls="navbar">
@@ -34,7 +35,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand">Armchair Fantasy Football</a>
+            <a class="navbar-brand" id="menu-trigger">Armchair Fantasy Football</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
@@ -50,52 +51,46 @@
     </div>
 </nav>
 
-<!-- Create filters -->
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-2 col-md-1 sidebar">
-            <!-- Outlined filters -->
-            <div class="nav nav-sidebar">
-                <div class="list-group">
-                    <a href="#" class="list-group-item">
-                        Filter 1
-                    </a>
-                    <a href="#" class="list-group-item">
-                        Filter 2
-                    </a>
-                    <a href="#" class="list-group-item">
-                        Filter 3
-                    </a>
-                </div>
+<!--Sliding Menu-->
+<div id="menu"
+     style="width: 600px; z-index: 1; display: none; position:fixed; background-color: #b0c4de; height: 100%; padding-left: 20px">
+    <div class="row" id="panel">
+        <div id="filters">
+            <!-- Year Chart DIV-->
+            <div class="col-md-10" id="filter_years">
+                <h4>Filter Years</h4>
             </div>
-            <!-- Dropdown Filters -->
-            <div class="nav nav-sidebar">
-                <div class="dropdown">
-                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Filter
-                        <span class="caret"></span></button>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Filter Selection 1</a></li>
-                        <li><a href="#">Filter Selection 2</a></li>
-                        <li><a href="#">Filter Selection 3</a></li>
-                    </ul>
-                </div>
+            <!-- Date Chart DIV-->
+            <div class="col-md-10" id="filter_dates" style=" clear:both;">
+                <h4>Filter Points</h4>
             </div>
-            <!-- Button Group Filters -->
-            <div class="nav nav-sidebar">
-                <div class="btn-group-vertical btn-group-md">
-                    <button type="button" class="btn btn-primary" href="#">Filter 1</button>
-                    <button type="button" class="btn btn-primary" href="#">Filter 2</button>
-                    <button type="button" class="btn btn-primary" href="#">Filter 3</button>
-                </div>
+            <!-- Checkbox DIV-->
+            <div class="col-md-10" id="filter_position" style=" clear:both;">
+                <h4>Filter Positions</h4>
+                <label>
+                    <input type=checkbox name="running_back" value="running_back" id="filter_running_back"/>
+                    Running Back
+                </label>
+                <label>
+                    <input type=checkbox name="quarter_back" value="quarter_back" id="filter_quarter_back"/>
+                    Quarter Back
+                </label>
+                <label>
+                    <input type=checkbox name="wr_te" value="wr_te" id="filter_wr_te"/>
+                    WR/TE
+                </label>
+
             </div>
-            <!-- Boring filters -->
-            <ul class="nav nav-sidebar">
-                <li><a href="#">Filter 1</a></li>
-                <li><a href="#">Filter 2</a></li>
-                <li><a href="#">Filter 3</a></li>
-            </ul>
+            <div id="filter_info_div" style=" clear:both;"></div>
+            <div id="apply_filter_div">
+                <button>Apply Filter</button>
+            </div>
         </div>
     </div>
+</div>
+
+<!-- Create The Dashboard -->
+<div class="container-fluid m-pikabu-viewport" style="z-index: 0; position: relative;">
 
     <!-- Create Chart Display Areas -->
     <div class="col-sm-10 col-sm-offset-2 col-md-10 col-md-offset-1 main">
@@ -111,39 +106,6 @@
             </div>
             <div class="col-md-6" id="histogram">
                 <h4>Histogram</h4>
-            </div>
-        </div>
-
-
-        <!-- Player Filters -->
-        <div class="row">
-            <div id="filters">
-                <!-- Year Chart DIV-->
-                <div class="col-md-6" id="filter_years">
-                    <h4>Filter Years</h4>
-                </div>
-                <!-- Date Chart DIV-->
-                <div class="col-md-6" id="filter_dates" style=" clear:both;">
-                    <h4>Filter Points</h4>
-                </div>
-                <!-- Checkbox DIV-->
-                <div class="col-md-6" id="filter_position" style=" clear:both;">
-                    <h4>Filter Positions</h4>
-                    <label>
-                        <input type=checkbox name="running_back" value="running_back" id="filter_running_back"/>
-                        Running Back
-                    </label>
-                    <label>
-                        <input type=checkbox name="quarter_back" value="quarter_back" id="filter_quarter_back"/>
-                        Quarter Back
-                    </label>
-                    <label>
-                        <input type=checkbox name="wr_te" value="wr_te" id="filter_wr_te"/>
-                        WR/TE
-                    </label>
-
-                </div>
-                <div id="filter_info_div" style=" clear:both;"></div>
             </div>
         </div>
 
@@ -167,6 +129,28 @@
 
 <script>
 
+    //Variable to hold the state of the sliding menu
+    var isMenuOpen = false;
+
+    //Initialize the sliding drawer for the filters.
+    $( "#menu-trigger" ).click( function ()
+    {
+        //If open -- close, if closed -- open
+        if( isMenuOpen )
+        {
+            $( "#menu" ).css( {
+                "display": "none"
+            } );
+        }
+        else
+        {
+            $( "#menu" ).css( {
+                "display": "block"
+            } );
+        }
+        isMenuOpen = !isMenuOpen;
+    } );
+
     var yearFormat = d3.time.format( '%Y' );
 
     var box_margin = { top: 10, right: 30, bottom: 33, left: 45 };
@@ -184,39 +168,44 @@
     var hist_height = 150;
     var hist_chart = dc.barChart( "#histogram" );
 
-    httpGetAsync('http://localhost:8000/careers', showdata);
+    httpGetAsync( 'http://localhost:8000/careers', showdata );
 
-    function httpGetAsync(theUrl, callback)
+    function httpGetAsync( theUrl, callback )
     {
         var xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function() {
-            if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-                callback(xmlHttp.responseText);
+        xmlHttp.onreadystatechange = function ()
+        {
+            if( xmlHttp.readyState == 4 && xmlHttp.status == 200 )
+            {
+                callback( xmlHttp.responseText );
+            }
         }
-        xmlHttp.open("GET", theUrl, true); // true for asynchronous
-        xmlHttp.send(null);
+        xmlHttp.open( "GET", theUrl, true ); // true for asynchronous
+        xmlHttp.send( null );
     }
 
-    function showdata(some_data){
-        var some_json_string = JSON.stringify(eval("(" + some_data + ")"));
-        var some_json = JSON.parse(some_json_string);
+    function showdata( some_data )
+    {
+        var some_json_string = JSON.stringify( eval( "(" + some_data + ")" ) );
+        var some_json = JSON.parse( some_json_string );
         var arrayLength = some_json.results.length;
         var data = [];
-        for (var i = 0; i < arrayLength; i++) {
-            data.push(some_json.results[i]);
+        for ( var i = 0; i < arrayLength; i++ )
+        {
+            data.push( some_json.results[ i ] );
         }
 
         data.forEach( function ( x )
-    {
-        // console.log(x.start_year);
+        {
+            // console.log(x.start_year);
 
-        var s_year = x.start_year.toString();
-        x.short_year = x.start_year;
-        x.year = yearFormat.parse( s_year );
-        x.name = x.player_name;
-        x.fantPt = +x.ff_pts;
-        x.winPct = +x.win_pct*100;
-    } );
+            var s_year = x.start_year.toString();
+            x.short_year = x.start_year;
+            x.year = yearFormat.parse( s_year );
+            x.name = x.player_name;
+            x.fantPt = +x.ff_pts;
+            x.winPct = +x.win_pct * 100;
+        } );
 
         var ndx = crossfilter( data );
 
@@ -254,8 +243,8 @@
                 .xUnits( d3.time.year )
                 .yAxisLabel( "Fantasy Points" )
                 .xAxisLabel( "Year" )
-            .elasticY( true )
-            .elasticX( true )
+                .elasticY( true )
+                .elasticX( true )
                 .keyAccessor( function ( d )
                 {
                     return d.key;
@@ -286,7 +275,7 @@
                 .margins( scatter_margin )
                 .symbolSize( 8 )
                 .clipPadding( 10 )
-                .mouseZoomable(true)
+                .mouseZoomable( true )
                 .x( d3.scale.linear().domain( [ 0, 100 ] ) )
                 .dimension( scatterDimension )
                 .group( scatterGroup )
@@ -299,7 +288,7 @@
                 } )
                 .yAxisLabel( "Fantasy Points" )
                 .xAxisLabel( "Win Percentage" )
-                .xAxisPadding (10);
+                .xAxisPadding( 10 );
 
         var histDimension = ndx.dimension( function ( d )
         {
@@ -322,36 +311,39 @@
             return d.name;
         } );
 
-        var data_table = $("#data_table").dataTable({
-          "bPaginate": true,
-          "pagingType": "full_numbers",
-          "bLengthChange": false,
-          "bFilter": false,
-          "bSort": true,
-          "bInfo": false,
-          "bAutoWidth": false,
-          "bDeferRender": true,
-          "aaData": table_dimension.top(Infinity),
-          "bDestroy": true,
-          "aoColumns": [
-              { "mData": "name", "sDefaultContent": ""},
-              { "mData": "short_year", "sDefaultContent": " " },
-              { "mData": "fantPt", "sDefaultContent": " " }
-          ]
-        });
+        var data_table = $( "#data_table" ).dataTable( {
+            "bPaginate": true,
+            "pagingType": "full_numbers",
+            "bLengthChange": false,
+            "bFilter": false,
+            "bSort": true,
+            "bInfo": false,
+            "bAutoWidth": false,
+            "bDeferRender": true,
+            "aaData": table_dimension.top( Infinity ),
+            "bDestroy": true,
+            "aoColumns": [
+                { "mData": "name", "sDefaultContent": "" },
+                { "mData": "short_year", "sDefaultContent": " " },
+                { "mData": "fantPt", "sDefaultContent": " " }
+            ]
+        } );
 
-        function RefreshTable() {
-            dc.events.trigger(function () {
-                alldata = table_dimension.top(Infinity);
+        function RefreshTable()
+        {
+            dc.events.trigger( function ()
+            {
+                alldata = table_dimension.top( Infinity );
                 data_table.fnClearTable();
-                data_table.fnAddData(alldata);
+                data_table.fnAddData( alldata );
                 data_table.fnDraw();
-          });
+            } );
         }
 
-        for (var i = 0; i < dc.chartRegistry.list().length; i++) {
-            var chartI = dc.chartRegistry.list()[i];
-            chartI.on("filtered", RefreshTable);
+        for ( var i = 0; i < dc.chartRegistry.list().length; i++ )
+        {
+            var chartI = dc.chartRegistry.list()[ i ];
+            chartI.on( "filtered", RefreshTable );
         }
 
         dc.renderAll();

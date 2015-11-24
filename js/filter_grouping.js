@@ -61,7 +61,7 @@ function drawSelectionFilter()
 
     //Create the Fantasy Point Range Chart with Y being # of players with that career fantasy points
     var fantasyPointSelectionChart = dc.barChart( "#filter_dates", "date_filter_group" );
-    d3.csv( "data/fantasy_points_test_data.csv", function ( error, data )
+    d3.csv( "data/fantasy_points_test_data2.csv", function ( error, data )
     {
         //Format the data to numbers
         data.forEach( function ( x )
@@ -194,6 +194,22 @@ function onPointsChartFiltered( chart )
  */
 function onPositionToggled()
 {
+
+    //$.ajax( {
+    //    url: 'http://localhost:8000/careers',
+    //    data: {
+    //        format: 'json'
+    //    },
+    //    error: function ()
+    //    {
+    //        alert( '<p>An error has occurred</p>' );
+    //    },
+    //    success: function ( data )
+    //    {
+    //        alert( data );
+    //    },
+    //    type: 'GET'
+    //} );
     positionsSelectionText = '<b>Positions:</b> ';
 
     //Check if any are checked
@@ -243,3 +259,4 @@ function clearAll()
     dc.redrawAll( "date_filter_group" );
     $( "#filter_position" ).find( ":checkbox" ).attr( "checked", false );
 }
+
