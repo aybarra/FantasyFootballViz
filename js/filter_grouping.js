@@ -3,6 +3,17 @@ var pointsSelectionText = '';
 var positionsSelectionText = '';
 var FILTER_CHARTS_GROUP = "date_filter_group";
 
+//Selected Values
+var minDate = null;
+var maxDate = null;
+var minPoints = null;
+var maxPoints = null;
+var positions = null;
+
+//charts
+var dateSelectionChart = null;
+var fantasyPointSelectionChart = null;
+
 function drawSelectionFilter()
 {
     //Draw the two main charts
@@ -15,6 +26,32 @@ function drawSelectionFilter()
         onPositionToggled();
     } );
 
+    //Setup apply filter onclick button
+    $( "#add_filter_button" ).click( function ()
+    {
+        //If all variables are null, just close the drawer
+        if( minDate === null && maxDate === null && minPoints === null && maxPoints === null && positions === null )
+        {
+            //Clear out all of the local variables and charts
+            clearVariables();
+
+            //Close the drawer
+            $( "#menu-trigger" ).trigger( "click" );
+            return;
+        }
+
+        //Push a new filter object onto the array of filter objects
+        {
+            filterObjects.push( new FilterObject( minDate, maxDate, minPoints, maxPoints, positions ) );
+        }
+
+        //Clear out all of the local variables and charts
+        clearVariables();
+
+        //Call the sliding drawer click function to close the drawer
+        $( "#menu-trigger" ).trigger( "click" );
+    } );
+
 }
 
 /**
@@ -23,6 +60,10 @@ function drawSelectionFilter()
  */
 function onDateChartFiltered( chart )
 {
+    //Clear out global variables
+    minDate = null;
+    maxDate = null;
+
     //Get a reference to the div where we want the values to go.
     var infoDiv = $( "#filter_info_div" );
     yearsSelectionText = '';
@@ -48,6 +89,10 @@ function onDateChartFiltered( chart )
         return;
     }
 
+    //Set the global variables
+    minDate = lowerDate;
+    maxDate = upperDate;
+
     //Print the year values
     yearsSelectionText = "<b>Years:</b> " + lowerDate + " - " + upperDate;
     drawFilterStatus();
@@ -59,6 +104,10 @@ function onDateChartFiltered( chart )
  */
 function onPointsChartFiltered( chart )
 {
+    //Clear out global variables
+    minPoints = null;
+    maxPoints = null;
+
     //Get a reference to the div where we want the values to go.
     var infoDiv = $( "#filter_info_div" );
     pointsSelectionText = '';
@@ -82,6 +131,10 @@ function onPointsChartFiltered( chart )
         return;
     }
 
+    //Set the global variables
+    minPoints = lowerPoints;
+    maxPoints = upperPoints;
+
     //Print the points values
     pointsSelectionText = "<b>Points:</b> " + lowerPoints + " - " + upperPoints;
     drawFilterStatus();
@@ -92,8 +145,10 @@ function onPointsChartFiltered( chart )
  */
 function onPositionToggled()
 {
-
     positionsSelectionText = '<b>Positions:</b> ';
+
+    //Clear out the positions array
+    positions = [];
 
     //Check if any are checked
     if( $( "#filter_position" ).find( ":checkbox:checked" ).length <= 0 )
@@ -105,15 +160,18 @@ function onPositionToggled()
         //Something was Checked, append text values to string
         if( $( "#filter_running_back" ).is( ":checked" ) )
         {
+            positions.push( "RB" );
             positionsSelectionText += " RB ";
         }
         if( $( "#filter_quarter_back" ).is( ":checked" ) )
         {
+            positions.push( "QB" );
             positionsSelectionText += " QB ";
         }
 
         if( $( "#filter_wr_te" ).is( ":checked" ) )
         {
+            positions.push( "WR/TE" );
             positionsSelectionText += " WR/TE ";
         }
     }
@@ -133,14 +191,28 @@ function drawFilterStatus()
     $( "<p>" + yearsSelectionText + " " + pointsSelectionText + " " + positionsSelectionText + "</p>" ).appendTo( infoDiv );
 }
 
-/**
- * Clear all of the filters off of the current grouping of filter charts. Also clear out check boxes.
- */
-function clearAll()
+function clearVariables()
 {
+    //Clear out charts.
     dc.filterAll( "date_filter_group" );
     dc.redrawAll( "date_filter_group" );
     $( "#filter_position" ).find( ":checkbox" ).attr( "checked", false );
+
+    //Selection variables
+    minDate = null;
+    maxDate = null;
+    minPoints = null;
+    maxPoints = null;
+    positions = null;
+
+    //Printing variables
+    yearsSelectionText = "";
+    pointsSelectionText = "";
+    positionsSelectionText = "";
+
+    //Clear out div
+    drawFilterStatus();
+
 }
 
 /**
@@ -149,7 +221,7 @@ function clearAll()
 function drawFilterYearsChart()
 {
     //Create the Year Filter Graph with Average Fantasy point values as Y values.
-    var dateSelectionChart = dc.barChart( "#filter_years", "date_filter_group" );
+    dateSelectionChart = dc.barChart( "#filter_years", "date_filter_group" );
     $.ajax( {
         url: 'http://localhost:8000/season-ffpt-averages/',
         type: 'GET',
@@ -222,7 +294,7 @@ function drawFilterYearsChart()
 function drawFilterPointsChart()
 {
     //Create the Fantasy Point Range Chart with Y being # of players with that career fantasy points
-    var fantasyPointSelectionChart = dc.barChart( "#filter_dates", "date_filter_group" );
+    fantasyPointSelectionChart = dc.barChart( "#filter_dates", "date_filter_group" );
     d3.csv( "data/fantasy_points_test_data2.csv", function ( error, data )
     {
         //Format the data to numbers
