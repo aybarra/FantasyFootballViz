@@ -171,186 +171,173 @@
     var hist_height = 150;
     var hist_chart = dc.barChart( "#histogram" );
 
-    httpGetAsync( 'http://localhost:8000/careers', showdata );
-
-    function httpGetAsync( theUrl, callback )
-    {
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function ()
+    //Initial Ajax call to load data.
+    $.ajax( {
+        url: 'http://localhost:8000/careers/',
+        type: 'GET',
+        data: {
+            format: 'json'
+        },
+        error: function ()
         {
-            if( xmlHttp.readyState == 4 && xmlHttp.status == 200 )
+            console.log( "Error Loading Data." )
+        },
+        success: function ( data )
+        {
+            //Get the array of player data from the JSON response
+            data = data[ 'results' ];
+
+            data.forEach( function ( x )
             {
-                callback( xmlHttp.responseText );
-            }
-        }
-        xmlHttp.open( "GET", theUrl, true ); // true for asynchronous
-        xmlHttp.send( null );
-    }
-
-    function showdata( some_data )
-    {
-        var some_json_string = JSON.stringify( eval( "(" + some_data + ")" ) );
-        var some_json = JSON.parse( some_json_string );
-        var arrayLength = some_json.results.length;
-        var data = [];
-        for ( var i = 0; i < arrayLength; i++ )
-        {
-            data.push( some_json.results[ i ] );
-        }
-
-        data.forEach( function ( x )
-        {
-            // console.log(x.start_year);
-
-            var s_year = x.start_year.toString();
-            x.short_year = x.start_year;
-            x.year = yearFormat.parse( s_year );
-            x.name = x.player_name;
-            x.fantPt = +x.ff_pts;
-            x.winPct = +x.win_pct * 100;
-        } );
-
-        var ndx = crossfilter( data );
-
-        var box_dimension = ndx.dimension( function ( d )
-        {
-            return new Date( new Date( d.year ).setDate( 1 ) );
-        } );
-        var box_group = box_dimension.group().reduce(
-                function ( p, v )
-                {
-                    p.push( v.fantPt );
-                    return p;
-                },
-                function ( p, v )
-                {
-                    p.splice( p.indexOf( v.fantPt ), 1 );
-                    return p;
-                },
-                function ()
-                {
-                    return [];
-                }
-        );
-
-        box_chart
-                .width( box_width )
-                .height( box_height )
-                .margins( box_margin )
-                .dimension( box_dimension )
-                .group( box_group )
-                .boxWidth( 3 )
-                .colors( "red" )
-                .x( d3.time.scale().domain( [ new Date( "1918" ), new Date( "2016" ) ] ) )
-                .round( d3.time.year.round )
-                .xUnits( d3.time.year )
-                .yAxisLabel( "Fantasy Points" )
-                .xAxisLabel( "Year" )
-                .elasticY( true )
-                .elasticX( true )
-                .keyAccessor( function ( d )
-                {
-                    return d.key;
-                } )
-                .valueAccessor( function ( d )
-                {
-                    return d.value;
-                } )
-                .on( "renderlet", function ( box_chart )
-                {
-
-                    var gBoxLabels = box_chart.selectAll( "text.box" );
-                    var gWhiskLabels = box_chart.selectAll( "text.whisker" );
-                    gBoxLabels.remove();
-                    gWhiskLabels.remove();
-
-                } );
-
-        var scatterDimension = ndx.dimension( function ( d )
-        {
-            return [ d.winPct, d.fantPt ];
-        } );
-        var scatterGroup = scatterDimension.group();
-
-        scatter_chart
-                .width( scatter_width )
-                .height( scatter_height )
-                .margins( scatter_margin )
-                .symbolSize( 8 )
-                .clipPadding( 10 )
-                .mouseZoomable( true )
-                .x( d3.scale.linear().domain( [ 0, 100 ] ) )
-                .dimension( scatterDimension )
-                .group( scatterGroup )
-            //.brushOn( false )
-                .renderTitle( true )
-                .title( function ( p )
-                {
-                    return
-                    d.name;
-                } )
-                .yAxisLabel( "Fantasy Points" )
-                .xAxisLabel( "Win Percentage" )
-                .xAxisPadding( 10 );
-
-        var histDimension = ndx.dimension( function ( d )
-        {
-            return d.fantPt;
-        } );
-        var histGroup = histDimension.group().reduceCount();
-
-        hist_chart
-                .width( hist_width )
-                .height( hist_height )
-                .margins( hist_margin )
-                .x( d3.scale.linear().domain( [ 0, 2550 ] ) )
-                .dimension( histDimension )
-                .group( histGroup )
-                .yAxisLabel( "Number of Players" )
-                .xAxisLabel( "Fantasy Points" );
-
-        var table_dimension = ndx.dimension( function ( d )
-        {
-            return d.name;
-        } );
-
-        var data_table = $( "#data_table" ).dataTable( {
-            "bPaginate": true,
-            "pagingType": "full_numbers",
-            "bLengthChange": false,
-            "bFilter": false,
-            "bSort": true,
-            "bInfo": false,
-            "bAutoWidth": false,
-            "bDeferRender": true,
-            "aaData": table_dimension.top( Infinity ),
-            "bDestroy": true,
-            "aoColumns": [
-                { "mData": "name", "sDefaultContent": "" },
-                { "mData": "short_year", "sDefaultContent": " " },
-                { "mData": "fantPt", "sDefaultContent": " " }
-            ]
-        } );
-
-        function RefreshTable()
-        {
-            dc.events.trigger( function ()
-            {
-                alldata = table_dimension.top( Infinity );
-                data_table.fnClearTable();
-                data_table.fnAddData( alldata );
-                data_table.fnDraw();
+                x.short_year = x.start_year;
+                x.year = yearFormat.parse( x.start_year + "" );
+                x.name = x.player_name;
+                x.fantPt = +x.ff_pts;
+                x.winPct = +x.win_pct * 100;
             } );
-        }
 
-        for ( var i = 0; i < dc.chartRegistry.list().length; i++ )
-        {
-            var chartI = dc.chartRegistry.list()[ i ];
-            chartI.on( "filtered", RefreshTable );
-        }
+            var ndx = crossfilter( data );
 
-        dc.renderAll();
-    }
+            var box_dimension = ndx.dimension( function ( d )
+            {
+                return new Date( new Date( d.year ).setDate( 1 ) );
+            } );
+            var box_group = box_dimension.group().reduce(
+                    function ( p, v )
+                    {
+                        p.push( v.fantPt );
+                        return p;
+                    },
+                    function ( p, v )
+                    {
+                        p.splice( p.indexOf( v.fantPt ), 1 );
+                        return p;
+                    },
+                    function ()
+                    {
+                        return [];
+                    }
+            );
+
+            box_chart
+                    .width( box_width )
+                    .height( box_height )
+                    .margins( box_margin )
+                    .dimension( box_dimension )
+                    .group( box_group )
+                    .boxWidth( 3 )
+                    .colors( "red" )
+                    .x( d3.time.scale().domain( [ new Date( "1918" ), new Date( "2016" ) ] ) )
+                    .round( d3.time.year.round )
+                    .xUnits( d3.time.year )
+                    .yAxisLabel( "Fantasy Points" )
+                    .xAxisLabel( "Year" )
+                    .elasticY( true )
+                    .elasticX( true )
+                    .keyAccessor( function ( d )
+                    {
+                        return d.key;
+                    } )
+                    .valueAccessor( function ( d )
+                    {
+                        return d.value;
+                    } )
+                    .on( "renderlet", function ( box_chart )
+                    {
+
+                        var gBoxLabels = box_chart.selectAll( "text.box" );
+                        var gWhiskLabels = box_chart.selectAll( "text.whisker" );
+                        gBoxLabels.remove();
+                        gWhiskLabels.remove();
+
+                    } );
+
+            var scatterDimension = ndx.dimension( function ( d )
+            {
+                return [ d.winPct, d.fantPt ];
+            } );
+            var scatterGroup = scatterDimension.group();
+
+            scatter_chart
+                    .width( scatter_width )
+                    .height( scatter_height )
+                    .margins( scatter_margin )
+                    .symbolSize( 8 )
+                    .clipPadding( 10 )
+                    .mouseZoomable( true )
+                    .x( d3.scale.linear().domain( [ 0, 100 ] ) )
+                    .dimension( scatterDimension )
+                    .group( scatterGroup )
+                //.brushOn( false )
+                    .renderTitle( true )
+                    .title( function ( p )
+                    {
+                        return
+                        d.name;
+                    } )
+                    .yAxisLabel( "Fantasy Points" )
+                    .xAxisLabel( "Win Percentage" )
+                    .xAxisPadding( 10 );
+
+            var histDimension = ndx.dimension( function ( d )
+            {
+                return d.fantPt;
+            } );
+            var histGroup = histDimension.group().reduceCount();
+
+            hist_chart
+                    .width( hist_width )
+                    .height( hist_height )
+                    .margins( hist_margin )
+                    .x( d3.scale.linear().domain( [ 0, 2550 ] ) )
+                    .dimension( histDimension )
+                    .group( histGroup )
+                    .yAxisLabel( "Number of Players" )
+                    .xAxisLabel( "Fantasy Points" );
+
+            var table_dimension = ndx.dimension( function ( d )
+            {
+                return d.name;
+            } );
+
+            var data_table = $( "#data_table" ).dataTable( {
+                "bPaginate": true,
+                "pagingType": "full_numbers",
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": true,
+                "bInfo": false,
+                "bAutoWidth": false,
+                "bDeferRender": true,
+                "aaData": table_dimension.top( Infinity ),
+                "bDestroy": true,
+                "aoColumns": [
+                    { "mData": "name", "sDefaultContent": "" },
+                    { "mData": "short_year", "sDefaultContent": " " },
+                    { "mData": "fantPt", "sDefaultContent": " " }
+                ]
+            } );
+
+            function RefreshTable()
+            {
+                dc.events.trigger( function ()
+                {
+                    alldata = table_dimension.top( Infinity );
+                    data_table.fnClearTable();
+                    data_table.fnAddData( alldata );
+                    data_table.fnDraw();
+                } );
+            }
+
+            for ( var i = 0; i < dc.chartRegistry.list().length; i++ )
+            {
+                var chartI = dc.chartRegistry.list()[ i ];
+                chartI.on( "filtered", RefreshTable );
+            }
+
+            dc.renderAll();
+        }
+    } );
 
     drawSelectionFilter();
 
