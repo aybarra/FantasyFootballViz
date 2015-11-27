@@ -26,6 +26,8 @@ function drawSelectionFilter()
         onPositionToggled();
     } );
 
+    var menuTrigger = $( "#menu-trigger" );
+
     //Setup apply filter onclick button
     $( "#add_filter_button" ).click( function ()
     {
@@ -36,22 +38,32 @@ function drawSelectionFilter()
             clearVariables();
 
             //Close the drawer
-            $( "#menu-trigger" ).trigger( "click" );
+            menuTrigger.trigger( "click" );
             return;
         }
 
         //Push a new filter object onto the array of filter objects
-        {
-            filterObjects.push( new FilterObject( minDate, maxDate, minPoints, maxPoints, positions ) );
-        }
+        filterObjects.push( new FilterObject( minDate, maxDate, minPoints, maxPoints, positions ) );
+
+        //Redraw the filter items table.
+        drawCurrentFilterTable();
 
         //Clear out all of the local variables and charts
         clearVariables();
 
         //Call the sliding drawer click function to close the drawer
-        $( "#menu-trigger" ).trigger( "click" );
+        menuTrigger.trigger( "click" );
     } );
 
+    //Setup cancel filter onclick button
+    $( "#clear_filter_button" ).click( function ()
+    {
+        //Clear out all of the local variables and charts
+        clearVariables();
+
+        //Close the drawer
+        menuTrigger.trigger( "click" );
+    } );
 }
 
 /**
@@ -345,4 +357,39 @@ function drawFilterPointsChart()
         //Only render charts in the current group.
         dc.renderAll( FILTER_CHARTS_GROUP );
     } );
+}
+
+function drawCurrentFilterTable()
+{
+    //Get a reference to the table
+    var table = $( "#filters_table" );
+
+    //Clear out the current table
+    table.empty();
+
+    //Loop through and add all the current filters
+    $.each( filterObjects, function ( index, filterObject )
+    {
+        table.append( '<tr valign="middle"><td><a href="javascript:deleteFilterObject(' + index + ');" id="deleteFilterRow">X</a></td><td><p>' + filterObject.prettyPrint() + '</p></td></tr>' );
+    } );
+
+    //Add an onClick to remove the filter from the row
+    table.on( 'click', '#deleteFilterRow', function ()
+    {
+        //Remove from the Table
+        $( this ).parent().parent().remove();
+    } );
+}
+
+/**
+ * Called by the X of each filter row from drawCurrentFilterTable. Removes the item from the array AND redraws the table so that the old row values are updated.
+ * @param index
+ */
+function deleteFilterObject( index )
+{
+    //remove from array
+    filterObjects.splice( index, 1 );
+
+    //redraw the table to give new i values to rows
+    drawCurrentFilterTable();
 }
