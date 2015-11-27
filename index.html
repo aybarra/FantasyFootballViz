@@ -27,26 +27,9 @@
 <!-- Create Navigation Bar -->
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid ">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
-                    aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" id="menu-trigger">Armchair Fantasy Football</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="index.html">Overview</a></li>
-                <li><a href="career_view.html">Career View</a></li>
-                <li><a href="single_season_view.html">Single Season View</a></li>
-                <li><a href="single_week_view.html">Single Week View</a></li>
-            </ul>
-            <form class="navbar-form navbar-right">
-                <input type="text" class="form-control" placeholder="Search Player Name">
-            </form>
+        <div id="navbar">
+            <a class="navbar-brand" id="menu-trigger">Filter</a>
+            <p class="navbar-brand nav navbar-nav navbar-right" id="title">Armchair Fantasy Football</p>
         </div>
     </div>
 </nav>
@@ -95,12 +78,24 @@
     <!-- Create Chart Display Areas -->
     <div class="col-sm-10 col-sm-offset-2 col-md-10 col-md-offset-1 main">
         <div class="row">
-            <div class="col-sm-12" id="large-section">
+            <div class="col-sm-9" id="large-section">
                 <h4>Large Section</h4>
+            </div>
+            <div class="col-sm-3">
+                <h4>Player Data Table</h4>
+                <table class="table table-striped table-borderedr" id="data_table">
+                    <thead>
+                    <tr class="header">
+                        <th>Name</th>
+                        <!--<th>Year</th>-->
+                        <th>Fantasy Points</th>
+                    </tr>
+                    </thead>
+                </table>
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" style="display: none;">
             <div class="col-md-6" id="box-whisker-chart">
                 <h4>Box and Whisker Plot</h4>
             </div>
@@ -109,21 +104,6 @@
             </div>
         </div>
 
-        <!-- Data Table -->
-        <div class="row">
-            <div class="col-md-6">
-                <h4>Player Data Table</h4>
-                <table class="table table-striped table-borderedr" id="data_table">
-                    <thead>
-                    <tr class="header">
-                        <th>Name</th>
-                        <th>Year</th>
-                        <th>Fantasy Points</th>
-                    </tr>
-                    </thead>
-                </table>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -313,10 +293,10 @@
                 "bDestroy": true,
                 "aoColumns": [
                     { "mData": "name", "sDefaultContent": "" },
-                    { "mData": "short_year", "sDefaultContent": " " },
                     { "mData": "fantPt", "sDefaultContent": " " }
                 ]
             } );
+//          { "mData": "short_year", "sDefaultContent": " " },
 
             function RefreshTable()
             {
