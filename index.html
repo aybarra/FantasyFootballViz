@@ -282,7 +282,7 @@
         {
             return d.selected === true
         } ) );
-        RefreshTable( lasso.items().filter( function ( d )
+        refreshPlayerDataTable( lasso.items().filter( function ( d )
         {
             return d.selected === true
         } ) );
@@ -333,373 +333,30 @@
             //Loop through the array and get all of the player pks
             $.each( data, function ( index, player )
             {
-                defaultFilterObject.players.push( player[ 'pguid' ] );
+                defaultFilterObject.players.push( player );
             } );
 
-            for ( var i = 0; i < 5; i++ )
-            {
-                $.ajax( {
-                    url: defaultFilterObject.generateCareerUrl(),
-                    type: 'GET',
-                    data: {
-                        format: 'json'
-                    },
-                    async: false,
-                    error: function ()
-                    {
-                        alert( "ERROR MAKING WEB REQUEST FOR PLAYER KEYS" )
-                    },
-                    success: function ( data )
-                    {
-                        console.log( "test" );
-                    }
-                } );
-            }
-
-            console.log( "done" );
-
-            //TODO load the rest of the page here. After the web call finishes
+            loadScatterPlot();
         }
     } );
 
-    //Initial Ajax call to load data.
-    $.ajax( {
-        url: 'http://localhost:8000/careers/?pos=rb&pos=qb&start_year=2013',
-        type: 'GET',
-        data: {
-            format: 'json'
-        },
-        error: function ()
-        {
-            console.log( "Error Loading Data." )
-        },
-        success: function ( data )
-        {
-            //Get the array of player data from the JSON response
-            data = data[ 'results' ];
-
-            data.forEach( function ( x )
-            {
-                x.short_year = x.start_year;
-                x.year = yearFormat.parse( x.start_year + "" );
-                x.name = x.player_name;
-                x.pos = x.pos_type;
-                x.fantPt = +x.ff_pts;
-                x.winPct = d3.round( (+x.win_pct * 100), 2 );
-            } );
-
-            // Scale the range of the data
-            x.domain( d3.extent( data, function ( d )
-            {
-                return d.winPct;
-            } ) );
-            y.domain( d3.extent( data, function ( d )
-            {
-                return d.fantPt;
-            } ) );
-
-            // Add the scatterplot
-            svg.selectAll( "dot" )
-                    .data( data )
-                    .enter().append( "circle" )
-                    .attr( "r", 3 )
-                    .attr( "cx", function ( d )
-                    {
-                        return x( d.winPct );
-                    } )
-                    .attr( "cy", function ( d )
-                    {
-                        return y( d.fantPt );
-                    } )
-                    .attr( "id", function ( d, i )
-                    {
-                        return "dot_" + i;
-                    } ) // added
-                    .attr( "class", "dot" )
-                    .style( "fill", function ( d )
-                    {
-                        return colorScale( d.pos );
-                    } )
-                    .on( "mouseover", function ( d )
-                    {
-                        d3.select( this )
-                                .attr( "stroke", "black" )
-                                .attr( "stroke-width", 1 )
-                                .attr( "fill-opacity", 1 );
-                        div.transition()
-                                .duration( 200 )
-                                .style( "opacity", .9 );
-                        div.html( "Name: " + d.name + "<br/>" +
-                                "Position: " + d.pos + "<br/>" +
-                                "Fantasy Pts: " + d.fantPt + "<br/>" +
-                                "Win %: " + d.winPct )
-                                .style( "left", (d3.event.pageX + 5) + "px" )
-                                .style( "top", (d3.event.pageY - 5) + "px" )
-                                .transition().duration( 300 )
-                                .style( "opacity", 1 )
-                                .style( "display", "block" );
-                    } )
-                // .on("mouseover", function(d){
-                // 	d3.select(this)
-                // 		.attr("stroke", "black")
-                // 		.attr("stroke-width", 1)
-                // 		.attr("fill-opacity", 1)
-                //       			})
-                    .on( "mouseout", function ( d )
-                    {
-                        d3.select( this )
-                                .attr( "stroke", "" )
-                                .attr( "fill-opacity", function ( d )
-                                {
-                                    return 1;
-                                } )
-
-                        div.transition().duration( 700 ).style( "opacity", 0 );
-                    } );
-
-            // Add the X Axis
-            svg.append( "g" )
-                    .attr( "class", "x axis" )
-                    .attr( "transform", "translate(0," + scatter_height + ")" )
-                    .call( xAxis );
-
-            // Add the Y Axis
-            svg.append( "g" )
-                    .attr( "class", "y axis" )
-                    .call( yAxis );
-
-            lasso.items( d3.selectAll( ".dot" ) );
-
-            // var ndx = crossfilter( data );
-            //
-            // var box_dimension = ndx.dimension( function ( d )
-            // {
-            //     return new Date( new Date( d.year ).setDate( 1 ) );
-            // } );
-            // var box_group = box_dimension.group().reduce(
-            //         function ( p, v )
-            //         {
-            //             p.push( v.fantPt );
-            //             return p;
-            //         },
-            //         function ( p, v )
-            //         {
-            //             p.splice( p.indexOf( v.fantPt ), 1 );
-            //             return p;
-            //         },
-            //         function ()
-            //         {
-            //             return [];
-            //         }
-            // );
-            //
-            // box_chart
-            //         .width( box_width )
-            //         .height( box_height )
-            //         .margins( box_margin )
-            //         .dimension( box_dimension )
-            //         .group( box_group )
-            //         .boxWidth( 3 )
-            //         .colors( "red" )
-            //         .x( d3.time.scale().domain( [ new Date( "1918" ), new Date( "2016" ) ] ) )
-            //         .round( d3.time.year.round )
-            //         .xUnits( d3.time.year )
-            //         .yAxisLabel( "Fantasy Points" )
-            //         .xAxisLabel( "Year" )
-            //         .elasticY( true )
-            //         .elasticX( true )
-            //         .keyAccessor( function ( d )
-            //         {
-            //             return d.key;
-            //         } )
-            //         .valueAccessor( function ( d )
-            //         {
-            //             return d.value;
-            //         } )
-            //         .on( "renderlet", function ( box_chart )
-            //         {
-            //
-            //             var gBoxLabels = box_chart.selectAll( "text.box" );
-            //             var gWhiskLabels = box_chart.selectAll( "text.whisker" );
-            //             gBoxLabels.remove();
-            //             gWhiskLabels.remove();
-            //
-            //         } );
-
-            // var scatterDimension = ndx.dimension( function ( d )
-            // {
-            //     return [ d.winPct, d.fantPt ];
-            // } );
-            // var scatterGroup = scatterDimension.group();
-            //
-            // scatter_chart
-            //         .width( scatter_width )
-            //         .height( scatter_height )
-            //         .margins( scatter_margin )
-            //         .symbolSize( 8 )
-            //         .clipPadding( 10 )
-            //         .mouseZoomable( true )
-            //         .x( d3.scale.linear().domain( [ 0, 100 ] ) )
-            //         .dimension( scatterDimension )
-            //         .group( scatterGroup )
-            //     //.brushOn( false )
-            //         .renderTitle( true )
-            //         .title( function ( p )
-            //         {
-            //             return
-            //             d.name;
-            //         } )
-            //         .yAxisLabel( "Fantasy Points" )
-            //         .xAxisLabel( "Win Percentage" )
-            //         .xAxisPadding( 10 );
-
-            // var histDimension = ndx.dimension( function ( d )
-            // {
-            //     return d.fantPt;
-            // } );
-            // var histGroup = histDimension.group().reduceCount();
-            //
-            // hist_chart
-            //         .width( hist_width )
-            //         .height( hist_height )
-            //         .margins( hist_margin )
-            //         .x( d3.scale.linear().domain( [ 0, 2550 ] ) )
-            //         .dimension( histDimension )
-            //         .group( histGroup )
-            //         .yAxisLabel( "Number of Players" )
-            //         .xAxisLabel( "Fantasy Points" );
-            //
-            // var table_dimension = ndx.dimension( function ( d )
-            // {
-            //     return d.name;
-            // } );
-            // $(document).ready(function() {
-            //     $('#data_table').DataTable( {
-            //         data: lasso.items().filter(function(d) {return d.selected===true}),
-            //         columns: [
-            //             { title: "Name" },
-            //             { title: "Position" },
-            //             { title: "Office" },
-            //             { title: "Extn." },
-            //             { title: "Start date" },
-            //             { title: "Salary" }
-            //         ]
-            //     } );
-            // } );
-            data_table = $( "#data_table" ).dataTable( {
-                "bPaginate": true,
-                "pagingType": "full_numbers",
-                "bLengthChange": false,
-                "bFilter": false,
-                "bSort": true,
-                "bInfo": false,
-                "bAutoWidth": false,
-                "bDeferRender": true,
-                "aaData": lasso.items().filter( function ( d )
-                {
-                    return d.selected === true
-                } ),
-                "bDestroy": true,
-                "aoColumns": [
-                    { "mData": "name", "sDefaultContent": "" },
-                    { "mData": "short_year", "sDefaultContent": " " },
-                    { "mData": "fantPt", "sDefaultContent": " " }
-                ]
-            } );
-//          { "mData": "short_year", "sDefaultContent": " " },
-
-            // for ( var i = 0; i < dc.chartRegistry.list().length; i++ )
-            // {
-            //     var chartI = dc.chartRegistry.list()[ i ];
-            //     chartI.on( "filtered", RefreshTable );
-            // }
-
-            // dc.renderAll();
-        }
-    } );
-
+    //Initial calls to load data and setup page.
     drawSelectionFilter();
     generateCDFChart();
-    function RefreshTable( alldata )
+
+    /**
+     *
+     */
+    function refreshPlayerDataTable( alldata )
     {
         data_table.fnClearTable();
         data_table.fnAddData( alldata );
         data_table.fnDraw();
     }
-    function callScatterPlot()
-    {
-        // // Set the dimensions of the canvas / graph
-        // var margin = {top: 30, right: 20, bottom: 30, left: 50},
-        //     width = 1000 - margin.left - margin.right,
-        //     height = 500 - margin.top - margin.bottom;
-        //
-        // // Set the ranges
-        // var x = d3.scale.linear().range([0, width]);
-        // var y = d3.scale.linear().range([height, 0]);
-        //
-        // // Define the axes
-        // var xAxis = d3.svg.axis().scale(x)
-        //     .orient("bottom").ticks(6);
-        //
-        // var yAxis = d3.svg.axis().scale(y)
-        //     .orient("left").ticks(6);
-        //
-        // // Define the div for the tooltip
-        // var div = d3.select("body").append("div")
-        //     .attr("class", "tooltip")
-        //     .style("opacity", 0);
-        //
-        // // Adds the svg canvas
-        // var svg = d3.select("#large-section")
-        //     .append("svg")
-        //         .attr("width", width + margin.left + margin.right)
-        //         .attr("height", height + margin.top + margin.bottom)
-        //     .append("g")
-        //         .attr("transform",
-        //               "translate(" + margin.left + "," + margin.top + ")");
-        //
-        //     // Scale the range of the data
-        //     x.domain(d3.extent(data, function(d) { return d.winPct; }));
-        //     y.domain(d3.extent(data, function(d) { return d.fantPt; }));
-        //
-        //     // Add the scatterplot
-        //     svg.selectAll("dot")
-        //         .data(data)
-        //     .enter().append("circle")
-        //         .attr("r", 5)
-        //         .attr("cx", function(d) { return x(d.winPct); })
-        //         .attr("cy", function(d) { return y(d.fantPt); })
-        //         .on("mouseover", function(d) {
-        //             div.transition()
-        //                 .duration(200)
-        //                 .style("opacity", .9);
-        //             div	.html("Name: " + d.name + "<br/>"  +
-        //                       "Position: " + d.pos + "<br/>" +
-        //                       "Fantasy Pts: " + d.fantPt + "<br/>" +
-        //                       "Win %: " + d.winPct)
-        //                 .style("left", (d3.event.pageX) + "px")
-        //                 .style("top", (d3.event.pageY - 28) + "px");
-        //             })
-        //         .on("mouseout", function(d) {
-        //             div.transition()
-        //                 .duration(500)
-        //                 .style("opacity", 0);
-        //         });
-        //
-        //     // Add the X Axis
-        //     svg.append("g")
-        //         .attr("class", "x axis")
-        //         .attr("transform", "translate(0," + height + ")")
-        //         .call(xAxis);
-        //
-        //     // Add the Y Axis
-        //     svg.append("g")
-        //         .attr("class", "y axis")
-        //         .call(yAxis);
 
-    }
-
-    // To be used by tooltips when you want the playername
+    /**
+     * To be used by tooltips when you want the playername
+     */
     function setupNameMap()
     {
         var nameMap = {};
@@ -719,15 +376,125 @@
     }
 
     /**
-     * Returns an array with all of the unique player primary keys from the filtered objects.
+     *
      */
     function loadScatterPlot()
     {
+        //TODO call this after adding more filters
+        //TODO call this when deleting filters
+        //TODO clear out old charts and graphs.
+        var playerArray = filteredPlayers();
 
+        playerArray.forEach( function ( x )
+        {
+            x.short_year = x.start_year;
+            x.year = yearFormat.parse( x.start_year + "" );
+            x.name = x.player_name;
+            x.pos = x.pos_type;
+            x.fantPt = +x.ff_pts;
+            x.winPct = d3.round( (+x.win_pct * 100), 2 );
+        } );
+
+        // Scale the range of the data
+        x.domain( d3.extent( playerArray, function ( d )
+        {
+            return d.winPct;
+        } ) );
+        y.domain( d3.extent( playerArray, function ( d )
+        {
+            return d.fantPt;
+        } ) );
+
+        // Add the scatterplot
+        svg.selectAll( "dot" )
+                .data( playerArray )
+                .enter().append( "circle" )
+                .attr( "r", 3 )
+                .attr( "cx", function ( d )
+                {
+                    return x( d.winPct );
+                } )
+                .attr( "cy", function ( d )
+                {
+                    return y( d.fantPt );
+                } )
+                .attr( "id", function ( d, i )
+                {
+                    return "dot_" + i;
+                } ) // added
+                .attr( "class", "dot" )
+                .style( "fill", function ( d )
+                {
+                    return colorScale( d.pos );
+                } )
+                .on( "mouseover", function ( d )
+                {
+                    d3.select( this )
+                            .attr( "stroke", "black" )
+                            .attr( "stroke-width", 1 )
+                            .attr( "fill-opacity", 1 );
+                    div.transition()
+                            .duration( 200 )
+                            .style( "opacity", .9 );
+                    div.html( "Name: " + d.name + "<br/>" +
+                            "Position: " + d.pos + "<br/>" +
+                            "Fantasy Pts: " + d.fantPt + "<br/>" +
+                            "Win %: " + d.winPct )
+                            .style( "left", (d3.event.pageX + 5) + "px" )
+                            .style( "top", (d3.event.pageY - 5) + "px" )
+                            .transition().duration( 300 )
+                            .style( "opacity", 1 )
+                            .style( "display", "block" );
+                } )
+                .on( "mouseout", function ( d )
+                {
+                    d3.select( this )
+                            .attr( "stroke", "" )
+                            .attr( "fill-opacity", function ( d )
+                            {
+                                return 1;
+                            } )
+
+                    div.transition().duration( 700 ).style( "opacity", 0 );
+                } );
+
+        // Add the X Axis
+        svg.append( "g" )
+                .attr( "class", "x axis" )
+                .attr( "transform", "translate(0," + scatter_height + ")" )
+                .call( xAxis );
+
+        // Add the Y Axis
+        svg.append( "g" )
+                .attr( "class", "y axis" )
+                .call( yAxis );
+
+        lasso.items( d3.selectAll( ".dot" ) );
+
+        data_table = $( "#data_table" ).dataTable( {
+            "bPaginate": true,
+            "pagingType": "full_numbers",
+            "bLengthChange": false,
+            "bFilter": false,
+            "bSort": true,
+            "bInfo": false,
+            "bAutoWidth": false,
+            "bDeferRender": true,
+            "aaData": lasso.items().filter( function ( d )
+            {
+                return d.selected === true
+            } ),
+            "bDestroy": true,
+            "aoColumns": [
+                { "mData": "name", "sDefaultContent": "" },
+                { "mData": "short_year", "sDefaultContent": " " },
+                { "mData": "fantPt", "sDefaultContent": " " }
+            ]
+        } );
     }
 
     /**
-     * Returns an array with all of the unique player primary keys from the filtered objects.
+     * Returns an array with all of the unique players that are currently selected from the filtered objects.
      */
     function filteredPlayers()
     {
@@ -737,20 +504,29 @@
         //Loop through all of the filter objects
         $.each( filterObjects, function ( index, filterObject )
         {
-            //Get the filter objects player pk array
-            var pks = filterObject.players;
+            //Get the filter objects players array
+            var players = filterObject.players;
 
             //Loop through all of the player pks and add to set.
-            $.each( pks, function ( index2, pk )
+            $.each( players, function ( index2, player )
             {
-                playerSet.add( pk );
+                //Use the stringify function so that the === function passes for the json objects.
+                playerSet.add( JSON.stringify( player ) );
             } );
 
         } );
 
-        //return an array containing all of the unigue player pks
-        return Array.from( playerSet );
+        //Loop through the array and convert the string into JSON objects. Needed to be strings for comparison
+        var playerArray = Array.from( playerSet );
+        $.each( playerArray, function ( index, playerString )
+        {
+            playerArray[ index ] = JSON.parse( playerString );
+        } );
+
+        //return an array containing all of the unigue players
+        return playerArray;
     }
+
 </script>
 
 </body>

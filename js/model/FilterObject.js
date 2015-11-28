@@ -64,5 +64,4 @@ FilterObject.prototype.generateCareerUrl = function ()
     }
 
     return url;
-
 };

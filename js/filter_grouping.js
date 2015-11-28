@@ -55,7 +55,7 @@ function drawSelectionFilter()
             },
             error: function ()
             {
-                alert("ERROR MAKING WEB REQUEST FOR PLAYER KEYS")
+                alert( "ERROR MAKING WEB REQUEST FOR PLAYER KEYS" )
             },
             success: function ( data )
             {
@@ -65,7 +65,7 @@ function drawSelectionFilter()
                 //Loop through the array and get all of the player pks
                 $.each( data, function ( index, player )
                 {
-                    filterObject.players.push( player['pguid'] );
+                    filterObject.players.push( player );
                 } );
 
                 //Redraw the filter items table.
