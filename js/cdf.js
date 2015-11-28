@@ -1,7 +1,14 @@
+function tooltip(key) {
+  console.log(key);
+  return 'Custom Tooltip<br/>' +
+           '<h3>' + key.toString() + '</h3>' +
+           '<p>' +  y + ' on ' + x + '</p>';
+};
+
 function generateCDFChart() {
     var chart;
     // var rate = [{key:"Exchange Rate against USD", values:[]}];
-    d3.json('http://localhost:8000/seasons_subset/', function(error,data){
+    d3.json('http://localhost:8000/seasons_subset/?starts_with=MannPe00&starts_with=BradTo', function(error,data){
       
           // .staggerLabels(true)    //Too many bars and not enough room? Try staggering labels.
                     // .tooltips(true)        //Don't show tooltips
@@ -10,29 +17,36 @@ function generateCDFChart() {
         nv.addGraph(function() {
             chart = nv.models.lineChart()
                     // .useInteractiveGuideline(true)
-                    .x(function(d) { return d.x })    //Specify the data accessors.
-                    .y(function(d) { return d.y })
+                    .x(function(d) { 
+                      if(d !== undefined){
+                        return d.x;
+                      } else {
+                        return 0;
+                      }
+                    })    //Specify the data accessors.
+                    .y(function(d) { 
+                      if(d !== undefined){
+                        return d.y 
+                      } else {
+                        return 0;
+                      }
+                    })
                     .color(d3.scale.category10().range())
                     .options({
                       transitionDuration: 300,
+                      useInteractiveGuideline: false,
+                      clipVoronoi: true,
+                      useVoronoi: true,
                       useInteractiveGuideline: true,
                       showLegend: false
                     });
 
-                    // chart.tooltip.contentGenerator(function (obj) { 
-                    chart.interactiveLayer.tooltip.contentGenerator(function (obj){
-                      var html = "<h2>"+obj.value+"</h2> <ul>";
-                      // obj.series.forEach(function(elem){
-                      //     html += "<li><h3 style='color:"+elem.color+"'>"
-                      //             +elem.key+"</h3> : <b>"+elem.value+"</b></li>";
-                      // })
-                      html += "</ul>"
-                      return html;
-                    });
+                    chart.tooltip.enabled(true);
+                    chart.tooltip.contentGenerator(tooltip);
 
                     chart.xAxis
                       .axisLabel("Season count")
-                      .tickFormat(d3.format(',1f'))
+                      .tickFormat(d3.format(',.0d'))
                       .staggerLabels(true);
 
                     chart.yAxis
