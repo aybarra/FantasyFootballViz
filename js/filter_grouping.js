@@ -370,7 +370,7 @@ function drawCurrentFilterTable()
     //Loop through and add all the current filters
     $.each( filterObjects, function ( index, filterObject )
     {
-        table.append( '<tr valign="middle"><td><a href="javascript:deleteFilterObject(' + index + ');" id="deleteFilterRow">X</a></td><td><p>' + filterObject.prettyPrint() + '</p></td></tr>' );
+        table.append( '<tr valign="middle"><td><input type="image" src="images/delete_icon.png" width="24" height="24" onclick="deleteFilterObject(' + index + ');" id="deleteFilterRow"></input></td><td><p>' + filterObject.prettyPrint() + '</p></td></tr>' );
     } );
 
     //Add an onClick to remove the filter from the row
