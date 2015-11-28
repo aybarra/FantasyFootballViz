@@ -23,7 +23,7 @@
     <script src="nvd3/src/models/axis.js"></script>
     <script src="nvd3/src/models/distribution.js"></script>
     <script src="nvd3/src/models/scatter.js"></script>
-    <script src="nvd3/src/models/scatterChart.js"></script> 
+    <script src="nvd3/src/models/scatterChart.js"></script>
     <link href="nvd3/build/nv.d3.min.css" rel="stylesheet">
     <script src="js/cdf.js"></script>
 
@@ -74,8 +74,12 @@
                     Quarter Back
                 </label>
                 <label>
-                    <input type=checkbox name="wr_te" value="wr_te" id="filter_wr_te"/>
-                    WR/TE
+                    <input type=checkbox name="wr" value="wr" id="filter_wr"/>
+                    WR
+                </label>
+                <label>
+                    <input type=checkbox name="te" value="te" id="filter_te"/>
+                    TE
                 </label>
 
             </div>
@@ -142,12 +146,6 @@
     // var PGUID_TO_NAME_MAP = {};
     var PGUID_TO_NAME_MAP = setupNameMap();
 
-    //Add Default Filter
-    filterObjects.push( new FilterObject( 2000, 2015, null, null, null ) );
-
-    //Draw the current filter table with the default filter applied.
-    drawCurrentFilterTable();
-
     //Variable to hold the state of the sliding menu
     var isMenuOpen = false;
 
@@ -173,7 +171,7 @@
     var yearFormat = d3.time.format( '%Y' );
 
     var data_table;
-    var data =[];
+    var data = [];
 
     var box_margin = { top: 10, right: 30, bottom: 33, left: 45 };
     var box_width = 500// - box_margin.left - box_margin.right;
@@ -202,89 +200,167 @@
     // 	.style("opacity", "1");
 
     // Set the ranges
-    var x = d3.scale.linear().range([0, scatter_width]);
-    var y = d3.scale.linear().range([scatter_height, 0]);
+    var x = d3.scale.linear().range( [ 0, scatter_width ] );
+    var y = d3.scale.linear().range( [ scatter_height, 0 ] );
 
-    var colorScale = d3.scale.ordinal().domain(["QB", "RB","WR","TE"])
-          .range(["red", "green", "blue","gray"]);
+    var colorScale = d3.scale.ordinal().domain( [ "QB", "RB", "WR", "TE" ] )
+            .range( [ "red", "green", "blue", "gray" ] );
 
     // Define the axes
-    var xAxis = d3.svg.axis().scale(x)
-        .orient("bottom").ticks(6);
+    var xAxis = d3.svg.axis().scale( x )
+            .orient( "bottom" ).ticks( 6 );
 
-    var yAxis = d3.svg.axis().scale(y)
-        .orient("left").ticks(6);
+    var yAxis = d3.svg.axis().scale( y )
+            .orient( "left" ).ticks( 6 );
 
     // Define the div for the tooltip
-    var div = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
+    var div = d3.select( "body" ).append( "div" )
+            .attr( "class", "tooltip" )
+            .style( "opacity", 0 );
 
     // Adds the svg canvas
-    var svg = d3.select("#large-section")
-        .append("svg")
-            .attr("width", scatter_width + scatter_margin.left + scatter_margin.right)
-            .attr("height", scatter_height + scatter_margin.top + scatter_margin.bottom)
-        .append("g")
-            .attr("transform",
-                  "translate(" + scatter_margin.left + "," + scatter_margin.top + ")");
-
+    var svg = d3.select( "#large-section" )
+            .append( "svg" )
+            .attr( "width", scatter_width + scatter_margin.left + scatter_margin.right )
+            .attr( "height", scatter_height + scatter_margin.top + scatter_margin.bottom )
+            .append( "g" )
+            .attr( "transform",
+            "translate(" + scatter_margin.left + "," + scatter_margin.top + ")" );
 
     // Lasso functions to execute while lassoing
-    var lasso_start = function() {
-      lasso.items()
-        .attr("r",3.5) // reset size
-        .style("fill",null) // clear all of the fills
-        .classed({"not_possible":true,"selected":false}); // style as not possible
+    var lasso_start = function ()
+    {
+        lasso.items()
+                .attr( "r", 3.5 ) // reset size
+                .style( "fill", null ) // clear all of the fills
+                .classed( { "not_possible": true, "selected": false } ); // style as not possible
     };
 
-    var lasso_draw = function() {
-      // Style the possible dots
-      lasso.items().filter(function(d) {return d.possible===true})
-        .classed({"not_possible":false,"possible":true});
+    var lasso_draw = function ()
+    {
+        // Style the possible dots
+        lasso.items().filter( function ( d )
+        {
+            return d.possible === true
+        } )
+                .classed( { "not_possible": false, "possible": true } );
 
-      // Style the not possible dot
-      lasso.items().filter(function(d) {return d.possible===false})
-        .classed({"not_possible":true,"possible":false});
+        // Style the not possible dot
+        lasso.items().filter( function ( d )
+        {
+            return d.possible === false
+        } )
+                .classed( { "not_possible": true, "possible": false } );
     };
 
-    var lasso_end = function() {
-      // Reset the color of all dots
-      lasso.items()
-         .style("fill", function(d) { return colorScale(d.pos); });
+    var lasso_end = function ()
+    {
+        // Reset the color of all dots
+        lasso.items()
+                .style( "fill", function ( d )
+                {
+                    return colorScale( d.pos );
+                } );
 
-      // Style the selected dots
-      lasso.items().filter(function(d) {return d.selected===true})
-        .classed({"not_possible":false,"possible":false})
-        .attr("r",7);
+        // Style the selected dots
+        lasso.items().filter( function ( d )
+        {
+            return d.selected === true
+        } )
+                .classed( { "not_possible": false, "possible": false } )
+                .attr( "r", 7 );
 
-      // Reset the style of the not selected dots
-      lasso.items().filter(function(d) {return d.selected===false})
-        .classed({"not_possible":false,"possible":false})
-        .attr("r",3.5);
+        // Reset the style of the not selected dots
+        lasso.items().filter( function ( d )
+        {
+            return d.selected === false
+        } )
+                .classed( { "not_possible": false, "possible": false } )
+                .attr( "r", 3.5 );
 
-      console.log(lasso.items().filter(function(d) {return d.selected===true}));
-      RefreshTable(lasso.items().filter(function(d) {return d.selected===true}));
+        console.log( lasso.items().filter( function ( d )
+        {
+            return d.selected === true
+        } ) );
+        RefreshTable( lasso.items().filter( function ( d )
+        {
+            return d.selected === true
+        } ) );
     };
 
     // Create the area where the lasso event can be triggered
-    var lasso_area = svg.append("rect")
-                          .attr("width",scatter_width)
-                          .attr("height",scatter_height)
-                          .style("opacity",0);
+    var lasso_area = svg.append( "rect" )
+            .attr( "width", scatter_width )
+            .attr( "height", scatter_height )
+            .style( "opacity", 0 );
 
     // Define the lasso
     var lasso = d3.lasso()
-          .closePathDistance(75) // max distance for the lasso loop to be closed
-          .closePathSelect(true) // can items be selected by closing the path?
-          .hoverSelect(true) // can items by selected by hovering over them?
-          .area(lasso_area) // area where the lasso can be started
-          .on("start",lasso_start) // lasso start function
-          .on("draw",lasso_draw) // lasso draw function
-          .on("end",lasso_end); // lasso end function
+            .closePathDistance( 75 ) // max distance for the lasso loop to be closed
+            .closePathSelect( true ) // can items be selected by closing the path?
+            .hoverSelect( true ) // can items by selected by hovering over them?
+            .area( lasso_area ) // area where the lasso can be started
+            .on( "start", lasso_start ) // lasso start function
+            .on( "draw", lasso_draw ) // lasso draw function
+            .on( "end", lasso_end ); // lasso end function
 
     // Init the lasso on the svg:g that contains the dots
-    svg.call(lasso);
+    svg.call( lasso );
+
+    //Add Default Filter
+    var defaultFilterObject = new FilterObject( 2000, 2015, null, null, null );
+    filterObjects.push( defaultFilterObject );
+
+    //Draw the current filter table with the default filter applied.
+    drawCurrentFilterTable();
+
+    //Make a web call to get all of the pks for the default filter object
+    $.ajax( {
+        url: defaultFilterObject.generateCareerUrl(),
+        type: 'GET',
+        data: {
+            format: 'json'
+        },
+        error: function ()
+        {
+            alert( "ERROR MAKING WEB REQUEST FOR PLAYER KEYS" )
+        },
+        success: function ( data )
+        {
+            //Get the result array
+            data = data[ 'results' ];
+
+            //Loop through the array and get all of the player pks
+            $.each( data, function ( index, player )
+            {
+                defaultFilterObject.players.push( player[ 'pguid' ] );
+            } );
+
+            for ( var i = 0; i < 5; i++ )
+            {
+                $.ajax( {
+                    url: defaultFilterObject.generateCareerUrl(),
+                    type: 'GET',
+                    data: {
+                        format: 'json'
+                    },
+                    async: false,
+                    error: function ()
+                    {
+                        alert( "ERROR MAKING WEB REQUEST FOR PLAYER KEYS" )
+                    },
+                    success: function ( data )
+                    {
+                        console.log( "test" );
+                    }
+                } );
+            }
+
+            console.log( "done" );
+
+            //TODO load the rest of the page here. After the web call finishes
+        }
+    } );
 
     //Initial Ajax call to load data.
     $.ajax( {
@@ -309,69 +385,90 @@
                 x.name = x.player_name;
                 x.pos = x.pos_type;
                 x.fantPt = +x.ff_pts;
-                x.winPct = d3.round((+x.win_pct * 100),2);
+                x.winPct = d3.round( (+x.win_pct * 100), 2 );
             } );
 
+            // Scale the range of the data
+            x.domain( d3.extent( data, function ( d )
+            {
+                return d.winPct;
+            } ) );
+            y.domain( d3.extent( data, function ( d )
+            {
+                return d.fantPt;
+            } ) );
 
-                // Scale the range of the data
-                x.domain(d3.extent(data, function(d) { return d.winPct; }));
-                y.domain(d3.extent(data, function(d) { return d.fantPt; }));
-
-                // Add the scatterplot
-                svg.selectAll("dot")
-                    .data(data)
-                .enter().append("circle")
-                    .attr("r", 3)
-                    .attr("cx", function(d) { return x(d.winPct); })
-                    .attr("cy", function(d) { return y(d.fantPt); })
-                    .attr("id",function(d,i) {return "dot_" + i;}) // added
-                    .attr("class", "dot")
-                    .style("fill", function(d){return colorScale(d.pos);	})
-                    .on("mouseover", function(d) {
-                      	d3.select(this)
-                      		.attr("stroke", "black")
-                      		.attr("stroke-width", 1)
-                      		.attr("fill-opacity", 1);
+            // Add the scatterplot
+            svg.selectAll( "dot" )
+                    .data( data )
+                    .enter().append( "circle" )
+                    .attr( "r", 3 )
+                    .attr( "cx", function ( d )
+                    {
+                        return x( d.winPct );
+                    } )
+                    .attr( "cy", function ( d )
+                    {
+                        return y( d.fantPt );
+                    } )
+                    .attr( "id", function ( d, i )
+                    {
+                        return "dot_" + i;
+                    } ) // added
+                    .attr( "class", "dot" )
+                    .style( "fill", function ( d )
+                    {
+                        return colorScale( d.pos );
+                    } )
+                    .on( "mouseover", function ( d )
+                    {
+                        d3.select( this )
+                                .attr( "stroke", "black" )
+                                .attr( "stroke-width", 1 )
+                                .attr( "fill-opacity", 1 );
                         div.transition()
-                            .duration(200)
-                            .style("opacity", .9);
-                        div	.html("Name: " + d.name + "<br/>"  +
-                                  "Position: " + d.pos + "<br/>" +
-                                  "Fantasy Pts: " + d.fantPt + "<br/>" +
-                                  "Win %: " + d.winPct)
-                                  .style("left", (d3.event.pageX + 5) + "px")
-                        			    .style("top", (d3.event.pageY - 5) + "px")
-                        			    .transition().duration(300)
-                        			    .style("opacity", 1)
-                        			    .style("display", "block")  ;
-                        })
-                		// .on("mouseover", function(d){
-                		// 	d3.select(this)
-                		// 		.attr("stroke", "black")
-                		// 		.attr("stroke-width", 1)
-                		// 		.attr("fill-opacity", 1)
-                    //       			})
-                		.on("mouseout", function(d){
-                			d3.select(this)
-                				.attr("stroke", "")
-                				.attr("fill-opacity", function(d){return 1;})
+                                .duration( 200 )
+                                .style( "opacity", .9 );
+                        div.html( "Name: " + d.name + "<br/>" +
+                                "Position: " + d.pos + "<br/>" +
+                                "Fantasy Pts: " + d.fantPt + "<br/>" +
+                                "Win %: " + d.winPct )
+                                .style( "left", (d3.event.pageX + 5) + "px" )
+                                .style( "top", (d3.event.pageY - 5) + "px" )
+                                .transition().duration( 300 )
+                                .style( "opacity", 1 )
+                                .style( "display", "block" );
+                    } )
+                // .on("mouseover", function(d){
+                // 	d3.select(this)
+                // 		.attr("stroke", "black")
+                // 		.attr("stroke-width", 1)
+                // 		.attr("fill-opacity", 1)
+                //       			})
+                    .on( "mouseout", function ( d )
+                    {
+                        d3.select( this )
+                                .attr( "stroke", "" )
+                                .attr( "fill-opacity", function ( d )
+                                {
+                                    return 1;
+                                } )
 
-                			div.transition().duration(700).style("opacity", 0);
-                		});
+                        div.transition().duration( 700 ).style( "opacity", 0 );
+                    } );
 
-                // Add the X Axis
-                svg.append("g")
-                    .attr("class", "x axis")
-                    .attr("transform", "translate(0," + scatter_height + ")")
-                    .call(xAxis);
+            // Add the X Axis
+            svg.append( "g" )
+                    .attr( "class", "x axis" )
+                    .attr( "transform", "translate(0," + scatter_height + ")" )
+                    .call( xAxis );
 
-                // Add the Y Axis
-                svg.append("g")
-                    .attr("class", "y axis")
-                    .call(yAxis);
+            // Add the Y Axis
+            svg.append( "g" )
+                    .attr( "class", "y axis" )
+                    .call( yAxis );
 
-                lasso.items(d3.selectAll(".dot"));
-
+            lasso.items( d3.selectAll( ".dot" ) );
 
             // var ndx = crossfilter( data );
             //
@@ -428,7 +525,6 @@
             //             gWhiskLabels.remove();
             //
             //         } );
-
 
             // var scatterDimension = ndx.dimension( function ( d )
             // {
@@ -490,7 +586,7 @@
             //         ]
             //     } );
             // } );
-          data_table = $( "#data_table" ).dataTable( {
+            data_table = $( "#data_table" ).dataTable( {
                 "bPaginate": true,
                 "pagingType": "full_numbers",
                 "bLengthChange": false,
@@ -499,7 +595,10 @@
                 "bInfo": false,
                 "bAutoWidth": false,
                 "bDeferRender": true,
-                "aaData": lasso.items().filter(function(d) {return d.selected===true}),
+                "aaData": lasso.items().filter( function ( d )
+                {
+                    return d.selected === true
+                } ),
                 "bDestroy": true,
                 "aoColumns": [
                     { "mData": "name", "sDefaultContent": "" },
@@ -508,8 +607,6 @@
                 ]
             } );
 //          { "mData": "short_year", "sDefaultContent": " " },
-
-
 
             // for ( var i = 0; i < dc.chartRegistry.list().length; i++ )
             // {
@@ -523,98 +620,137 @@
 
     drawSelectionFilter();
     generateCDFChart();
-    function RefreshTable(alldata)
+    function RefreshTable( alldata )
     {
-      data_table.fnClearTable();
-      data_table.fnAddData( alldata );
-      data_table.fnDraw();
+        data_table.fnClearTable();
+        data_table.fnAddData( alldata );
+        data_table.fnDraw();
     }
-  function callScatterPlot(){
-    // // Set the dimensions of the canvas / graph
-    // var margin = {top: 30, right: 20, bottom: 30, left: 50},
-    //     width = 1000 - margin.left - margin.right,
-    //     height = 500 - margin.top - margin.bottom;
-    //
-    // // Set the ranges
-    // var x = d3.scale.linear().range([0, width]);
-    // var y = d3.scale.linear().range([height, 0]);
-    //
-    // // Define the axes
-    // var xAxis = d3.svg.axis().scale(x)
-    //     .orient("bottom").ticks(6);
-    //
-    // var yAxis = d3.svg.axis().scale(y)
-    //     .orient("left").ticks(6);
-    //
-    // // Define the div for the tooltip
-    // var div = d3.select("body").append("div")
-    //     .attr("class", "tooltip")
-    //     .style("opacity", 0);
-    //
-    // // Adds the svg canvas
-    // var svg = d3.select("#large-section")
-    //     .append("svg")
-    //         .attr("width", width + margin.left + margin.right)
-    //         .attr("height", height + margin.top + margin.bottom)
-    //     .append("g")
-    //         .attr("transform",
-    //               "translate(" + margin.left + "," + margin.top + ")");
-    //
-    //     // Scale the range of the data
-    //     x.domain(d3.extent(data, function(d) { return d.winPct; }));
-    //     y.domain(d3.extent(data, function(d) { return d.fantPt; }));
-    //
-    //     // Add the scatterplot
-    //     svg.selectAll("dot")
-    //         .data(data)
-    //     .enter().append("circle")
-    //         .attr("r", 5)
-    //         .attr("cx", function(d) { return x(d.winPct); })
-    //         .attr("cy", function(d) { return y(d.fantPt); })
-    //         .on("mouseover", function(d) {
-    //             div.transition()
-    //                 .duration(200)
-    //                 .style("opacity", .9);
-    //             div	.html("Name: " + d.name + "<br/>"  +
-    //                       "Position: " + d.pos + "<br/>" +
-    //                       "Fantasy Pts: " + d.fantPt + "<br/>" +
-    //                       "Win %: " + d.winPct)
-    //                 .style("left", (d3.event.pageX) + "px")
-    //                 .style("top", (d3.event.pageY - 28) + "px");
-    //             })
-    //         .on("mouseout", function(d) {
-    //             div.transition()
-    //                 .duration(500)
-    //                 .style("opacity", 0);
-    //         });
-    //
-    //     // Add the X Axis
-    //     svg.append("g")
-    //         .attr("class", "x axis")
-    //         .attr("transform", "translate(0," + height + ")")
-    //         .call(xAxis);
-    //
-    //     // Add the Y Axis
-    //     svg.append("g")
-    //         .attr("class", "y axis")
-    //         .call(yAxis);
+    function callScatterPlot()
+    {
+        // // Set the dimensions of the canvas / graph
+        // var margin = {top: 30, right: 20, bottom: 30, left: 50},
+        //     width = 1000 - margin.left - margin.right,
+        //     height = 500 - margin.top - margin.bottom;
+        //
+        // // Set the ranges
+        // var x = d3.scale.linear().range([0, width]);
+        // var y = d3.scale.linear().range([height, 0]);
+        //
+        // // Define the axes
+        // var xAxis = d3.svg.axis().scale(x)
+        //     .orient("bottom").ticks(6);
+        //
+        // var yAxis = d3.svg.axis().scale(y)
+        //     .orient("left").ticks(6);
+        //
+        // // Define the div for the tooltip
+        // var div = d3.select("body").append("div")
+        //     .attr("class", "tooltip")
+        //     .style("opacity", 0);
+        //
+        // // Adds the svg canvas
+        // var svg = d3.select("#large-section")
+        //     .append("svg")
+        //         .attr("width", width + margin.left + margin.right)
+        //         .attr("height", height + margin.top + margin.bottom)
+        //     .append("g")
+        //         .attr("transform",
+        //               "translate(" + margin.left + "," + margin.top + ")");
+        //
+        //     // Scale the range of the data
+        //     x.domain(d3.extent(data, function(d) { return d.winPct; }));
+        //     y.domain(d3.extent(data, function(d) { return d.fantPt; }));
+        //
+        //     // Add the scatterplot
+        //     svg.selectAll("dot")
+        //         .data(data)
+        //     .enter().append("circle")
+        //         .attr("r", 5)
+        //         .attr("cx", function(d) { return x(d.winPct); })
+        //         .attr("cy", function(d) { return y(d.fantPt); })
+        //         .on("mouseover", function(d) {
+        //             div.transition()
+        //                 .duration(200)
+        //                 .style("opacity", .9);
+        //             div	.html("Name: " + d.name + "<br/>"  +
+        //                       "Position: " + d.pos + "<br/>" +
+        //                       "Fantasy Pts: " + d.fantPt + "<br/>" +
+        //                       "Win %: " + d.winPct)
+        //                 .style("left", (d3.event.pageX) + "px")
+        //                 .style("top", (d3.event.pageY - 28) + "px");
+        //             })
+        //         .on("mouseout", function(d) {
+        //             div.transition()
+        //                 .duration(500)
+        //                 .style("opacity", 0);
+        //         });
+        //
+        //     // Add the X Axis
+        //     svg.append("g")
+        //         .attr("class", "x axis")
+        //         .attr("transform", "translate(0," + height + ")")
+        //         .call(xAxis);
+        //
+        //     // Add the Y Axis
+        //     svg.append("g")
+        //         .attr("class", "y axis")
+        //         .call(yAxis);
 
-  }
+    }
 
-  // To be used by tooltips when you want the playername
-  function setupNameMap(){
-    var nameMap = {};
-    d3.json('http://localhost:8000/careers', function(error,data){
-        // console.log(data);
-        data['results'].forEach(function(career) {
-            if(nameMap[career['pguid']] === undefined){
-                nameMap[career['pguid']] = career['player_name'];
-            }
-        });
-        // console.log(nameMap);
-        return nameMap;
-    });
-  }
+    // To be used by tooltips when you want the playername
+    function setupNameMap()
+    {
+        var nameMap = {};
+        d3.json( 'http://localhost:8000/careers', function ( error, data )
+        {
+            // console.log(data);
+            data[ 'results' ].forEach( function ( career )
+            {
+                if( nameMap[ career[ 'pguid' ] ] === undefined )
+                {
+                    nameMap[ career[ 'pguid' ] ] = career[ 'player_name' ];
+                }
+            } );
+            // console.log(nameMap);
+            return nameMap;
+        } );
+    }
+
+    /**
+     * Returns an array with all of the unique player primary keys from the filtered objects.
+     */
+    function loadScatterPlot()
+    {
+
+    }
+
+    /**
+     * Returns an array with all of the unique player primary keys from the filtered objects.
+     */
+    function filteredPlayers()
+    {
+        //Create the set to place the pks
+        var playerSet = new Set();
+
+        //Loop through all of the filter objects
+        $.each( filterObjects, function ( index, filterObject )
+        {
+            //Get the filter objects player pk array
+            var pks = filterObject.players;
+
+            //Loop through all of the player pks and add to set.
+            $.each( pks, function ( index2, pk )
+            {
+                playerSet.add( pk );
+            } );
+
+        } );
+
+        //return an array containing all of the unigue player pks
+        return Array.from( playerSet );
+    }
 </script>
 
 </body>

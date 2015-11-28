@@ -43,16 +43,42 @@ function drawSelectionFilter()
         }
 
         //Push a new filter object onto the array of filter objects
-        filterObjects.push( new FilterObject( minDate, maxDate, minPoints, maxPoints, positions ) );
+        var filterObject = new FilterObject( minDate, maxDate, minPoints, maxPoints, positions );
+        filterObjects.push( filterObject );
 
-        //Redraw the filter items table.
-        drawCurrentFilterTable();
+        //Make a webcall to get entities based on the filter values
+        $.ajax( {
+            url: filterObject.generateCareerUrl(),
+            type: 'GET',
+            data: {
+                format: 'json'
+            },
+            error: function ()
+            {
+                alert("ERROR MAKING WEB REQUEST FOR PLAYER KEYS")
+            },
+            success: function ( data )
+            {
+                //Get the result array
+                data = data[ 'results' ];
 
-        //Clear out all of the local variables and charts
-        clearVariables();
+                //Loop through the array and get all of the player pks
+                $.each( data, function ( index, player )
+                {
+                    filterObject.players.push( player['pguid'] );
+                } );
 
-        //Call the sliding drawer click function to close the drawer
-        menuTrigger.trigger( "click" );
+                //Redraw the filter items table.
+                drawCurrentFilterTable();
+
+                //Clear out all of the local variables and charts
+                clearVariables();
+
+                //Call the sliding drawer click function to close the drawer
+                menuTrigger.trigger( "click" );
+            }
+        } );
+
     } );
 
     //Setup cancel filter onclick button
@@ -181,10 +207,16 @@ function onPositionToggled()
             positionsSelectionText += " QB ";
         }
 
-        if( $( "#filter_wr_te" ).is( ":checked" ) )
+        if( $( "#filter_wr" ).is( ":checked" ) )
         {
-            positions.push( "WR/TE" );
-            positionsSelectionText += " WR/TE ";
+            positions.push( "WR" );
+            positionsSelectionText += " WR ";
+        }
+
+        if( $( "#filter_te" ).is( ":checked" ) )
+        {
+            positions.push( "TE" );
+            positionsSelectionText += " TE ";
         }
     }
 
@@ -370,6 +402,7 @@ function drawCurrentFilterTable()
     //Loop through and add all the current filters
     $.each( filterObjects, function ( index, filterObject )
     {
+        //noinspection HtmlUnknownTarget
         table.append( '<tr valign="middle"><td><input type="image" src="images/delete_icon.png" width="24" height="24" onclick="deleteFilterObject(' + index + ');" id="deleteFilterRow"></input></td><td><p>' + filterObject.prettyPrint() + '</p></td></tr>' );
     } );
 
