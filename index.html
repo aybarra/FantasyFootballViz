@@ -174,9 +174,7 @@
     var yearFormat = d3.time.format( '%Y' );
 
     var data_table;
-    //  = $(document).ready(function(){
-    //   $('#data_table').dataTable();
-    // });
+    var data = [];
 
     var data = [];
     //
@@ -197,8 +195,6 @@
     // Set the ranges
     var x = d3.scale.linear().range( [ 0, scatter_width ] );
     var y = d3.scale.linear().range( [ scatter_height, 0 ] );
-
-
 
     var colorScale = d3.scale.ordinal().domain( [ "QB", "RB", "WR", "TE" ] )
             .range( [ "red", "green", "blue", "gray" ] );
@@ -230,6 +226,7 @@
     // var div = d3.select( "body" ).append( "div" )
     //         .attr( "class", "tooltip" )
     //         .style( "opacity", 0 );
+
 
     // Adds the svg canvas
     var svg = d3.select( "#large-section" )
@@ -300,7 +297,6 @@
         console.log(lassoed_items);
 
         refreshPlayerDataTable( lassoed_items );
-
 
     };
 
@@ -405,7 +401,7 @@
 
         var scat_xaxis_padding = 1;
         var scat_yaxis_padding = 0;
-        
+
         playerArray.forEach( function ( x )
         {
             x.short_year = x.start_year;
@@ -551,7 +547,6 @@
                 //Use the stringify function so that the === function passes for the json objects.
                 playerSet.add( JSON.stringify( player ) );
             } );
-
         } );
 
         //Loop through the array and convert the string into JSON objects. Needed to be strings for comparison
@@ -581,6 +576,7 @@
     				.text(function(d){return player[d.var];})
     				.attr("class", "normalDetail");
     }
+
 
 </script>
 
