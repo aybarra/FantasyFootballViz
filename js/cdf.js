@@ -1,5 +1,5 @@
 function tooltip(key) {
-  console.log(key);
+  // console.log(key);
   return 'Custom Tooltip<br/>' +
            '<h3>' + key.toString() + '</h3>' +
            '<p>' +  y + ' on ' + x + '</p>';
@@ -8,7 +8,7 @@ function tooltip(key) {
 function generateCDFChart() {
     var chart;
     // var rate = [{key:"Exchange Rate against USD", values:[]}];
-    d3.json('http://localhost:8000/seasons_subset/?starts_with=MannPe00&starts_with=BradTo', function(error,data){
+    d3.json('http://localhost:8000/seasons_subset/', function(error,data){
       
           // .staggerLabels(true)    //Too many bars and not enough room? Try staggering labels.
                     // .tooltips(true)        //Don't show tooltips
@@ -40,8 +40,8 @@ function generateCDFChart() {
                       showLegend: false
                     });
 
-                    chart.tooltip.enabled(true);
-                    chart.tooltip.contentGenerator(tooltip);
+                    // chart.tooltip.enabled(true);
+                    // chart.tooltip.contentGenerator(tooltip);
 
                     chart.xAxis
                       .axisLabel("Season count")
@@ -50,13 +50,13 @@ function generateCDFChart() {
 
                     chart.yAxis
                       .axisLabel('Cumulative Fantasy Points');
-                    // .transitionDuration(350)
-                    .duration(300)
-                    .clipVoronoi(false)
-                    .showLegend(false)
-                    .color(d3.scale.category10().range())
-                    .showYAxis(true)        //Show the y-axis
-                    .showXAxis(true);
+                    // // .transitionDuration(350)
+                    // .duration(300)
+                    // .clipVoronoi(false)
+                    // .showLegend(false)
+                    // .color(d3.scale.category10().range())
+                    // .showYAxis(true)        //Show the y-axis
+                    // .showXAxis(true);
  
             // generateChart(chart);
             d3.select('#cdf_chart svg')//'#chart svg')
@@ -97,7 +97,7 @@ function convertData(data){
       lines[pguid]['values'].push({x: last++, y: ff_pts, year: season_year});
     }
   }
-  console.log(lines);
+  // console.log(lines);
 
   for(var key_obj in lines){
     // console.log(key);
@@ -114,6 +114,6 @@ function convertData(data){
     plot_data.push({key: key_obj, values: vals});
 
   }
-  console.log(plot_data);
+  // console.log(plot_data);
   return plot_data;
 }
