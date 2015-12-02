@@ -2,7 +2,7 @@ function generateCDFChart() {
     var chart;
     // var rate = [{key:"Exchange Rate against USD", values:[]}];
     d3.json('http://localhost:8000/seasons_subset/', function(error,data){
-      
+
           // .staggerLabels(true)    //Too many bars and not enough room? Try staggering labels.
                     // .tooltips(true)        //Don't show tooltips
                     // .showValues(true)       //...instead, show the bar value right on top of each bar.
@@ -19,14 +19,14 @@ function generateCDFChart() {
                     .color(d3.scale.category10().range())
                     .showYAxis(true)        //Show the y-axis
                     .showXAxis(true);
- 
+
             // generateChart(chart);
             d3.select('#cdf_chart svg')//'#chart svg')
                     .datum(convertData(data))
                     .call(chart);
- 
+
             nv.utils.windowResize(chart.update);
- 
+
             return chart;
         });
     })
@@ -59,7 +59,7 @@ function convertData(data){
       lines[pguid]['values'].push({x: last++, y: ff_pts, year: season_year});
     }
   }
-  console.log(lines);
+  // console.log(lines);
 
   for(var key_obj in lines){
     // console.log(key);
@@ -72,10 +72,10 @@ function convertData(data){
         vals[i].y += vals[i-1].y;
       }
     }
-    
+
     plot_data.push({key: key_obj, values: vals});
 
   }
-  console.log(plot_data);
+  // console.log(plot_data);
   return plot_data;
 }

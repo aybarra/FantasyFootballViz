@@ -28,8 +28,8 @@
     <script src="js/cdf.js"></script>
 
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-    <link href="dc/dc.css" rel="stylesheet" type="text/css">
-    <link href="css/dashboard.css" rel="stylesheet">
+    <!-- <link href="dc/dc.css" rel="stylesheet" type="text/css">
+    <link href="css/dashboard.css" rel="stylesheet"> -->
     <link href="css/layout.css" rel="stylesheet">
     <link href="css/datatables.min.css" rel="stylesheet">
 
@@ -105,8 +105,16 @@
                 <table id="filters_table">
                 </table>
             </div>
-            <div class="col-sm-7" id="large-section">
-                <h4>Large Section</h4>
+            <div class="col-sm-7">
+                <div class="row">
+                  <div class="col-sm-12" id="large-section"></div>
+                </div>
+                <div class="row">
+                  <h4>Shneiderman's Mantra:  Overview first, zoom and filter, then details-on-demand.</h4>
+                  <div class="col-sm-12" id="cdf_chart">
+                      <svg></svg>
+                  </div>
+                </div>
             </div>
             <div class="col-sm-3">
                 <h4>Player Data Table</h4>
@@ -123,19 +131,12 @@
             </div>
         </div>
 
-        <div class="row">
-            <div id="cdf_chart" class="col-sm-10">
-                <svg></svg>
-            </div>
-        </div>
-        <!-- <div class="row" style="display: none;">
-            <div class="col-md-6" id="box-whisker-chart">
-                <h4>Box and Whisker Plot</h4>
-            </div>
-            <div class="col-md-6" id="histogram">
-                <h4>Histogram</h4>
-            </div>
+        <!-- <div class="row">
+          <div id="cdf_chart" class="col-sm-7">
+              <svg></svg>
+          </div>
         </div> -->
+
 
     </div>
 </div>
@@ -176,17 +177,29 @@
     var data_table;
     var data = [];
 
-    var data = [];
-    //
+    var lassoed_items = [];
+
     // var box_margin = { top: 10, right: 30, bottom: 33, left: 45 };
     // var box_width = 500// - box_margin.left - box_margin.right;
     // var box_height = 150// - box_margin.top - box_margin.bottom;
     // var box_chart = dc.boxPlot( "#box-whisker-chart" );
 
     var scatter_margin = { top: 10, right: 30, bottom: 33, left: 45 };
-    var scatter_width = 800 - scatter_margin.right - scatter_margin.left;
+    var scatter_width = 700 - scatter_margin.right - scatter_margin.left;
     var scatter_height = 400 - scatter_margin.top - scatter_margin.bottom;
-    //
+
+    // Adds the svg canvas
+    var svg_scatter = d3.select( "#large-section" )
+            .append( "svg" )
+            .attr( "width", scatter_width + scatter_margin.left + scatter_margin.right )
+            .attr( "height", scatter_height + scatter_margin.top + scatter_margin.bottom )
+            .append("g")
+            .attr( "transform",
+                  "translate(" + scatter_margin.left + "," + scatter_margin.top + ")" );
+
+        // var svg_cdf = d3.select( "#cdf_chart" )
+        //         .append( "svg" );
+
     // var hist_margin = { top: 10, right: 30, bottom: 33, left: 45 };
     // var hist_width = 500;
     // var hist_height = 150;
@@ -196,15 +209,21 @@
     var x = d3.scale.linear().range( [ 0, scatter_width ] );
     var y = d3.scale.linear().range( [ scatter_height, 0 ] );
 
-    var colorScale = d3.scale.ordinal().domain( [ "QB", "RB", "WR", "TE" ] )
-            .range( [ "red", "green", "blue", "gray" ] );
+    var colorScale = //d3.scale.ordinal().domain( [ "QB", "RB", "WR", "TE" ] )
+            //.range( [ "red", "green", "blue", "gray" ] );
+            d3.scale.category10( );
 
     // Define the axes
     var xAxis = d3.svg.axis().scale( x )
             .orient( "bottom" ).ticks( 6 );
 
     var yAxis = d3.svg.axis().scale( y )
-            .orient( "left" ).ticks( 6 );
+            .orient( "left" ).ticks( 10 );
+
+
+
+    var scat_xaxis_padding = 1;
+    var scat_yaxis_padding = 0;
 
     // Define the div for the tooltip
     var tooltip = d3.select("body").append("div")
@@ -220,7 +239,7 @@
 
     var printDetails = [
 			{'var': 'name', 'print': 'Name'},
-			{'var': 'pos', 'print': 'Position'},
+			{'var': 'pos_long', 'print': 'Position'},
 			{'var': 'fantPt', 'print': 'Fantasy Pts'},
 			{'var': 'winPct', 'print': 'Win %'}];
     // var div = d3.select( "body" ).append( "div" )
@@ -228,14 +247,7 @@
     //         .style( "opacity", 0 );
 
 
-    // Adds the svg canvas
-    var svg = d3.select( "#large-section" )
-            .append( "svg" )
-            .attr( "width", scatter_width + scatter_margin.left + scatter_margin.right )
-            .attr( "height", scatter_height + scatter_margin.top + scatter_margin.bottom )
-            .append( "g" )
-            .attr( "transform",
-            "translate(" + scatter_margin.left + "," + scatter_margin.top + ")" );
+
 
     // Lasso functions to execute while lassoing
     var lasso_start = function ()
@@ -294,14 +306,14 @@
             return d.selected === true
         } ).data();
 
-        console.log(lassoed_items);
+        // console.log(lassoed_items);
 
         refreshPlayerDataTable( lassoed_items );
 
     };
 
     // Create the area where the lasso event can be triggered
-    var lasso_area = svg.append( "rect" )
+    var lasso_area = svg_scatter.append( "rect" )
             .attr( "width", scatter_width )
             .attr( "height", scatter_height )
             .style( "opacity", 0 );
@@ -317,9 +329,9 @@
             .on( "end", lasso_end ); // lasso end function
 
     // Init the lasso on the svg:g that contains the dots
-    svg.call( lasso );
+    svg_scatter.call( lasso );
 
-    var lassoed_items = [];
+
 
     //Add Default Filter
     var defaultFilterObject = new FilterObject( 2000, 2015, null, null, null );
@@ -351,6 +363,7 @@
             } );
 
             loadScatterPlot();
+            createTable();
         }
     } );
 
@@ -399,8 +412,9 @@
         //TODO clear out old charts and graphs.
         var playerArray = filteredPlayers();
 
-        var scat_xaxis_padding = 1;
-        var scat_yaxis_padding = 0;
+
+
+
 
         playerArray.forEach( function ( x )
         {
@@ -408,6 +422,13 @@
             x.year = yearFormat.parse( x.start_year + "" );
             x.name = x.player_name;
             x.pos = x.pos_type;
+            {
+              if (x.pos == "qb"){x.pos_long = "Quarterback"}
+              else if(x.pos == "rb"){x.pos_long = "Running Back"}
+              else if(x.pos == "wr"){x.pos_long = "Wide Receiver"}
+              else if(x.pos == "te"){x.pos_long = "Tight End"}
+              else {x.pos == ""}
+            };
             x.fantPt = +x.ff_pts;
             x.winPct = d3.round( (+x.win_pct * 100), 2 );
         } );
@@ -431,7 +452,7 @@
         y.domain([ymin, ymax]);
 
         // Add the scatterplot
-        svg.selectAll( "dot" )
+        svg_scatter.selectAll( "dot" )
                 .data( playerArray )
                 .enter().append( "circle" )
                 .attr( "r", 3 )
@@ -452,6 +473,12 @@
                 {
                     return colorScale( d.pos );
                 } )
+                // .style("fill", "none")
+                // .style("stroke-width", 2)
+                // .style("stroke", function (d)
+                // {
+                // return colorScale(d.pos);
+                // })
                 .on( "mouseover", function ( d )
                 {
                     d3.select( this )
@@ -488,43 +515,19 @@
                 } );
 
         // Add the X Axis
-        svg.append( "g" )
+        svg_scatter.append( "g" )
                 .attr( "class", "x axis" )
                 .attr( "transform", "translate(0," + scatter_height + ")" )
                 .call( xAxis );
 
         // Add the Y Axis
-        svg.append( "g" )
+        svg_scatter.append( "g" )
                 .attr( "class", "y axis" )
                 .call( yAxis );
 
         lasso.items( d3.selectAll( ".dot" ) );
 
-        data_table = $( "#data_table" ).dataTable( {
-            "bPaginate": true,
-            "pagingType": "full_numbers",
-            "bLengthChange": false,
-            // "bFilter": false,
-            "bSort": true,
-            // "bInfo": false,
-            "bAutoWidth": false,
-            // "bDeferRender": true,
-            "aoData": "lassoed_items",
-            // "bDestroy": true,
-            "aoColumns": [
-                { "mData": "name",
-                  "defaultContent": "<i>Empty</i>"},
-                { "mData": "pos",
-              "defaultContent": "<i>Empty</i>"},
 
-                { "mData": "fantPt",
-              "defaultContent": "<i>Empty</i>"},
-                { "mData": "winPct",
-              "defaultContent": "<i>Empty</i>"}
-
-          ]
-
-        } );
     }
 
     /**
@@ -558,6 +561,34 @@
 
         //return an array containing all of the unigue players
         return playerArray;
+    }
+
+    function createTable(){
+      data_table = $( "#data_table" ).dataTable( {
+          "bPaginate": true,
+          "pagingType": "full_numbers",
+          "bLengthChange": false,
+          // "bFilter": false,
+          "bSort": true,
+          // "bInfo": false,
+          "bAutoWidth": false,
+          // "bDeferRender": true,
+          "aoData": "lassoed_items",
+          // "bDestroy": true,
+          "aoColumns": [
+              { "mData": "name",
+                "defaultContent": "<i>Empty</i>"},
+              { "mData": "pos_long",
+            "defaultContent": "<i>Empty</i>"},
+
+              { "mData": "fantPt",
+            "defaultContent": "<i>Empty</i>"},
+              { "mData": "winPct",
+            "defaultContent": "<i>Empty</i>"}
+
+        ]
+
+      } );
     }
 
     function updateDetails(player){
