@@ -1,3 +1,10 @@
+function tooltip(key) {
+  // console.log(key);
+  return 'Custom Tooltip<br/>' +
+           '<h3>' + key.toString() + '</h3>' +
+           '<p>' +  y + ' on ' + x + '</p>';
+};
+
 function generateCDFChart() {
     var chart;
     // var rate = [{key:"Exchange Rate against USD", values:[]}];
@@ -9,17 +16,47 @@ function generateCDFChart() {
                     // .tooltipContent(function(key, y, e, graph) { return 'Some String'; })
         nv.addGraph(function() {
             chart = nv.models.lineChart()
-                    // .useInteractiveGuideline(true)
-                    .x(function(d) { return d.x })    //Specify the data accessors.
-                    .y(function(d) { return d.y })
-                    // .transitionDuration(350)
-                    .duration(300)
-                    .clipVoronoi(false)
-                    .showLegend(false)
+                    .x(function(d) {
+                      if(d !== undefined){
+                        return d.x;
+                      } else {
+                        return 0;
+                      }
+                    })    //Specify the data accessors.
+                    .y(function(d) {
+                      if(d !== undefined){
+                        return d.y
+                      } else {
+                        return 0;
+                      }
+                    })
                     .color(d3.scale.category10().range())
-                    .showYAxis(true)        //Show the y-axis
-                    .showXAxis(true);
+                    .options({
+                      transitionDuration: 300,
+                      useInteractiveGuideline: false,
+                      clipVoronoi: true,
+                      useVoronoi: true,
+                      useInteractiveGuideline: true,
+                      showLegend: false
+                    });
 
+                    // chart.tooltip.enabled(true);
+                    // chart.tooltip.contentGenerator(tooltip);
+
+                    chart.xAxis
+                      .axisLabel("Season count")
+                      .tickFormat(d3.format(',.0d'))
+                      .staggerLabels(true);
+
+                    chart.yAxis
+                      .axisLabel('Cumulative Fantasy Points');
+                    // // .transitionDuration(350)
+                    // .duration(300)
+                    // .clipVoronoi(false)
+                    // .showLegend(false)
+                    // .color(d3.scale.category10().range())
+                    // .showYAxis(true)        //Show the y-axis
+                    // .showXAxis(true);
             // generateChart(chart);
             d3.select('#cdf_chart svg')//'#chart svg')
                     .datum(convertData(data))
