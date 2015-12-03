@@ -16,7 +16,7 @@
     <script src="js/lasso.js"></script>
 
 
-    <link href="nvd3/build/nv.d3.min.css" rel="stylesheet">
+    <!-- <link href="nvd3/build/nv.d3.min.css" rel="stylesheet">
     <script src="nvd3/build/nv.d3.min.js"></script>
     <script src="nvd3/src/tooltip.js"></script>
     <script src="nvd3/src/utils.js"></script>
@@ -25,8 +25,8 @@
     <script src="nvd3/src/models/distribution.js"></script>
     <script src="nvd3/src/models/scatter.js"></script>
     <script src="nvd3/src/models/scatterChart.js"></script>
-    <link href="nvd3/build/nv.d3.min.css" rel="stylesheet">
-    <script src="js/cdf.js"></script>
+    <link href="nvd3/build/nv.d3.min.css" rel="stylesheet"> -->
+    <script src="js/cdf_d3.js"></script>
 
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <!-- <link href="dc/dc.css" rel="stylesheet" type="text/css">
@@ -112,8 +112,8 @@
                 </div>
                 <div class="row">
                   <h4>Shneiderman's Mantra:  Overview first, zoom and filter, then details-on-demand.</h4>
-                  <div class="col-sm-12" id="cdf_chart">
-                      <svg></svg>
+                  <div class="col-sm-12">
+                    <svg id="cdf_chart"></svg>
                   </div>
                 </div>
             </div>
@@ -370,7 +370,8 @@
 
     //Initial calls to load data and setup page.
     drawSelectionFilter();
-    generateCDFChart();
+    // generateCDFChart();
+    generateCDF_D3Chart()
 
     /**
      *

@@ -33,15 +33,15 @@ function generateCDFChart() {
                     .color(d3.scale.category10().range())
                     .options({
                       transitionDuration: 300,
-                      useInteractiveGuideline: false,
+                      // useInteractiveGuideline: false,
                       clipVoronoi: true,
                       useVoronoi: true,
-                      useInteractiveGuideline: true,
+                      // useInteractiveGuideline: true,
                       showLegend: false
                     });
 
                     // chart.tooltip.enabled(true);
-                    // chart.tooltip.contentGenerator(tooltip);
+                    chart.tooltip.contentGenerator(tooltip);
 
                     chart.xAxis
                       .axisLabel("Season count")
