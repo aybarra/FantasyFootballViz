@@ -27,6 +27,7 @@
     <script src="nvd3/src/models/scatterChart.js"></script>
     <link href="nvd3/build/nv.d3.min.css" rel="stylesheet"> -->
     <script src="js/cdf_d3.js"></script>
+    <link href="css/cdf.css" rel="stylesheet"> 
 
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <!-- <link href="dc/dc.css" rel="stylesheet" type="text/css">
@@ -123,7 +124,7 @@
                 <div class="row">
                   <h4>Shneiderman's Mantra:  Overview first, zoom and filter, then details-on-demand.</h4>
                   <div class="col-sm-12">
-                    <svg id="cdf_chart"></svg>
+                    <div id="cdf_chart"></div>
                   </div>
                 </div>
             </div>
@@ -194,6 +195,10 @@
     var scatter_width = 700 - scatter_margin.right - scatter_margin.left;
     var scatter_height = 400 - scatter_margin.top - scatter_margin.bottom;
 
+    var cdf_margin = { top: 10, right: 30, bottom: 33, left: 45 };
+    var cdf_width = 700 - cdf_margin.right - cdf_margin.left;
+    var cdf_height = 400 - cdf_margin.top - cdf_margin.bottom;
+    
     // Adds the svg canvas
     var svg_scatter = d3.select( "#scatter_chart" )
             .append( "svg" )
