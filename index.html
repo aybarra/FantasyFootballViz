@@ -84,7 +84,17 @@
                     <input type=checkbox name="te" value="te" id="filter_te"/>
                     TE
                 </label>
-
+            </div>
+            <div class="col-md-10" id="filter_active_inactive" style="clear:both;">
+                <h4>Player Status</h4>
+                <label>
+                    <input type=checkbox name="active" value="active" id="filter_active"/>
+                    Active
+                </label>
+                <label>
+                    <input type=checkbox name="inactive" value="inactive" id="filter_inactive"/>
+                    Inactive
+                </label>
             </div>
             <div id="filter_info_div" style=" clear:both;"></div>
             <div id="apply_filter_div">
@@ -335,7 +345,7 @@
 
 
     //Add Default Filter
-    var defaultFilterObject = new FilterObject( 2000, 2015, null, null, null );
+    var defaultFilterObject = new FilterObject( 2000, 2015, null, null, null, null );
     filterObjects.push( defaultFilterObject );
 
     //Draw the current filter table with the default filter applied.
