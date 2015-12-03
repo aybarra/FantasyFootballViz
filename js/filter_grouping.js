@@ -1,6 +1,7 @@
 var yearsSelectionText = '';
 var pointsSelectionText = '';
 var positionsSelectionText = '';
+var statusSelectionText = '';
 var FILTER_CHARTS_GROUP = "date_filter_group";
 
 //Selected Values
@@ -9,6 +10,7 @@ var maxDate = null;
 var minPoints = null;
 var maxPoints = null;
 var positions = null;
+var statuses = null;
 
 //charts
 var dateSelectionChart = null;
@@ -26,13 +28,19 @@ function drawSelectionFilter()
         onPositionToggled();
     } );
 
+    //Setup the filter player status onChange Listener
+    $( "#filter_active_inactive" ).find( ":checkbox" ).change( function ()
+    {
+        onPlayerStatusToggled();
+    } );
+
     var menuTrigger = $( "#menu-trigger" );
 
     //Setup apply filter onclick button
     $( "#add_filter_button" ).click( function ()
     {
         //If all variables are null, just close the drawer
-        if( minDate === null && maxDate === null && minPoints === null && maxPoints === null && positions === null )
+        if( minDate === null && maxDate === null && minPoints === null && maxPoints === null && positions === null && statuses === null )
         {
             //Clear out all of the local variables and charts
             clearVariables();
@@ -43,7 +51,7 @@ function drawSelectionFilter()
         }
 
         //Push a new filter object onto the array of filter objects
-        var filterObject = new FilterObject( minDate, maxDate, minPoints, maxPoints, positions );
+        var filterObject = new FilterObject( minDate, maxDate, minPoints, maxPoints, positions, statuses );
         filterObjects.push( filterObject );
 
         //Make a webcall to get entities based on the filter values
@@ -225,6 +233,40 @@ function onPositionToggled()
 }
 
 /**
+ * Called when any player status check box is toggled
+ */
+function onPlayerStatusToggled()
+{
+     statusSelectionText = '<b>Statuses:</b> ';
+
+    //Clear out the statuses array
+    statuses = [];
+
+    //Check if any are checked
+    if( $( "#filter_active_inactive" ).find( ":checkbox:checked" ).length <= 0 )
+    {
+        statusSelectionText = '';
+    }
+    else
+    {
+        //Something was Checked, append text values to string
+        if( $( "#filter_active" ).is( ":checked" ) )
+        {
+            statuses.push( "2" );
+            statusSelectionText += " Active ";
+        }
+        if( $( "#filter_inactive" ).is( ":checked" ) )
+        {
+            statuses.push( "3" );
+            statusSelectionText += " Inactive ";
+        }
+    }
+
+    //Redraw all filter text
+    drawFilterStatus();
+}
+
+/**
  * Draw the currently selected filters below the filter selection.
  * Allows user to see what they have selected.
  */
@@ -232,7 +274,7 @@ function drawFilterStatus()
 {
     var infoDiv = $( "#filter_info_div" );
     infoDiv.empty();
-    $( "<p>" + yearsSelectionText + " " + pointsSelectionText + " " + positionsSelectionText + "</p>" ).appendTo( infoDiv );
+    $( "<p>" + yearsSelectionText + " " + pointsSelectionText + " " + positionsSelectionText + " " + statusSelectionText + "</p>" ).appendTo( infoDiv );
 }
 
 function clearVariables()
@@ -241,6 +283,7 @@ function clearVariables()
     dc.filterAll( "date_filter_group" );
     dc.redrawAll( "date_filter_group" );
     $( "#filter_position" ).find( ":checkbox" ).attr( "checked", false );
+    $( "#filter_active_inactive" ).find( ":checkbox" ).attr( "checked", false );
 
     //Selection variables
     minDate = null;
@@ -248,11 +291,13 @@ function clearVariables()
     minPoints = null;
     maxPoints = null;
     positions = null;
+    statuses = null;
 
     //Printing variables
     yearsSelectionText = "";
     pointsSelectionText = "";
     positionsSelectionText = "";
+    statusSelectionText = "";
 
     //Clear out div
     drawFilterStatus();
