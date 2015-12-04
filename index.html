@@ -14,6 +14,7 @@
     <script src="js/filter_grouping.js"></script>
     <script src="js/model/FilterObject.js"></script>
     <script src="js/lasso.js"></script>
+    <script src="lib/AutoComplete/dist/jquery.autocomplete.min.js"></script>
 
 
     <!-- <link href="nvd3/build/nv.d3.min.css" rel="stylesheet">
@@ -27,13 +28,14 @@
     <script src="nvd3/src/models/scatterChart.js"></script>
     <link href="nvd3/build/nv.d3.min.css" rel="stylesheet"> -->
     <script src="js/cdf_d3.js"></script>
-    <link href="css/cdf.css" rel="stylesheet"> 
+    <link href="css/cdf.css" rel="stylesheet">
 
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <!-- <link href="dc/dc.css" rel="stylesheet" type="text/css">
     <link href="css/dashboard.css" rel="stylesheet"> -->
     <link href="css/layout.css" rel="stylesheet">
     <link href="lib/DataTables/datatables.min.css" rel="stylesheet">
+    <link href="lib/AutoComplete/content/styles.css" rel="stylesheet">
 
 </head>
 
@@ -43,7 +45,7 @@
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid ">
         <div id="navbar">
-          <!-- <img src="images/logo.jpg"></scr> -->
+            <!-- <img src="images/logo.jpg"></scr> -->
             <a class="navbar-brand" id="menu-trigger"
                style="cursor:pointer; -webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;">Filter</a>
 
@@ -116,21 +118,31 @@
                 <h4>Filter Section</h4>
                 <table id="filters_table">
                 </table>
+                <h4>Add Player</h4>
+                <input type="text" name="add_player_input_field" id="add_player_input_field"/>
+
+                <div class="autocomplete-suggestions">
+                    <div class="autocomplete-group" id="autocomplete_group"><strong>Added Players</strong></div>
+                    <!--<div class="autocomplete-suggestion autocomplete-selected">...</div>-->
+                    <!--<div class="autocomplete-suggestion">...</div>-->
+                    <!--<div class="autocomplete-suggestion">...</div>-->
+                </div>
             </div>
             <div class="col-sm-7">
                 <div class="row">
-                  <div class="col-sm-12" id="scatter_chart"></div>
+                    <div class="col-sm-12" id="scatter_chart"></div>
                 </div>
                 <div class="row">
-                  <h4>Shneiderman's Mantra:  Overview first, zoom and filter, then details-on-demand.</h4>
-                  <div class="col-sm-12">
-                    <div id="cdf_chart"></div>
-                  </div>
+                    <h4>Shneiderman's Mantra: Overview first, zoom and filter, then details-on-demand.</h4>
+
+                    <div class="col-sm-12">
+                        <div id="cdf_chart"></div>
+                    </div>
                 </div>
             </div>
             <div class="col-sm-3">
                 <h4>Player Data Table</h4>
-                <table class="table table-row-border table-hover" id="data_table" width = "100%">
+                <table class="table table-row-border table-hover" id="data_table" width="100%">
                     <thead>
                     <tr class="header">
                         <th>Name</th>
@@ -158,12 +170,63 @@
     //Global variable used to hold array list of filter objects
     var filterObjects = [];
 
+    //Global variable used to hold array of extra player objects used for filtering
+    var selectedPlayers = [];
+
     // Global variable mapping the pguid to player name
     // var PGUID_TO_NAME_MAP = {};
     var PGUID_TO_NAME_MAP = setupNameMap();
 
     //Variable to hold the state of the sliding menu
     var isMenuOpen = false;
+
+    //Setup the input field
+    $( '#add_player_input_field' ).autocomplete( {
+        dataType: 'json',
+        serviceUrl: 'http://localhost:8000/careers/',
+        paramName: "starts_with",
+        deferRequestBy: 100,
+        transformResult: function ( response )
+        {
+            return {
+                suggestions: $.map( response[ 'results' ], function ( dataItem )
+                {
+                    return { value: dataItem.player_name, data: dataItem };
+                } )
+            };
+        },
+        onSelect: function ( data )
+        {
+            //Clear out the input text field
+            $( '#add_player_input_field' ).val( '' );
+
+            //check if we should add to array
+            var isPlayerInArray = false;
+            var stringifiedPlayer = JSON.stringify( data.data );
+
+            //Check to make sure the player was not already added
+            $.each( selectedPlayers, function ( index, player )
+            {
+                //Use the stringify function so that the === function passes for the json objects.
+                var foundPlayer = JSON.stringify( player );
+                if( foundPlayer === stringifiedPlayer )
+                {
+                    isPlayerInArray = true;
+                    return false;
+                }
+            } );
+
+            if ( !isPlayerInArray )
+            {
+                //Add the selected player to the additional player div
+                $( '#autocomplete_group' ).append( '<div class="autocomplete-suggestion">' + data.value + '</div>' );
+
+                //Add player to selected player global array
+                selectedPlayers.push( data.data );
+            }
+        }
+    } )
+    ;
 
     //Initialize the sliding drawer for the filters.
     $( "#menu-trigger" ).click( function ()
@@ -198,23 +261,23 @@
     var cdf_margin = { top: 10, right: 30, bottom: 33, left: 45 };
     var cdf_width = 700 - cdf_margin.right - cdf_margin.left;
     var cdf_height = 400 - cdf_margin.top - cdf_margin.bottom;
-    
+
     // Adds the svg canvas
     var svg_scatter = d3.select( "#scatter_chart" )
             .append( "svg" )
             .attr( "width", scatter_width + scatter_margin.left + scatter_margin.right )
             .attr( "height", scatter_height + scatter_margin.top + scatter_margin.bottom )
-            .append("g")
+            .append( "g" )
             .attr( "transform",
-                  "translate(" + scatter_margin.left + "," + scatter_margin.top + ")" );
+            "translate(" + scatter_margin.left + "," + scatter_margin.top + ")" );
 
     // Set the ranges
     var x = d3.scale.linear().range( [ 0, scatter_width ] );
     var y = d3.scale.linear().range( [ scatter_height, 0 ] );
 
     var colorScale = //d3.scale.ordinal().domain( [ "QB", "RB", "WR", "TE" ] )
-            //.range( [ "red", "green", "blue", "gray" ] );
-            d3.scale.category10( );
+        //.range( [ "red", "green", "blue", "gray" ] );
+            d3.scale.category10();
 
     // Define the axes
     var xAxis = d3.svg.axis().scale( x )
@@ -227,85 +290,85 @@
     var scat_yaxis_padding = 0;
 
     // Define the div for the tooltip
-    var tooltip = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0)//1e-6)
-        .style("background", "rgba(250,250,250,.7)");
+    var tooltip = d3.select( "body" ).append( "div" )
+            .attr( "class", "tooltip" )
+            .style( "opacity", 0 )//1e-6)
+            .style( "background", "rgba(250,250,250,.7)" );
 
-    tooltip.append("img")
-    	.attr("id", "tooltipImg")
-    	.attr("height", 50)
-    	.attr("width", 50)
-    	.style("opacity", "1");
+    tooltip.append( "img" )
+            .attr( "id", "tooltipImg" )
+            .attr( "height", 50 )
+            .attr( "width", 50 )
+            .style( "opacity", "1" );
 
     var printDetails = [
-			{'var': 'name', 'print': 'Name'},
-			{'var': 'pos_long', 'print': 'Position'},
-			{'var': 'fantPt', 'print': 'Fantasy Pts'},
-			{'var': 'winPct', 'print': 'Win %'}];
+        { 'var': 'name', 'print': 'Name' },
+        { 'var': 'pos_long', 'print': 'Position' },
+        { 'var': 'fantPt', 'print': 'Fantasy Pts' },
+        { 'var': 'winPct', 'print': 'Win %' } ];
 
-      // Lasso functions to execute while lassoing
-      var lasso_start = function ()
-      {
-          lasso.items()
-                  .attr( "r", 3.5 ) // reset size
-                  .style( "fill", null ) // clear all of the fills
-                  .classed( { "not_possible": true, "selected": false } ); // style as not possible
-      };
+    // Lasso functions to execute while lassoing
+    var lasso_start = function ()
+    {
+        lasso.items()
+                .attr( "r", 3.5 ) // reset size
+                .style( "fill", null ) // clear all of the fills
+                .classed( { "not_possible": true, "selected": false } ); // style as not possible
+    };
 
-      var lasso_draw = function ()
-      {
-          // Style the possible dots
-          lasso.items().filter( function ( d )
-          {
-              return d.possible === true
-          } )
-                  .classed( { "not_possible": false, "possible": true } );
+    var lasso_draw = function ()
+    {
+        // Style the possible dots
+        lasso.items().filter( function ( d )
+        {
+            return d.possible === true
+        } )
+                .classed( { "not_possible": false, "possible": true } );
 
-          // Style the not possible dot
-          lasso.items().filter( function ( d )
-          {
-              return d.possible === false
-          } )
-                  .classed( { "not_possible": true, "possible": false } );
-      };
+        // Style the not possible dot
+        lasso.items().filter( function ( d )
+        {
+            return d.possible === false
+        } )
+                .classed( { "not_possible": true, "possible": false } );
+    };
 
-      var lasso_end = function ()
-      {
-          // Reset the color of all dots
-          lasso.items()
-                  .style( "fill", function ( d )
-                  {
-                      return colorScale( d.pos );
-                  } );
+    var lasso_end = function ()
+    {
+        // Reset the color of all dots
+        lasso.items()
+                .style( "fill", function ( d )
+                {
+                    return colorScale( d.pos );
+                } );
 
-          // Style the selected dots
-          lasso.items().filter( function ( d )
-          {
-              return d.selected === true
-          } )
-                  .classed( { "not_possible": false, "possible": false } )
-                  .attr( "r", 5 );
+        // Style the selected dots
+        lasso.items().filter( function ( d )
+        {
+            return d.selected === true
+        } )
+                .classed( { "not_possible": false, "possible": false } )
+                .attr( "r", 5 );
 
-          // Reset the style of the not selected dots
-          lasso.items().filter( function ( d )
-          {
-              return d.selected === false
-          } )
-                  .classed( { "not_possible": false, "possible": false } )
-                  .attr( "r", 3 );
+        // Reset the style of the not selected dots
+        lasso.items().filter( function ( d )
+        {
+            return d.selected === false
+        } )
+                .classed( { "not_possible": false, "possible": false } )
+                .attr( "r", 3 );
 
-          //Update array holding lassoed items
-          lassoed_items = lasso.items().filter( function ( d )
-          {
-              return d.selected === true
-          } ).data();
+        //Update array holding lassoed items
+        lassoed_items = lasso.items().filter( function ( d )
+        {
+            return d.selected === true
+        } ).data();
 
-          // console.log(lassoed_items);
+        // console.log(lassoed_items);
 
-          refreshPlayerDataTable( lassoed_items );
+        refreshPlayerDataTable( lassoed_items );
 
-      };
+    };
 
     // Create the area where the lasso event can be triggered
     var lasso_area = svg_scatter.append( "rect" )
@@ -326,10 +389,8 @@
     // Init the lasso on the svg:g that contains the dots
     svg_scatter.call( lasso );
 
-
-
     //Add Default Filter
-    var defaultFilterObject = new FilterObject( 2000, 2015, null, null, null, [2] );
+    var defaultFilterObject = new FilterObject( 2000, 2015, null, null, null, [ 2 ] );
     filterObjects.push( defaultFilterObject );
 
     //Draw the current filter table with the default filter applied.
@@ -366,8 +427,6 @@
     drawSelectionFilter();
     // generateCDFChart();
     generateCDF_D3Chart()
-
-
 
     /**
      * To be used by tooltips when you want the playername
@@ -407,21 +466,49 @@
             x.name = x.player_name;
             x.pos = x.pos_type;
             {
-              if (x.pos == "qb"){x.pos_long = "QB"}
-              else if(x.pos == "rb"){x.pos_long = "RB"}
-              else if(x.pos == "wr"){x.pos_long = "WR"}
-              else if(x.pos == "te"){x.pos_long = "TE"}
-              else {x.pos == ""}
-            };
+                if( x.pos == "qb" )
+                {
+                    x.pos_long = "QB"
+                }
+                else if( x.pos == "rb" )
+                {
+                    x.pos_long = "RB"
+                }
+                else if( x.pos == "wr" )
+                {
+                    x.pos_long = "WR"
+                }
+                else if( x.pos == "te" )
+                {
+                    x.pos_long = "TE"
+                }
+                else
+                {
+                    x.pos == ""
+                }
+            }
+            ;
             x.fantPt = +x.ff_pts;
             x.winPct = d3.round( (+x.win_pct * 100), 2 );
         } );
 
         // Scale the domain of the data
-        var xmin = d3.min(playerArray, function(d) { return d.winPct; }) - scat_xaxis_padding,
-            xmax = d3.max(playerArray, function(d) { return d.winPct; }) + scat_xaxis_padding,
-            ymin = d3.min(playerArray, function(d) { return d.fantPt; }) - scat_yaxis_padding,
-            ymax = d3.max(playerArray, function(d) { return d.fantPt; }) + scat_yaxis_padding;
+        var xmin = d3.min( playerArray, function ( d )
+                        {
+                            return d.winPct;
+                        } ) - scat_xaxis_padding,
+                xmax = d3.max( playerArray, function ( d )
+                        {
+                            return d.winPct;
+                        } ) + scat_xaxis_padding,
+                ymin = d3.min( playerArray, function ( d )
+                        {
+                            return d.fantPt;
+                        } ) - scat_yaxis_padding,
+                ymax = d3.max( playerArray, function ( d )
+                        {
+                            return d.fantPt;
+                        } ) + scat_yaxis_padding;
 
         // x.domain( d3.extent( playerArray, function ( d )
         // {
@@ -432,8 +519,8 @@
         //     return d.fantPt;
         // } ) );
 
-        x.domain([xmin, xmax]);
-        y.domain([ymin, ymax]);
+        x.domain( [ xmin, xmax ] );
+        y.domain( [ ymin, ymax ] );
 
         // Add the scatterplot
         svg_scatter.selectAll( "dot" )
@@ -457,25 +544,25 @@
                 {
                     return colorScale( d.pos );
                 } )
-                .attr("stroke", "black")
-                .attr("stroke-width", 1)
-                .on("click", function (d)
-              {
-                refreshPlayerDataTable(d);
-              })
+                .attr( "stroke", "black" )
+                .attr( "stroke-width", 1 )
+                .on( "click", function ( d )
+                {
+                    refreshPlayerDataTable( d );
+                } )
                 .on( "mouseover", function ( d )
                 {
                     d3.select( this )
                             .attr( "stroke", "black" )
                             .attr( "stroke-width", 2 )
-                            .attr("r", 5 )
+                            .attr( "r", 5 )
                             .attr( "fill-opacity", 1 );
                     tooltip
-                    .style("left", (d3.event.pageX + 5) + "px")
-          			    .style("top", (d3.event.pageY - 5) + "px")
-          			    .transition().duration(300)
-          			    .style("opacity", 1)
-          			    .style("display", "block")
+                            .style( "left", (d3.event.pageX + 5) + "px" )
+                            .style( "top", (d3.event.pageY - 5) + "px" )
+                            .transition().duration( 300 )
+                            .style( "opacity", 1 )
+                            .style( "display", "block" )
                     // tooltip.html( "Name: " + d.name + "<br/>" +
                     //         "Position: " + d.pos + "<br/>" +
                     //         "Fantasy Pts: " + d.fantPt + "<br/>" +
@@ -485,21 +572,24 @@
                     //         .transition().duration( 300 )
                     //         .style( "opacity", 1 )
                     //         .style( "display", "block" );
-                    updateDetails(d);
+                    updateDetails( d );
                 } )
                 .on( "mouseout", function ( d )
                 {
                     d3.select( this )
                             .attr( "stroke", "black" )
-                            .attr( "stroke-width", 1)
-                            .attr("r", function(d){
-                              if(d.selected == false){
-                                return 3;
-                              }
-                              else {
-                                return 5;
-                              }
-                            })
+                            .attr( "stroke-width", 1 )
+                            .attr( "r", function ( d )
+                            {
+                                if( d.selected == false )
+                                {
+                                    return 3;
+                                }
+                                else
+                                {
+                                    return 5;
+                                }
+                            } )
                             .attr( "fill-opacity", function ( d )
                             {
                                 return 1;
@@ -545,6 +635,14 @@
             } );
         } );
 
+        //Loop through all of the extra searched players and add to the set
+        $.each( selectedPlayers, function ( index, player )
+        {
+            //Use the stringify function so that the === function passes for the json objects.
+            playerSet.add( JSON.stringify( player ) );
+
+        } );
+
         //Loop through the array and convert the string into JSON objects. Needed to be strings for comparison
         var playerArray = Array.from( playerSet );
         $.each( playerArray, function ( index, playerString )
@@ -556,74 +654,84 @@
         return playerArray;
     }
 
-    function createTable(){
+    function createTable()
+    {
 
-      $(document).ready(function() {
+        $( document ).ready( function ()
+        {
 
-        data_table = $( "#data_table" ).DataTable({
-          select: true,
-          data: lassoed_items,
-          columns: [
-            {data: "name"},
-            {data: "pos_long"},
-            {data: "fantPt"},
-            {data: "winPct"}
-          ]
-        });
+            data_table = $( "#data_table" ).DataTable( {
+                select: true,
+                data: lassoed_items,
+                columns: [
+                    { data: "name" },
+                    { data: "pos_long" },
+                    { data: "fantPt" },
+                    { data: "winPct" }
+                ]
+            } );
 
-        // $('#data_table tbody').on( 'click', 'tr', function () {
-        //   $(this).toggleClass('selected');
-        // } );
+            // $('#data_table tbody').on( 'click', 'tr', function () {
+            //   $(this).toggleClass('selected');
+            // } );
 
-      } );
+        } );
 
         // $('#example tbody').on( 'click', 'tr', function () {
         //   $(this).toggleClass('selected');
         // } );
 
-
-      // data_table = $( "#data_table" ).dataTable( {
-      //     "bPaginate": true,
-      //     "pagingType": "full_numbers",
-      //     "bLengthChange": false,
-      //     // "bFilter": false,
-      //     "bSort": true,
-      //     // "bInfo": false,
-      //     "bAutoWidth": false,
-      //     // "bDeferRender": true,
-      //     "aoData": "lassoed_items",
-      //     // "bDestroy": true,
-      //     "aoColumns": [
-      //         { "mData": "name",
-      //           "defaultContent": "<i>Empty</i>"},
-      //         { "mData": "pos_long",
-      //       "defaultContent": "<i>Empty</i>"},
-      //
-      //         { "mData": "fantPt",
-      //       "defaultContent": "<i>Empty</i>"},
-      //         { "mData": "winPct",
-      //       "defaultContent": "<i>Empty</i>"}
-      //
-      //   ]
-      //
-      // } );
+        // data_table = $( "#data_table" ).dataTable( {
+        //     "bPaginate": true,
+        //     "pagingType": "full_numbers",
+        //     "bLengthChange": false,
+        //     // "bFilter": false,
+        //     "bSort": true,
+        //     // "bInfo": false,
+        //     "bAutoWidth": false,
+        //     // "bDeferRender": true,
+        //     "aoData": "lassoed_items",
+        //     // "bDestroy": true,
+        //     "aoColumns": [
+        //         { "mData": "name",
+        //           "defaultContent": "<i>Empty</i>"},
+        //         { "mData": "pos_long",
+        //       "defaultContent": "<i>Empty</i>"},
+        //
+        //         { "mData": "fantPt",
+        //       "defaultContent": "<i>Empty</i>"},
+        //         { "mData": "winPct",
+        //       "defaultContent": "<i>Empty</i>"}
+        //
+        //   ]
+        //
+        // } );
     }
 
-    function updateDetails(player){
-    	var image = new Image();
-    	image.onload = function(){
-    		document.getElementById("tooltipImg").src = 'images/' + player.pos + '.jpg';}
-    	image.src = 'images/' + player.pos + '.jpg';
+    function updateDetails( player )
+    {
+        var image = new Image();
+        image.onload = function ()
+        {
+            document.getElementById( "tooltipImg" ).src = 'images/' + player.pos + '.jpg';
+        }
+        image.src = 'images/' + player.pos + '.jpg';
 
-    	tooltip.selectAll("div").remove();
-    	tooltip.selectAll("div").data(printDetails).enter()
-    		.append("div")
-    			.append('span')
-    				.text(function(d){return d.print + ": ";})
-    				.attr("class", "boldDetail")
-    			.insert('span')
-    				.text(function(d){return player[d.var];})
-    				.attr("class", "normalDetail");
+        tooltip.selectAll( "div" ).remove();
+        tooltip.selectAll( "div" ).data( printDetails ).enter()
+                .append( "div" )
+                .append( 'span' )
+                .text( function ( d )
+                {
+                    return d.print + ": ";
+                } )
+                .attr( "class", "boldDetail" )
+                .insert( 'span' )
+                .text( function ( d )
+                {
+                    return player[ d.var ];
+                } )
+                .attr( "class", "normalDetail" );
     }
 
     /**
@@ -635,8 +743,6 @@
         data_table.rows.add( alldata );
         data_table.draw();
     }
-
-
 
 
 </script>

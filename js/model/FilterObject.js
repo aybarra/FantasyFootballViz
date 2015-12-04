@@ -34,8 +34,6 @@ FilterObject.prototype.prettyPrint = function ()
         stringVal += 'Positions: ' + this.positions.join();
     }
 
-    console.log( this.statuses );
-
     if( this.statuses !== null && this.statuses.length == 1 )
     {
         //Must only have 1
