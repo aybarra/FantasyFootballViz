@@ -181,8 +181,18 @@
     //Variable to hold the state of the sliding menu
     var isMenuOpen = false;
 
+    //Get a reference to the added players div
+    var addedPlayersDiv = $("#autocomplete_results_div" );
+
     //Default hide the added players div
-    $("#autocomplete_results_div" ).hide();
+    addedPlayersDiv.hide();
+
+    //Setup click of delete player to remove the player row from the div. Also calls onclick of row to remove from array
+    addedPlayersDiv.on( 'click', '#deletePlayerRow', function ()
+    {
+            //Remove from the div
+            $( this ).parent().remove();
+    } );
 
     //Setup the input field
     $( '#add_player_input_field' ).autocomplete( {
