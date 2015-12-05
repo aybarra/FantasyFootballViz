@@ -24,61 +24,92 @@ function generateCDF_D3Chart(){
       .append("g")
       .attr("transform", "translate(" + cdf_margin.left + "," + cdf_margin.top + ")");
 
+  var selected_players = filteredPlayers();
+  // console.log(selected_players);
+  var filter_string = '?players=';
+  selected_players.forEach(function (d){
+    filter_string += (','+d.pguid);
+  });
+  // console.log(filter_string);
 
-  d3.json('http://localhost:8000/seasons_subset/', function(error,data){
-    if (error) throw error;
+  d3.json( 'http://localhost:8000/careers', function ( error, data )
+  {
+      // console.log(data);
+      data['results'].forEach( function ( career )
+      {
+          if( PGUID_TO_NAME_MAP[ career[ 'pguid' ] ] === undefined ) {
+              PGUID_TO_NAME_MAP[ career[ 'pguid' ] ] = career[ 'player_name' ];
+          }
+      });
 
-    var data_conv = convertData(data);
+      d3.json('http://localhost:8000/seasons_subset/'+filter_string, function(error,data){
+        if (error) throw error;
 
-    var keys = d3.keys(data_conv);
-    color.domain(d3.keys(data_conv));
+        var data_conv = convertData(data);
 
-    x.domain([
-      0,
-      d3.max(data_conv, function(d) { return d.values.length; })  // Want the longest length career
-    ]);
+        var keys = d3.keys(data_conv);
+        color.domain(d3.keys(data_conv));
 
-    y.domain([
-      d3.min(data_conv, function(d) { return d3.min(d.values, function(v) { return v.y; }); }),
-      d3.max(data_conv, function(d) { return d3.max(d.values, function(v) { return v.y; }); })
-    ]);
+        x.domain([
+          0,
+          d3.max(data_conv, function(d) { return d.values.length; })  // Want the longest length career
+        ]);
 
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + cdf_height + ")")
-        .call(xAxis)
-        .text("Years Played");
+        y.domain([
+          d3.min(data_conv, function(d) { return d3.min(d.values, function(v) { return v.y; }); }),
+          d3.max(data_conv, function(d) { return d3.max(d.values, function(v) { return v.y; }); })
+        ]);
 
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
-      .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .text("Cumulative Fantasy Points");
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + cdf_height + ")")
+            .call(xAxis)
+            .text("Years Played");
 
-    var player = svg.selectAll(".player")
-        .data(data_conv)
-      .enter().append("g")
-        .attr("class", "player");
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+          .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text("Cumulative Fantasy Points");
 
-    player.append("path")
-        .attr("class", "line")
-        .attr("d", function(d) { return line(d.values); })
-        .style("stroke", function(d) { return color(d.key); });
+        var player = svg.selectAll(".player")
+            .data(data_conv)
+          .enter().append("g")
+            .attr("class", "player");
 
-    player.append("text")
-        .datum(function(d) { return {name: d.key, value: d.values[d.values.length - 1]}; })
-        .attr("transform", function(d) { return "translate(" + x(d.value.x) + "," + y(d.value.y) + ")"; })
-        .attr("x", 3)
-        .attr("dy", ".35em")
-        .text(function(d) { return d.name; });
+        player.append("path")
+            .attr("class", "line")
+            .attr("d", function(d) { return line(d.values); })
+            .style("stroke", function(d) { return d3.hsl('#dddddd') })
+            .on('mouseover', function(d) { 
+                var line = d3.select(this);
+                line.style('stroke', d3.hsl('#33b9ff'));
+                this.parentNode.parentNode.appendChild(this.parentNode);  
+                d3.select(this.nextSibling)
+                  .attr("opacity", "1")  
+            })
+            .on('mouseout', function(d) { 
+                var line = d3.select(this);
+                line.style('stroke', d3.hsl('#dddddd'));
+                // line.moveToBack();
+                d3.select(this.nextSibling)
+                  .attr("opacity", "0")
+            });
+
+        player.append("text")
+            .datum(function(d_sub) { return {name: PGUID_TO_NAME_MAP[d_sub.key], value: d_sub.values[d_sub.values.length - 1]}; })
+            .attr("transform", function(d_sub) { return "translate(" + x(d_sub.value.x) + "," + y(d_sub.value.y) + ")"; })
+            .attr("x", 3)
+            .attr("dy", ".35em")
+            .text(function(d_sub) { return d_sub.name + ' (' + d_sub.value.y + ') ' ; })
+            .attr("opacity", "0")
+      });
   });
 }
-
-
 
 // Returns an array of objects of the form:
 //  [{
@@ -117,7 +148,6 @@ function convertData(data){
   // console.log(lines);
 
   for(var key_obj in lines){
-    // console.log(key);
 
     // Update these to be cumsum
     var vals = lines[key_obj]['values'];

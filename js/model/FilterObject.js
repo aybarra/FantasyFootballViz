@@ -11,7 +11,7 @@ var FilterObject = function ( minDate, maxDate, minPoints, maxPoints, positions,
 
 FilterObject.prototype.toString = function ()
 {
-    var filterToString = "Dates: " + this.minDate + "-" + this.maxDate + " Points: " + this.minPoints + "-" + this.maxPoints + " Pos: " + this.positions + "-" + this.statuses;
+    var filterToString = "Dates: " + this.minDate + "-" + this.maxDate + " Points: " + this.minPoints + "-" + this.maxPoints + " Pos: " + this.positions + " Statuses: " + this.statuses;
     console.log( filterToString );
     return filterToString;
 };
@@ -31,7 +31,7 @@ FilterObject.prototype.prettyPrint = function ()
 
     if( this.positions !== null && this.positions.length > 0 )
     {
-        stringVal += 'Positions: ' + this.positions.join();
+        stringVal += 'Positions: ' + this.positions.join() + " ";
     }
 
     if( this.statuses !== null && this.statuses.length == 1 )

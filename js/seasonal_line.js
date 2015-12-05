@@ -7,8 +7,8 @@ function generateLineChart(){
 
 
     var margin = {top: 20, right: 20, bottom: 40, left: 50},
-        width = 960 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+        width = 700 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
 
     var absyear = false;
 
@@ -32,7 +32,7 @@ function generateLineChart(){
                     return y(d.season_ff_pts); 
                 });
 
-    var svg = d3.select("body").append("svg")
+    var svg = d3.select("#seasonal_line").append("svg")
                 .attr("id","seasonal_line")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
