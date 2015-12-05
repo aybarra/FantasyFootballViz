@@ -45,7 +45,7 @@ $( document ).ready( function ()
                 $( "#autocomplete_results_div" ).show();
 
                 //Add the selected player to the additional player div
-                $( '#autocomplete_group' ).append( '<div class="autocomplete-suggestion"><input type="image" src="images/delete_icon.png" width="24" height="24" onclick="deletePlayerObject(' + 0 + ');" id="deletePlayerRow"></input>' + data.value + '</div>' );
+                $( '#autocomplete_group' ).append( '<div class="autocomplete-suggestion"><input type="image" src="images/delete_icon.png" width="24" height="24" onclick=deletePlayerObject("' + data.data['pguid'] + '"); id="deletePlayerRow"></input>' + data.value + '</div>' );
 
                 //Add player to selected player global array
                 selectedPlayers.push( data.data );
@@ -54,8 +54,29 @@ $( document ).ready( function ()
             {
                 alert( data.value + ' is already in the data set' );
             }
-            //TODO on delete of a singular player, check to see if DIV should be hidden.
         }
-    } )
-    ;
+    } );
 } );
+
+/**
+ * Remove the player with the pguid of the provided player from the players list.
+ * @param player
+ */
+function deletePlayerObject(playerGuidToDelete)
+{
+    $.each( selectedPlayers, function ( index, player )
+    {
+        //If they have the same pguid, they are the same person. Delete from array and stop execution. There should never be duplicates.
+        if( playerGuidToDelete === player['pguid'] )
+        {
+            selectedPlayers.splice( index, 1 );
+            return false;
+        }
+    } );
+
+    //If there are no more additional players, hide the div.
+    if( selectedPlayers.length == 0)
+    {
+        $("#autocomplete_results_div" ).hide();
+    }
+}
