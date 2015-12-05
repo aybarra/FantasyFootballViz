@@ -28,7 +28,7 @@ function isPlayerInFilterSet( stringifiedPlayer )
 }
 
 /**
- * Returns an array with all of the unique players that are currently selected from the filtered objects.
+ * Returns an array with all of the unique player guids that are currently selected from the filtered objects.
  */
 function filteredPlayersPguids()
 {
