@@ -12,6 +12,9 @@ var maxPoints = null;
 var positions = null;
 var statuses = null;
 
+//Constants
+var minFilterObjectCount = 1;
+
 //charts
 var dateSelectionChart = null;
 var fantasyPointSelectionChart = null;
@@ -448,14 +451,19 @@ function drawCurrentFilterTable()
     $.each( filterObjects, function ( index, filterObject )
     {
         //noinspection HtmlUnknownTarget
-        table.append( '<tr valign="middle"><td><input type="image" src="images/delete_icon.png" width="24" height="24" onclick="deleteFilterObject(' + index + ');" id="deleteFilterRow"></input></td><td><p>' + filterObject.prettyPrint() + '</p></td></tr>' );
+        table.append( '<tr valign="middle"><td><input type="image" src="images/delete_icon_2.png" width="16" height="16" id="filter_grouping" style="vertical-align: middle; margin-right: 10px;" onclick="deleteFilterObject(' + index + ');" id="deleteFilterRow"></input></td><td><p style="vertical-align: middle; margin-bottom: 0px;">' + filterObject.prettyPrint() + '</p></td></tr>' );
     } );
 
     //Add an onClick to remove the filter from the row
     table.on( 'click', '#deleteFilterRow', function ()
     {
-        //Remove from the Table
-        $( this ).parent().parent().remove();
+        //Only allow delete of filter object if we have more than the minimum count. We dont want them to have no filters.
+        //If you change this logic, change it in deleteFilterObject as well.
+        if( filterObjects.length > minFilterObjectCount)
+        {
+            //Remove from the Table
+            $( this ).parent().parent().remove();
+        }
     } );
 }
 
@@ -465,9 +473,17 @@ function drawCurrentFilterTable()
  */
 function deleteFilterObject( index )
 {
-    //remove from array
-    filterObjects.splice( index, 1 );
+    //Only allow delete of filter object if we have more than the minimum count. We dont want them to have no filters.
+    if( filterObjects.length > minFilterObjectCount)
+    {
+        //remove from array
+        filterObjects.splice( index, 1 );
 
-    //redraw the table to give new i values to rows
-    drawCurrentFilterTable();
+        //redraw the table to give new i values to rows
+        drawCurrentFilterTable();
+    }
+    else
+    {
+        alert( 'Must Maintain ' + minFilterObjectCount + ' filter' );
+    }
 }

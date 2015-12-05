@@ -126,6 +126,6 @@ body.loaded .mybutton {
         overflow: auto;
     }
 
-#*chart{
+#chart{
    -webkit-transition:margin-left .5s ease-in-out;
 }
