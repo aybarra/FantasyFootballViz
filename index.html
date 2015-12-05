@@ -429,9 +429,12 @@
                 defaultFilterObject.players.push( player );
             } );
 
+            
+            setupNameMap();
             loadScatterPlot();
             createTable();
             generateCDF_D3Chart();
+            
         }
     } );
 
@@ -445,20 +448,18 @@
      */
     function setupNameMap()
     {
-        var nameMap = {};
         d3.json( 'http://localhost:8000/careers', function ( error, data )
         {
-            // console.log(data);
-            data[ 'results' ].forEach( function ( career )
-            {
-                if( nameMap[ career[ 'pguid' ] ] === undefined )
-                {
-                    nameMap[ career[ 'pguid' ] ] = career[ 'player_name' ];
-                }
-            } );
-            // console.log(nameMap);
-            return nameMap;
-        } );
+          // console.log(data);
+          data['results'].forEach( function ( career )
+          {
+              if( PGUID_TO_NAME_MAP[ career[ 'pguid' ] ] === undefined ) {
+                  PGUID_TO_NAME_MAP[ career[ 'pguid' ] ] = new Array(2);
+                  PGUID_TO_NAME_MAP[ career[ 'pguid' ] ][0] = career[ 'player_name' ];
+                  PGUID_TO_NAME_MAP[ career[ 'pguid' ] ][1] = career[ 'pos_type'];
+              }
+          });
+        });
     }
 
     /**
