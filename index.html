@@ -15,6 +15,7 @@
     <script src="js/model/FilterObject.js"></script>
     <script src="js/lasso.js"></script>
     <script src="lib/AutoComplete/dist/jquery.autocomplete.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/mathjs/2.4.2/math.min.js"></script>
 
 
     <!-- <link href="nvd3/build/nv.d3.min.css" rel="stylesheet">
@@ -30,7 +31,6 @@
     <script src="js/cdf_d3.js"></script>
     <script src="js/seasonal_line.js"></script>
     <link href="css/cdf.css" rel="stylesheet">
-
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <!-- <link href="dc/dc.css" rel="stylesheet" type="text/css">
     <link href="css/dashboard.css" rel="stylesheet"> -->
@@ -255,6 +255,7 @@
     var data = [];
     var lassoed_items = [];
 
+    //CONSTANTS
     var scatter_margin = { top: 10, right: 30, bottom: 33, left: 45 };
     var scatter_width = 700 - scatter_margin.right - scatter_margin.left;
     var scatter_height = 400 - scatter_margin.top - scatter_margin.bottom;
@@ -262,6 +263,16 @@
     var cdf_margin = { top: 10, right: 30, bottom: 33, left: 45 };
     var cdf_width = 700 - cdf_margin.right - cdf_margin.left;
     var cdf_height = 400 - cdf_margin.top - cdf_margin.bottom;
+
+    var dot_init_size = 3;
+    var dot_hover_size = 7;
+    var dot_trans = 300;
+    var tooltip_trans_in = 400;
+    var tooltip_trans_out = 400;
+
+    var colorScale = //d3.scale.ordinal().domain( [ "QB", "RB", "WR", "TE" ] )
+        //.range( [ "red", "green", "blue", "gray" ] );
+            d3.scale.category10();
 
     // Adds the svg canvas
     var svg_scatter = d3.select( "#scatter_chart" )
@@ -276,9 +287,7 @@
     var x = d3.scale.linear().range( [ 0, scatter_width ] );
     var y = d3.scale.linear().range( [ scatter_height, 0 ] );
 
-    var colorScale = //d3.scale.ordinal().domain( [ "QB", "RB", "WR", "TE" ] )
-        //.range( [ "red", "green", "blue", "gray" ] );
-            d3.scale.category10();
+
 
     // Define the axes
     var xAxis = d3.svg.axis().scale( x )
@@ -287,14 +296,14 @@
     var yAxis = d3.svg.axis().scale( y )
             .orient( "left" ).ticks( 10 );
 
-    var scat_xaxis_padding = 1;
+    var scat_xaxis_padding = 0;
     var scat_yaxis_padding = 0;
 
     // Define the div for the tooltip
     var tooltip = d3.select( "body" ).append( "div" )
             .attr( "class", "tooltip" )
             .style( "opacity", 0 )//1e-6)
-            .style( "background", "rgba(250,250,250,.7)" );
+            .style( "background", "rgba(250,250,250,.9)" );
 
     tooltip.append( "img" )
             .attr( "id", "tooltipImg" )
@@ -312,7 +321,7 @@
     var lasso_start = function ()
     {
         lasso.items()
-                .attr( "r", 3.5 ) // reset size
+                .attr( "r", dot_init_size ) // reset size
                 .style( "fill", null ) // clear all of the fills
                 .classed( { "not_possible": true, "selected": false } ); // style as not possible
     };
@@ -349,7 +358,8 @@
             return d.selected === true
         } )
                 .classed( { "not_possible": false, "possible": false } )
-                .attr( "r", 5 );
+                .transition().duration(dot_trans)
+                .attr( "r", dot_hover_size );
 
         // Reset the style of the not selected dots
         lasso.items().filter( function ( d )
@@ -357,7 +367,7 @@
             return d.selected === false
         } )
                 .classed( { "not_possible": false, "possible": false } )
-                .attr( "r", 3 );
+                .attr( "r", dot_init_size );
 
         //Update array holding lassoed items
         lassoed_items = lasso.items().filter( function ( d )
@@ -527,7 +537,7 @@
         svg_scatter.selectAll( "dot" )
                 .data( playerArray )
                 .enter().append( "circle" )
-                .attr( "r", 3 )
+                .attr( "r", dot_init_size )
                 .attr( "cx", function ( d )
                 {
                     return x( d.winPct );
@@ -554,14 +564,15 @@
                 .on( "mouseover", function ( d )
                 {
                     d3.select( this )
+                            .transition().duration(dot_trans)
                             .attr( "stroke", "black" )
                             .attr( "stroke-width", 2 )
-                            .attr( "r", 5 )
+                            .attr( "r", dot_hover_size )
                             .attr( "fill-opacity", 1 );
                     tooltip
                             .style( "left", (d3.event.pageX + 5) + "px" )
                             .style( "top", (d3.event.pageY - 5) + "px" )
-                            .transition().duration( 300 )
+                            .transition().duration( tooltip_trans_in )
                             .style( "opacity", 1 )
                             .style( "display", "block" )
                     // tooltip.html( "Name: " + d.name + "<br/>" +
@@ -578,17 +589,18 @@
                 .on( "mouseout", function ( d )
                 {
                     d3.select( this )
+                            .transition().duration(dot_trans)
                             .attr( "stroke", "black" )
                             .attr( "stroke-width", 1 )
                             .attr( "r", function ( d )
                             {
                                 if( d.selected == false )
                                 {
-                                    return 3;
+                                    return dot_init_size;
                                 }
                                 else
                                 {
-                                    return 5;
+                                    return dot_hover_size;
                                 }
                             } )
                             .attr( "fill-opacity", function ( d )
@@ -596,7 +608,7 @@
                                 return 1;
                             } )
 
-                    tooltip.transition().duration( 700 ).style( "opacity", 0 );
+                    tooltip.transition().duration( tooltip_trans_out ).style( "opacity", 0 );
                 } );
 
         // Add the X Axis
