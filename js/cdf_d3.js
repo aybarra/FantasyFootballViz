@@ -24,6 +24,14 @@ function generateCDF_D3Chart(){
       .append("g")
       .attr("transform", "translate(" + cdf_margin.left + "," + cdf_margin.top + ")");
 
+  var selected_players = filteredPlayers();
+  // console.log(selected_players);
+  var filter_string = '?players=';
+  selected_players.forEach(function (d){
+    filter_string += (','+d.pguid);
+  });
+  // console.log(filter_string);
+
   d3.json( 'http://localhost:8000/careers', function ( error, data )
   {
       // console.log(data);
@@ -34,7 +42,7 @@ function generateCDF_D3Chart(){
           }
       });
 
-      d3.json('http://localhost:8000/seasons_subset/', function(error,data){
+      d3.json('http://localhost:8000/seasons_subset/'+filter_string, function(error,data){
         if (error) throw error;
 
         var data_conv = convertData(data);
