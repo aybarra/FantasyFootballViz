@@ -129,42 +129,42 @@
                     <!--<div class="autocomplete-suggestion">...</div>-->
                 </div>
             </div>
-            <div class="col-sm-7">
+            <div class="col-sm-8">
                 <div class="row">
                   <div class="btn-group" data-toggle="buttons-radio">
-                    <button type="button" id="stream" class="btn active switch" onclick="transitionTo('stream')">Streamgraph</button>
-                    <button type="button" id="stack" class="btn switch" onclick="transitionTo('stack')">Stacked Area</button>
+                    <button type="button" id="career" class="btn active switch btn-primary btn-xs" onclick="transitionTo('career')">Career View</button>
+                    <button type="button" id="seasonal" class="btn switch btn-primary btn-xs" onclick="transitionTo('seasonal')">Seasonal View</button>
                     <!-- <button type="button" id="area" class="btn switch">Area</button> -->
                   </div>
                 </div>
                   <div class="row">
-                    <div class="col-sm-12 career_chart" id="scatter_chart"></div>
+                    <div class="col-sm-12 career_chart chart" id="scatter_chart"></div>
                 </div>
 
                 <div class="row">
-                    <div class="col-sm-12 career_chart">
+                    <div class="col-sm-12 career_chart chart">
                         <div id="cdf_chart"></div>
                     </div>
                 </div>
 
                 <div class="row">
-                    <div class="col-sm-12" id="seasonal_line"></div>
+                    <div class="col-sm-12 seasonal_chart chart" id="seasonal_line" style="display: none"></div>
                 </div>
 
                 <div class="row">
-                    <div class="col-sm-12" id="seasonal_parallel"></div>
+                    <div class="col-sm-12 seasonal_chart chart" id="seasonal_parallel"style="display: none"></div>
                 </div>
 
             </div>
 
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <h4>Player Data Table</h4>
                 <table class="table table-row-border table-hover" id="data_table" width="100%">
                     <thead>
                     <tr class="header">
                         <th>Name</th>
-                        <th>Position</th>
-                        <th>Fantasy Points</th>
+                        <th>Pos</th>
+                        <th>Pts</th>
                         <th>Win %</th>
                     </tr>
                     </thead>
@@ -451,7 +451,7 @@
     //Initial calls to load data and setup page.
     drawSelectionFilter();
     // generateCDFChart();
-    
+
     generateLineChart();
     /**
      * To be used by tooltips when you want the playername
@@ -732,12 +732,9 @@
                 dom:  'Bfrtip',
                 buttons: [
                   'selected',
-                  'selectedSingle',
                   'selectAll',
                   'selectNone',
-                  'selectRows',
-                  'selectColumns',
-                  'selectCells'
+                  'selectRows'
                 ]
             } );
 
@@ -817,7 +814,7 @@
     function transitionTo(name){
 
       // swap_sound.play();
-      if (name == "stack"){
+      if (name == "seasonal"){
         // if ($("#cdf_chart").has("svg").length==0){
         //   console.log("calling cdf chart");
         //   generateCDF_D3Chart();
@@ -827,15 +824,14 @@
         document.getElementById('seasonal_line').style.display = 'block';
       };
 
-      if (name == "stream"){
+      if (name == "career"){
         // d3.select("#cdf_chart").select("svg").remove();
 
         document.getElementById('scatter_chart').style.display = 'block';
         document.getElementById('cdf_chart').style.display = 'block';
         document.getElementById('seasonal_line').style.display = 'none';
       }
-      if (name == "area")
-        areas();
+
     }
 
 </script>

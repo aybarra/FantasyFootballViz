@@ -337,7 +337,7 @@ d3.selection.prototype.moveToBack = function() {
         avgjoeline.active = true
 
     b_height = height+margin.bottom+margin.top
-    var d_button = d3.select("body").append("button")
+    var d_button = d3.select("#seasonal_line").append("button")
         .attr("class","button")
         .style("position","relative")
         .style("left", -width-20+"px")
@@ -349,7 +349,7 @@ d3.selection.prototype.moveToBack = function() {
                 avgjoeline.active = active;
         });
 
-    d3.select("body").append("button")
+    d3.select("#seasonal_line").append("button")
         .attr("class","button")
         .style("position","relative")
         .style("left", -width+"px")
@@ -362,11 +362,11 @@ d3.selection.prototype.moveToBack = function() {
                 goodguyline.active = active;
         });
 
-    d3.select("body").append("button")
+    d3.select("#seasonal_line").append("button")
         .attr("class","button")
         .style("position","relative")
-        .style("top",-24+"px")
-        .style("left", 240+"px")
+        // .style("top",-24+"px")
+        .style("left", -width + 20 +"px")
         .style("width","60px")
         .text("Elite")
         .on("click",function(){
