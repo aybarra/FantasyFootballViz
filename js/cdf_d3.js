@@ -80,39 +80,28 @@ function generateCDF_D3Chart(){
             .on('mouseover', function(d) { 
                 var line = d3.select(this);
                 line.style('stroke', d3.hsl('#33b9ff'));
-                this.parentNode.parentNode.appendChild(this.parentNode);
-              // console.log(d); 
+                this.parentNode.parentNode.appendChild(this.parentNode);  
+                d3.select(this.nextSibling)
+                  .attr("opacity", "1")  
             })
             .on('mouseout', function(d) { 
                 var line = d3.select(this);
                 line.style('stroke', d3.hsl('#dddddd'));
-                line.moveToBack();
+                // line.moveToBack();
+                d3.select(this.nextSibling)
+                  .attr("opacity", "0")
             });
 
-        // player.append("text")
-        //     .datum(function(d) { return {name: PGUID_TO_NAME_MAP[d.key], value: d.values[d.values.length - 1]}; })
-        //     .attr("transform", function(d) { return "translate(" + x(d.value.x) + "," + y(d.value.y) + ")"; })
-        //     .attr("x", 3)
-        //     .attr("dy", ".35em")
-        //     .text(function(d) { return d.name + ' (' + d.value.y + ') ' ; });
+        player.append("text")
+            .datum(function(d_sub) { return {name: PGUID_TO_NAME_MAP[d_sub.key], value: d_sub.values[d_sub.values.length - 1]}; })
+            .attr("transform", function(d_sub) { return "translate(" + x(d_sub.value.x) + "," + y(d_sub.value.y) + ")"; })
+            .attr("x", 3)
+            .attr("dy", ".35em")
+            .text(function(d_sub) { return d_sub.name + ' (' + d_sub.value.y + ') ' ; })
+            .attr("opacity", "0")
       });
   });
 }
-
-d3.selection.prototype.moveToFront = function() {
-  return this.each(function(){
-    this.parentNode.appendChild(this);
-  });
-};
-
-d3.selection.prototype.moveToBack = function() { 
-    return this.each(function() { 
-        var firstChild = this.parentNode.firstChild; 
-        if (firstChild) { 
-            this.parentNode.insertBefore(this, firstChild); 
-        } 
-    }); 
-};
 
 // Returns an array of objects of the form:
 //  [{
@@ -151,7 +140,6 @@ function convertData(data){
   // console.log(lines);
 
   for(var key_obj in lines){
-    // console.log(key);
 
     // Update these to be cumsum
     var vals = lines[key_obj]['values'];
