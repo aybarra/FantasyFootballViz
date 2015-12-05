@@ -7,8 +7,8 @@ var color = d3.scale.category10();
 
 
 var margin = {top: 20, right: 20, bottom: 40, left: 50},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    width = 700 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
 
 // var x = d3.time.scale()
 //     .range([0, width]);
@@ -31,7 +31,7 @@ var line = d3.svg.line()
     .y(function(d) { return y(d.season_ff_pts); });
 //     .interpolate("basis");
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#seasonal_line").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
@@ -43,18 +43,18 @@ var svg = d3.select("body").append("svg")
     });
   }
 
-d3.selection.prototype.moveToBack = function() { 
-    return this.each(function() { 
-        var firstChild = this.parentNode.firstChild; 
-        if (firstChild) { 
-            this.parentNode.insertBefore(this, firstChild); 
-        } 
-    }); 
+d3.selection.prototype.moveToBack = function() {
+    return this.each(function() {
+        var firstChild = this.parentNode.firstChild;
+        if (firstChild) {
+            this.parentNode.insertBefore(this, firstChild);
+        }
+    });
 };
 
  d3.json('http://localhost:8000/seasons_subset/', function(error,data){
   if (error) throw error;
-  
+
   var curid = []
   var startyear
   var cumpoints
@@ -64,7 +64,7 @@ d3.selection.prototype.moveToBack = function() {
   var avgjoe = {}
   var yearlist = []
   var season_dev = []
-  
+
   data.results.forEach(function(d) {
     d.guid = d.season_guid.split("_")[0]
     d.year = +d.season_guid.split("_")[1]
@@ -91,7 +91,7 @@ d3.selection.prototype.moveToBack = function() {
 //         avgcnt[numyears-1] += 1
         numyears++
     }
-    if (curyear != 2015){ 
+    if (curyear != 2015){
        dataset.push(d);
        if (avgpoints.length < numyears) {
            avgpoints.push(0)
@@ -118,7 +118,7 @@ d3.selection.prototype.moveToBack = function() {
           avgjoe.values.push({"season_ff_pts":season_pts, "year":i+1})
         }
   }
-  
+
   var goodguy = {}
   var eliteguy = {}
   goodguy.key="GoodGuy"
@@ -141,7 +141,7 @@ d3.selection.prototype.moveToBack = function() {
         return d.guid;
      })
     .entries(dataset);
-    
+
   var keys = d3.keys(dataGroup);
   color.domain(d3.keys(dataGroup));
 
@@ -162,7 +162,7 @@ d3.selection.prototype.moveToBack = function() {
       .attr("transform", "rotate(-90)")
       .attr("y", -42)
       .attr("x", -150)
-      .attr("dy", ".71em")   
+      .attr("dy", ".71em")
       .style("text-anchor", "end")
       .text("Seasonal Fantasy Points");
 
@@ -197,7 +197,7 @@ d3.selection.prototype.moveToBack = function() {
 
    var averageline = svg.append("g")
           .attr("class", "lines")
-         
+
   nameline.append("text")
           .attr("x", 9)
           .attr("y", 10)
@@ -213,8 +213,8 @@ d3.selection.prototype.moveToBack = function() {
   averageline.append("text")
           .attr("x", 9)
           .attr("y", 55)
-                        
-                        
+
+
     dataGroup.forEach(function(d, i) {
       var iline = svg.append("path")
          .attr("class", "line")
@@ -222,15 +222,15 @@ d3.selection.prototype.moveToBack = function() {
          .attr("d", line(d.values))
          .style('stroke-width', 3)
          .style("stroke", "whitesmoke")
-        .on("mouseover", function() { 
-                focus.style("display", null); 
+        .on("mouseover", function() {
+                focus.style("display", null);
                 iline.style("stroke","steelblue")
                 var sel = d3.select(this);
                 sel.moveToFront();
 
             })
-        .on("mouseout", function() { 
-                focus.style("display", "none"); 
+        .on("mouseout", function() {
+                focus.style("display", "none");
                 iline.style("stroke","whitesmoke");
                 var sel = d3.select(this);
                 sel.moveToBack();
@@ -264,8 +264,8 @@ d3.selection.prototype.moveToBack = function() {
                 averageline.select("text").text("Average/Season: " + avg + " (Best: "+bestyr+", Worst: " + worstyr+")");
             });
        });
-       
-            
+
+
         var avgjoeline = svg.append("path")
                             .attr("class","distribution_lines")
                             .attr("id","avgjoeline")
@@ -274,17 +274,17 @@ d3.selection.prototype.moveToBack = function() {
                             .style("opacity",0)
                             .style("stroke-width",2)
                             .style("stroke","firebrick")
-                            .on("mouseover", function() { 
-                                    focus.style("display", null); 
+                            .on("mouseover", function() {
+                                    focus.style("display", null);
                                     avgjoeline.style("stroke","indianred")
                                     var sel = d3.select(this)
                                     sel.moveToFront();
                                 })
-                            .on("mouseout", function() { 
-                                    focus.style("display", "none"); 
+                            .on("mouseout", function() {
+                                    focus.style("display", "none");
                                     avgjoeline.style("stroke","firebrick");
                             });
-                            
+
         var goodguyline = svg.append("path")
                             .attr("class","distribution_lines")
                             .attr("id","goodguyline")
@@ -293,14 +293,14 @@ d3.selection.prototype.moveToBack = function() {
                             .style("opacity",0)
                             .style("stroke-width",2)
                             .style("stroke","seagreen")
-                            .on("mouseover", function() { 
-                                    focus.style("display", null); 
+                            .on("mouseover", function() {
+                                    focus.style("display", null);
                                     goodguyline.style("stroke","mediumseagreen")
                                     var sel = d3.select(this)
                                     sel.moveToFront();
                                 })
-                            .on("mouseout", function() { 
-                                    focus.style("display", "none"); 
+                            .on("mouseout", function() {
+                                    focus.style("display", "none");
                                     goodguyline.style("stroke","seagreen");
                             });
 //                             .on("mousemove", function(){
@@ -322,20 +322,20 @@ d3.selection.prototype.moveToBack = function() {
                             .style("stroke-width",2)
                             .style("stroke","salmon")
                             .style("opacity",0)
-                            .on("mouseover", function() { 
-                                    focus.style("display", null); 
+                            .on("mouseover", function() {
+                                    focus.style("display", null);
                                     eliteguyline.style("stroke","darksalmon")
                                     var sel = d3.select(this)
                                     sel.moveToFront();
                                 })
-                            .on("mouseout", function() { 
-                                    focus.style("display", "none"); 
+                            .on("mouseout", function() {
+                                    focus.style("display", "none");
                                     eliteguyline.style("stroke","salmon");
                             });
         eliteguyline.active = true
         goodguyline.active = true
         avgjoeline.active = true
-        
+
     b_height = height+margin.bottom+margin.top
     var d_button = d3.select("body").append("button")
         .attr("class","button")
@@ -348,7 +348,7 @@ d3.selection.prototype.moveToBack = function() {
                 d3.select("#avgjoeline").style("opacity", opacity);
                 avgjoeline.active = active;
         });
-        
+
     d3.select("body").append("button")
         .attr("class","button")
         .style("position","relative")
@@ -359,9 +359,9 @@ d3.selection.prototype.moveToBack = function() {
                 var active = goodguyline.active ? false : true;
                 var opacity = active ? 0 : 1;
                 d3.select("#goodguyline").style("opacity", opacity);
-                goodguyline.active = active;                
+                goodguyline.active = active;
         });
-        
+
     d3.select("body").append("button")
         .attr("class","button")
         .style("position","relative")
@@ -379,14 +379,14 @@ d3.selection.prototype.moveToBack = function() {
 //                         for (var j = 0; j < d.values.length; j++) {
 //                             if (d.values[j].season_ff_pts >= eliteguy.values[j].season_ff_pts && avgcnt[j] > 1) {
 //                                 sel = d3.select("#"+d.key).style("stroke","grey")
-//                                 sel.style("stroke-width", 1) 
+//                                 sel.style("stroke-width", 1)
 //                                 sel.moveToFront();
 //                             }
 //                         }
 //                     });
 //                 }
         });
-   });  
+   });
 ;
 
 }

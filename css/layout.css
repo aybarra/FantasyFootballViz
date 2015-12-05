@@ -104,6 +104,18 @@ div.tooltip p {
   fill:#EC888C;
 }
 
+.dataTables tbody tr {
+    height: 100px;
+}
+
+body .mybutton {
+  display:block;
+}
+
+body.loaded .mybutton {
+  display:none;
+}
+
 #events {
         margin-bottom: 1em;
         padding: 1em;
@@ -114,7 +126,6 @@ div.tooltip p {
         overflow: auto;
     }
 
-#cdf_chart svg {
-  height: 400px;
-  width: 750px;
+#*chart{
+   -webkit-transition:margin-left .5s ease-in-out;
 }

@@ -131,16 +131,32 @@
             </div>
             <div class="col-sm-7">
                 <div class="row">
-                    <div class="col-sm-12" id="scatter_chart"></div>
+                  <div class="btn-group" data-toggle="buttons-radio">
+                    <button type="button" id="stream" class="btn active switch" onclick="transitionTo('stream')">Streamgraph</button>
+                    <button type="button" id="stack" class="btn switch" onclick="transitionTo('stack')">Stacked Area</button>
+                    <!-- <button type="button" id="area" class="btn switch">Area</button> -->
+                  </div>
                 </div>
-                <div class="row">
-                    <h4>Shneiderman's Mantra: Overview first, zoom and filter, then details-on-demand.</h4>
+                  <div class="row">
+                    <div class="col-sm-12 career_chart" id="scatter_chart"></div>
+                </div>
 
-                    <div class="col-sm-12">
+                <div class="row">
+                    <div class="col-sm-12 career_chart">
                         <div id="cdf_chart"></div>
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-sm-12" id="seasonal_line"></div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12" id="seasonal_parallel"></div>
+                </div>
+
             </div>
+
             <div class="col-sm-3">
                 <h4>Player Data Table</h4>
                 <table class="table table-row-border table-hover" id="data_table" width="100%">
@@ -155,14 +171,6 @@
                 </table>
             </div>
         </div>
-
-        <!-- <div class="row">
-          <div id="cdf_chart" class="col-sm-7">
-              <svg></svg>
-          </div>
-        </div> -->
-
-
     </div>
 </div>
 
@@ -259,15 +267,18 @@
     var scatter_margin = { top: 10, right: 30, bottom: 33, left: 45 };
     var scatter_width = 700 - scatter_margin.right - scatter_margin.left;
     var scatter_height = 400 - scatter_margin.top - scatter_margin.bottom;
+    var scatter_padding = 100;
 
     var cdf_margin = { top: 10, right: 30, bottom: 33, left: 45 };
     var cdf_width = 700 - cdf_margin.right - cdf_margin.left;
     var cdf_height = 400 - cdf_margin.top - cdf_margin.bottom;
 
+    var swap_sound = new Audio('sounds/whip_crack.mp3');
+
     var dot_init_size = 3;
     var dot_hover_size = 7;
     var dot_trans = 300;
-    var tooltip_trans_in = 400;
+    var tooltip_trans_in = 200;
     var tooltip_trans_out = 400;
 
     var colorScale = //d3.scale.ordinal().domain( [ "QB", "RB", "WR", "TE" ] )
@@ -283,21 +294,23 @@
             .attr( "transform",
             "translate(" + scatter_margin.left + "," + scatter_margin.top + ")" );
 
-    // Set the ranges
-    var x = d3.scale.linear().range( [ 0, scatter_width ] );
-    var y = d3.scale.linear().range( [ scatter_height, 0 ] );
-
-
-
-    // Define the axes
-    var xAxis = d3.svg.axis().scale( x )
-            .orient( "bottom" ).ticks( 6 );
-
-    var yAxis = d3.svg.axis().scale( y )
-            .orient( "left" ).ticks( 10 );
-
-    var scat_xaxis_padding = 0;
-    var scat_yaxis_padding = 0;
+    // // Set the ranges
+    // var x = d3.scale.linear().range( [ 0, scatter_width ] );
+    // var y = d3.scale.linear().range( [ scatter_height, 0 ] );
+    //
+    //
+    //
+    // // Define the axes
+    // var xAxis = d3.svg.axis().scale( x )
+    //         .orient( "bottom" ).ticks( 6 );
+    //
+    // var yAxis = d3.svg.axis().scale( y )
+    //         .orient( "left" ).ticks( 10 );
+    //
+    //
+    //
+    // var scat_xaxis_padding = 0;
+    // var scat_yaxis_padding = 0;
 
     // Define the div for the tooltip
     var tooltip = d3.select( "body" ).append( "div" )
@@ -397,8 +410,8 @@
             .on( "draw", lasso_draw ) // lasso draw function
             .on( "end", lasso_end ); // lasso end function
 
-    // Init the lasso on the svg:g that contains the dots
-    svg_scatter.call( lasso );
+    // // Init the lasso on the svg:g that contains the dots
+    // svg_scatter.call( lasso );
 
     //Add Default Filter
     var defaultFilterObject = new FilterObject( 2000, 2015, null, null, null, [ 2 ] );
@@ -504,6 +517,24 @@
             x.winPct = d3.round( (+x.win_pct * 100), 2 );
         } );
 
+        // Set the ranges
+        var x = d3.scale.linear().range( [ 0, scatter_width ] );
+        var y = d3.scale.linear().range( [ scatter_height, 0 ] );
+
+
+
+        // Define the axes
+        var xAxis = d3.svg.axis().scale( x )
+                .orient( "bottom" ).ticks( 6 );
+
+        var yAxis = d3.svg.axis().scale( y )
+                .orient( "left" ).ticks( 10 );
+
+
+
+        var scat_xaxis_padding = 0;
+        var scat_yaxis_padding = 0;
+
         // Scale the domain of the data
         var xmin = d3.min( playerArray, function ( d )
                         {
@@ -554,10 +585,11 @@
                 .attr( "class", "dot" )
                 .style( "fill", function ( d )
                 {
-                    return colorScale( d.pos );
+                  return colorScale( d.pos );
                 } )
                 .attr( "stroke", "black" )
                 .attr( "stroke-width", 1 )
+                .attr("fill-opacity", 0.7)
                 .on( "click", function ( d )
                 {
                     refreshPlayerDataTable( d );
@@ -606,7 +638,7 @@
                             } )
                             .attr( "fill-opacity", function ( d )
                             {
-                                return 1;
+                                return .7;
                             } )
 
                     tooltip.transition().duration( tooltip_trans_out ).style( "opacity", 0 );
@@ -616,12 +648,23 @@
         svg_scatter.append( "g" )
                 .attr( "class", "x axis" )
                 .attr( "transform", "translate(0," + scatter_height + ")" )
-                .call( xAxis );
+                .call( xAxis )
+                .append("text")
+                .attr("text-anchor", "middle")
+                .attr("transform", "translate("+ (scatter_width/2) +","+(scatter_height)+")")
+                .text("Win Percentage");
 
         // Add the Y Axis
         svg_scatter.append( "g" )
                 .attr( "class", "y axis" )
-                .call( yAxis );
+                .call( yAxis )
+                .append("text")
+                .attr("text-anchor", "middle")
+                .attr("transform", "translate("+ 10 +","+(scatter_height/2)+")rotate(-90)")
+                .text("Fantasy Points");
+
+                // Init the lasso on the svg:g that contains the dots
+                svg_scatter.call( lasso );
 
         lasso.items( d3.selectAll( ".dot" ) );
 
@@ -676,12 +719,25 @@
 
             data_table = $( "#data_table" ).DataTable( {
                 select: true,
+                fixedColumns: {
+                  heightMatch: 'none'
+                },
                 data: lassoed_items,
                 columns: [
                     { data: "name" },
                     { data: "pos_long" },
                     { data: "fantPt" },
                     { data: "winPct" }
+                ],
+                dom:  'Bfrtip',
+                buttons: [
+                  'selected',
+                  'selectedSingle',
+                  'selectAll',
+                  'selectNone',
+                  'selectRows',
+                  'selectColumns',
+                  'selectCells'
                 ]
             } );
 
@@ -758,6 +814,29 @@
         data_table.draw();
     }
 
+    function transitionTo(name){
+
+      // swap_sound.play();
+      if (name == "stack"){
+        // if ($("#cdf_chart").has("svg").length==0){
+        //   console.log("calling cdf chart");
+        //   generateCDF_D3Chart();
+        // }
+        document.getElementById('scatter_chart').style.display = 'none';
+        document.getElementById('cdf_chart').style.display = 'none';
+        document.getElementById('seasonal_line').style.display = 'block';
+      };
+
+      if (name == "stream"){
+        // d3.select("#cdf_chart").select("svg").remove();
+
+        document.getElementById('scatter_chart').style.display = 'block';
+        document.getElementById('cdf_chart').style.display = 'block';
+        document.getElementById('seasonal_line').style.display = 'none';
+      }
+      if (name == "area")
+        areas();
+    }
 
 </script>
 
