@@ -29,6 +29,24 @@ function isPlayerInFilterSet( stringifiedPlayer )
 
 /**
  * Returns an array with all of the unique players that are currently selected from the filtered objects.
+ */
+function filteredPlayersPguids()
+{
+    //Create the return array
+    var filteredPlayersPguids = [];
+
+    //Get the list of currently filtered players JSONS
+    var players = filteredPlayers();
+
+    $.each( players, function ( index, player )
+    {
+        filteredPlayersPguids.push( player['pguid'] );
+    } );
+    return filteredPlayersPguids;
+}
+
+/**
+ * Returns an array with all of the unique players that are currently selected from the filtered objects.
  * The JSON objects are the JSON response from a players careers route.
  */
 function filteredPlayers()
