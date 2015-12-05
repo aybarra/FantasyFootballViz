@@ -339,8 +339,8 @@ d3.selection.prototype.moveToBack = function() {
     b_height = height+margin.bottom+margin.top
     var d_button = d3.select("body").append("button")
         .attr("class","button")
-        .style("left",margin.left+"px")
-        .style("top",b_height+"px")
+        .style("position","relative")
+        .style("left", -width-20+"px")
         .text("Average Player")
         .on("click",function(){
                 var active = avgjoeline.active ? false : true;
@@ -351,8 +351,8 @@ d3.selection.prototype.moveToBack = function() {
         
     d3.select("body").append("button")
         .attr("class","button")
-        .style("top",b_height+"px")
-        .style("left",(margin.left+100)+"px")
+        .style("position","relative")
+        .style("left", -width+"px")
         .style("width","60px")
         .text("Good")
         .on("click",function(){
@@ -364,8 +364,9 @@ d3.selection.prototype.moveToBack = function() {
         
     d3.select("body").append("button")
         .attr("class","button")
-        .style("top",b_height+"px")
-        .style("left",(margin.left+177)+"px")
+        .style("position","relative")
+        .style("top",-24+"px")
+        .style("left", 240+"px")
         .style("width","60px")
         .text("Elite")
         .on("click",function(){
