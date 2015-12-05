@@ -201,29 +201,21 @@
             //Clear out the input text field
             $( '#add_player_input_field' ).val( '' );
 
-            //check if we should add to array
-            var isPlayerInArray = false;
+            //Stringify the current player for comparison in the isPlayerInFilteredSetFunction
             var stringifiedPlayer = JSON.stringify( data.data );
 
-            //Check to make sure the player was not already added
-            $.each( selectedPlayers, function ( index, player )
-            {
-                //Use the stringify function so that the === function passes for the json objects.
-                var foundPlayer = JSON.stringify( player );
-                if( foundPlayer === stringifiedPlayer )
-                {
-                    isPlayerInArray = true;
-                    return false;
-                }
-            } );
-
-            if ( !isPlayerInArray )
+            //Only add if not already added to the array
+            if ( !isPlayerInFilterSet(stringifiedPlayer) )
             {
                 //Add the selected player to the additional player div
-                $( '#autocomplete_group' ).append( '<div class="autocomplete-suggestion">' + data.value + '</div>' );
+                $( '#autocomplete_group' ).append( '<div class="autocomplete-suggestion"><input type="image" src="images/delete_icon.png" width="24" height="24" onclick="deletePlayerObject(' + 0 + ');" id="deletePlayerRow"></input>' + data.value + '</div>' );
 
                 //Add player to selected player global array
                 selectedPlayers.push( data.data );
+            }
+            else
+            {
+                alert( data.value + ' is already in the data set' );
             }
         }
     } )
@@ -627,7 +619,37 @@
     }
 
     /**
+     * Returns true if player currently in filter set. False if the player is not found.
+     * This functions needs a stringified version of a players careers JSON to perform properly.
+     */
+    function isPlayerInFilterSet( stringifiedPlayer )
+    {
+        //Boolean value for isPlayerFound in the current set of players
+        var isPlayerFound = false;
+
+        //Get all of the currently filtered down players.
+        var jsonFilteredPlayers = filteredPlayers();
+
+        //Loop through all of the players to see if the one we are passing in is already contained in the set.
+        $.each( jsonFilteredPlayers, function ( index, jsonFilteredPlayer )
+        {
+            //Stringify the player json for comparison
+            var stringifiedJsonPlayer = JSON.stringify(jsonFilteredPlayer);
+
+            //If the player matches, set the return value and break out of the for loop.
+            if( stringifiedPlayer === stringifiedJsonPlayer)
+            {
+                isPlayerFound = true;
+                return false; //return false breaks out of the each loop.
+            }
+        } );
+
+        return isPlayerFound;
+    }
+
+    /**
      * Returns an array with all of the unique players that are currently selected from the filtered objects.
+     * The JSON objects are the JSON response from a players careers route.
      */
     function filteredPlayers()
     {

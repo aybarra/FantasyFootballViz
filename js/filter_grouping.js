@@ -12,6 +12,9 @@ var maxPoints = null;
 var positions = null;
 var statuses = null;
 
+//Constants
+var minFilterObjectCount = 1;
+
 //charts
 var dateSelectionChart = null;
 var fantasyPointSelectionChart = null;
@@ -454,8 +457,13 @@ function drawCurrentFilterTable()
     //Add an onClick to remove the filter from the row
     table.on( 'click', '#deleteFilterRow', function ()
     {
-        //Remove from the Table
-        $( this ).parent().parent().remove();
+        //Only allow delete of filter object if we have more than the minimum count. We dont want them to have no filters.
+        //If you change this logic, change it in deleteFilterObject as well.
+        if( filterObjects.length > minFilterObjectCount)
+        {
+            //Remove from the Table
+            $( this ).parent().parent().remove();
+        }
     } );
 }
 
@@ -465,9 +473,17 @@ function drawCurrentFilterTable()
  */
 function deleteFilterObject( index )
 {
-    //remove from array
-    filterObjects.splice( index, 1 );
+    //Only allow delete of filter object if we have more than the minimum count. We dont want them to have no filters.
+    if( filterObjects.length > minFilterObjectCount)
+    {
+        //remove from array
+        filterObjects.splice( index, 1 );
 
-    //redraw the table to give new i values to rows
-    drawCurrentFilterTable();
+        //redraw the table to give new i values to rows
+        drawCurrentFilterTable();
+    }
+    else
+    {
+        alert( 'Must Maintain ' + minFilterObjectCount + ' filter' );
+    }
 }
