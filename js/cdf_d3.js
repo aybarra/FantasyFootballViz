@@ -1,5 +1,5 @@
 function generateCDF_D3Chart(){
-  
+
   var x = d3.time.scale().range([0, cdf_width]);
   var y = d3.scale.linear().range([cdf_height, 0]);
 
@@ -84,7 +84,7 @@ function generateCDF_D3Chart(){
               .attr("opacity", "1")  
         })
         .on('mouseout', function(d) { 
-            console.log(d);
+            // console.log(d);
             var line = d3.select(this);
             line.style('stroke', d3.hsl('#dddddd'));
             // line.moveToBack();
@@ -113,10 +113,10 @@ function generateCDF_D3Chart(){
 // Returns an array of objects of the form:
 //  [{
 //      key: pguid
-//      values: arr [ x <-- year, 
+//      values: arr [ x <-- year,
 //                    y <-- ff_pts (cumulative)]
-//            
-//  },...]    
+//
+//  },...]
 function convertData(data){
   var lines = {};
   var plot_data = [];
