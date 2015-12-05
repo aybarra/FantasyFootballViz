@@ -24,61 +24,95 @@ function generateCDF_D3Chart(){
       .append("g")
       .attr("transform", "translate(" + cdf_margin.left + "," + cdf_margin.top + ")");
 
+  d3.json( 'http://localhost:8000/careers', function ( error, data )
+  {
+      // console.log(data);
+      data['results'].forEach( function ( career )
+      {
+          if( PGUID_TO_NAME_MAP[ career[ 'pguid' ] ] === undefined ) {
+              PGUID_TO_NAME_MAP[ career[ 'pguid' ] ] = career[ 'player_name' ];
+          }
+      });
 
-  d3.json('http://localhost:8000/seasons_subset/', function(error,data){
-    if (error) throw error;
+      d3.json('http://localhost:8000/seasons_subset/', function(error,data){
+        if (error) throw error;
 
-    var data_conv = convertData(data);
+        var data_conv = convertData(data);
 
-    var keys = d3.keys(data_conv);
-    color.domain(d3.keys(data_conv));
+        var keys = d3.keys(data_conv);
+        color.domain(d3.keys(data_conv));
 
-    x.domain([
-      0,
-      d3.max(data_conv, function(d) { return d.values.length; })  // Want the longest length career
-    ]);
+        x.domain([
+          0,
+          d3.max(data_conv, function(d) { return d.values.length; })  // Want the longest length career
+        ]);
 
-    y.domain([
-      d3.min(data_conv, function(d) { return d3.min(d.values, function(v) { return v.y; }); }),
-      d3.max(data_conv, function(d) { return d3.max(d.values, function(v) { return v.y; }); })
-    ]);
+        y.domain([
+          d3.min(data_conv, function(d) { return d3.min(d.values, function(v) { return v.y; }); }),
+          d3.max(data_conv, function(d) { return d3.max(d.values, function(v) { return v.y; }); })
+        ]);
 
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + cdf_height + ")")
-        .call(xAxis)
-        .text("Years Played");
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + cdf_height + ")")
+            .call(xAxis)
+            .text("Years Played");
 
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
-      .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .text("Cumulative Fantasy Points");
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+          .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text("Cumulative Fantasy Points");
 
-    var player = svg.selectAll(".player")
-        .data(data_conv)
-      .enter().append("g")
-        .attr("class", "player");
+        var player = svg.selectAll(".player")
+            .data(data_conv)
+          .enter().append("g")
+            .attr("class", "player");
 
-    player.append("path")
-        .attr("class", "line")
-        .attr("d", function(d) { return line(d.values); })
-        .style("stroke", function(d) { return color(d.key); });
+        player.append("path")
+            .attr("class", "line")
+            .attr("d", function(d) { return line(d.values); })
+            .style("stroke", function(d) { return d3.hsl('#dddddd') })
+            .on('mouseover', function(d) { 
+                var line = d3.select(this);
+                line.style('stroke', d3.hsl('#33b9ff'));
+                this.parentNode.parentNode.appendChild(this.parentNode);
+              // console.log(d); 
+            })
+            .on('mouseout', function(d) { 
+                var line = d3.select(this);
+                line.style('stroke', d3.hsl('#dddddd'));
+                line.moveToBack();
+            });
 
-    player.append("text")
-        .datum(function(d) { return {name: d.key, value: d.values[d.values.length - 1]}; })
-        .attr("transform", function(d) { return "translate(" + x(d.value.x) + "," + y(d.value.y) + ")"; })
-        .attr("x", 3)
-        .attr("dy", ".35em")
-        .text(function(d) { return d.name; });
+        // player.append("text")
+        //     .datum(function(d) { return {name: PGUID_TO_NAME_MAP[d.key], value: d.values[d.values.length - 1]}; })
+        //     .attr("transform", function(d) { return "translate(" + x(d.value.x) + "," + y(d.value.y) + ")"; })
+        //     .attr("x", 3)
+        //     .attr("dy", ".35em")
+        //     .text(function(d) { return d.name + ' (' + d.value.y + ') ' ; });
+      });
   });
 }
 
+d3.selection.prototype.moveToFront = function() {
+  return this.each(function(){
+    this.parentNode.appendChild(this);
+  });
+};
 
+d3.selection.prototype.moveToBack = function() { 
+    return this.each(function() { 
+        var firstChild = this.parentNode.firstChild; 
+        if (firstChild) { 
+            this.parentNode.insertBefore(this, firstChild); 
+        } 
+    }); 
+};
 
 // Returns an array of objects of the form:
 //  [{
