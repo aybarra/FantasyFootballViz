@@ -45,7 +45,7 @@ $( document ).ready( function ()
                 $( "#autocomplete_results_div" ).show();
 
                 //Add the selected player to the additional player div
-                $( '#autocomplete_group' ).append( '<div class="autocomplete-suggestion"><input type="image" src="images/delete_icon.png" width="24" height="24" onclick=deletePlayerObject("' + data.data['pguid'] + '"); id="deletePlayerRow"></input>' + data.value + '</div>' );
+                $( '#autocomplete_group' ).append( '<div class="autocomplete-suggestion"><input type="image" src="images/delete_icon_2.png" width="16" height="16" style="vertical-align: middle; margin-right: 8px;" onclick=deletePlayerObject("' + data.data['pguid'] + '"); id="deletePlayerRow"></input>' + data.value + '</div>' );
 
                 //Add player to selected player global array
                 selectedPlayers.push( data.data );
