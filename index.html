@@ -122,7 +122,7 @@
                 <h4>Add Player</h4>
                 <input type="text" name="add_player_input_field" id="add_player_input_field"/>
 
-                <div class="autocomplete-suggestions">
+                <div class="autocomplete-suggestions" id="autocomplete_results_div">
                     <div class="autocomplete-group" id="autocomplete_group"><strong>Added Players</strong></div>
                     <!--<div class="autocomplete-suggestion autocomplete-selected">...</div>-->
                     <!--<div class="autocomplete-suggestion">...</div>-->
@@ -181,6 +181,9 @@
     //Variable to hold the state of the sliding menu
     var isMenuOpen = false;
 
+    //Default hide the added players div
+    $("#autocomplete_results_div" ).hide();
+
     //Setup the input field
     $( '#add_player_input_field' ).autocomplete( {
         dataType: 'json',
@@ -207,6 +210,9 @@
             //Only add if not already added to the array
             if ( !isPlayerInFilterSet(stringifiedPlayer) )
             {
+                //Make sure the div showing added players is showing
+                $("#autocomplete_results_div" ).show();
+
                 //Add the selected player to the additional player div
                 $( '#autocomplete_group' ).append( '<div class="autocomplete-suggestion"><input type="image" src="images/delete_icon.png" width="24" height="24" onclick="deletePlayerObject(' + 0 + ');" id="deletePlayerRow"></input>' + data.value + '</div>' );
 
@@ -217,6 +223,7 @@
             {
                 alert( data.value + ' is already in the data set' );
             }
+            //TODO on delete of a singular player, check to see if DIV should be hidden.
         }
     } )
     ;
