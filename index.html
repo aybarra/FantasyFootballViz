@@ -386,12 +386,12 @@
                 defaultFilterObject.players.push( player );
             } );
 
-            
+
             setupNameMap();
             loadScatterPlot();
             createTable();
             generateCDF_D3Chart();
-            
+
         }
     } );
 
@@ -684,11 +684,17 @@
         var image = new Image();
         image.onload = function ()
         {
-            document.getElementById( "tooltipImg" ).src = 'images/' + player.pos + '.jpg';
-            // document.getElementById( "tooltipImg" ).src = 'player_pics/' + player.pguid + '.jpg';
+          document.getElementById( "tooltipImg" ).src = 'player_pics/' + player.pguid + '.jpg';
+          // image.src = 'player_pics/' + player.pguid + '.jpg';
+
         }
-        image.src = 'images/' + player.pos + '.jpg';
-        // image.src = 'player_pics/' + player.pguid + '.jpg';
+        image.onerror = function(){
+          document.getElementById( "tooltipImg" ).src = 'images/' + player.pos + '.jpg';
+          // image.src = 'images/' + player.pos + '.jpg';
+
+        }
+        // image.src = 'images/' + player.pos + '.jpg';
+        image.src = 'player_pics/' + player.pguid + '.jpg';
 
         tooltip.selectAll( "div" ).remove();
         tooltip.selectAll( "div" ).data( printDetails ).enter()
