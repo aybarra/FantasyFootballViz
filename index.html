@@ -368,6 +368,8 @@
     //Global variable used to hold array list of filter objects
     var filterObjects = [];
 
+    var season_subset_data = [];
+
     //Global variable used to hold array of extra player objects used for filtering
     var selectedPlayers = [];
 
@@ -556,66 +558,10 @@
     drawCurrentFilterTable();
 
     //Make a web call to get all of the pks for the default filter object
-    $.ajax( {
-        url: defaultFilterObject.generateCareerUrl(),
-        type: 'GET',
-        data: {
-            format: 'json'
-        },
-        error: function ()
-        {
-            alert( "ERROR MAKING WEB REQUEST FOR PLAYER KEYS" )
-        },
-        success: function ( data )
-        {
-            //Get the result array
-            data = data[ 'results' ];
-
-            //Loop through the array and get all of the player pks
-            $.each( data, function ( index, player )
-            {
-                defaultFilterObject.players.push( player );
-            } );
-
-            setupNameMap();
-            generateHistogram();
-            generateHistoryLine();
-            loadScatterPlot();
-            createTable();
-            drawPCChart();
-
-        }
-    } );
+    loadPageData();
 
     //Initial calls to load data and setup page.
     drawSelectionFilter();
-    // generateCDFChart();
-
-    generateLineChart();
-
-
-    /**
-     * To be used by tooltips when you want the playername
-     */
-    function setupNameMap()
-    {
-        d3.json( 'http://localhost:8000/careers', function ( error, data )
-        {
-            // console.log(data);
-            data[ 'results' ].forEach( function ( career )
-            {
-                if( PGUID_TO_NAME_MAP[ career[ 'pguid' ] ] === undefined )
-                {
-                    PGUID_TO_NAME_MAP[ career[ 'pguid' ] ] = new Array( 2 );
-                    PGUID_TO_NAME_MAP[ career[ 'pguid' ] ][ 0 ] = career[ 'player_name' ];
-                    PGUID_TO_NAME_MAP[ career[ 'pguid' ] ][ 1 ] = career[ 'pos_type' ];
-                }
-            } );
-
-            generateCDF_D3Chart();
-            // animateLines();
-        } );
-    }
 
     /**
      *
@@ -914,6 +860,7 @@
         data_table.draw();
     }
 
+
     // function transitionTo( name )
     // {
     //     var x = document.getElementsByClassName( "career_chart" );
@@ -976,6 +923,70 @@
       //   default:
       //
       // }
+
+    }
+
+    /**
+     * Call to make all the web requests to the server to get all the data for the pages.
+     */
+    function loadPageData()
+    {
+        $.ajax( {
+            url: defaultFilterObject.generateCareerUrl(),
+            type: 'GET',
+            async: false,
+            data: {
+                format: 'json'
+            },
+            error: function ()
+            {
+                alert( "ERROR MAKING WEB REQUEST FOR PLAYER KEYS" )
+            },
+            success: function ( data )
+            {
+                //Get the result array
+                data = data[ 'results' ];
+
+                //Loop through the array and get all of the player pks
+                $.each( data, function ( index, player )
+                {
+                    if( PGUID_TO_NAME_MAP[ player[ 'pguid' ] ] === undefined )
+                    {
+                        PGUID_TO_NAME_MAP[ player[ 'pguid' ] ] = new Array( 2 );
+                        PGUID_TO_NAME_MAP[ player[ 'pguid' ] ][ 0 ] = player[ 'player_name' ];
+                        PGUID_TO_NAME_MAP[ player[ 'pguid' ] ][ 1 ] = player[ 'pos_type' ];
+                    }
+                    defaultFilterObject.players.push( player );
+                } );
+
+            }
+        } );
+
+        $.ajax( {
+            url: 'http://localhost:8000/seasons_subset/?players=' + filteredPlayersPguids().join(),
+            type: 'GET',
+            async: false,
+            data: {
+                format: 'json'
+            },
+            error: function ()
+            {
+                alert( "ERROR MAKING WEB REQUEST FOR PLAYER KEYS" )
+            },
+            success: function ( data )
+            {
+                //Get the result array
+                season_subset_data = data[ 'results' ];
+            }
+        } );
+
+        generateCDF_D3Chart( season_subset_data );
+        generateHistogram();
+        generateHistoryLine();
+        loadScatterPlot(); //Loads from filters
+        createTable(); //Not a chart
+        drawPCChart();
+        generateLineChart(season_subset_data);
     }
 
 </script>
