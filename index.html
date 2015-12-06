@@ -165,11 +165,12 @@
                 </div> -->
 
                 <div class="row">
-                    <div class="col-sm-11 career_chart chart">
-                        <button type="button" id="cdf_year_swap" class="btn-primary btn-xs">CHANGE AXIS</button>
+
+                    <div class="col-sm-10 large-chart">
+                        <!-- <button type="button" id="cdf_year_swap" class="btn-primary btn-xs">CHANGE AXIS</button> -->
                         <div id="cdf_chart"></div>
                     </div>
-                    <div class="col-sm-1 btn-group">
+                    <div class="col-sm-2 btn-group switch-btn">
                       <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
                         Section 1
                         <span class="caret"></span>
@@ -188,9 +189,9 @@
 
 
                   <div class="row">
-                    <div class="col-sm-11 career_chart chart" id="scatter_chart"></div>
+                    <div class="col-sm-10 parcoords large-chart" id="scatter_chart"></div>
 
-                    <div class="col-sm-1 btn-group">
+                    <div class="col-sm-2 btn-group switch-btn">
                       <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
                         Section 2
                         <span class="caret"></span>
@@ -218,7 +219,7 @@
                 </div> -->
 
 
-                <div class="row">
+                <!-- <div class="row">
                   <div class="col-sm-8 seasonal_chart chart" style="display: none">
                     <div class="btn-group" data-toggle="buttons-radio">
                       <button type="button" id="average" class="btn active switch btn-primary btn-xs">Average</button>
@@ -228,100 +229,113 @@
                     <div class="col-sm-4 seasonal_chart chart" style="display: none">
                         <button type="button" id="year" class="btn-primary btn-xs">Year</button>
                     </div>
-                </div>
+                </div> -->
 
-                <div class="row">
+                <!-- <div class="row">
                     <div id="pcplot" class="parcoords col-sm-12 seasonal_chart chart" style="display:none" ></div>
-                </div>
+                </div> -->
 
             </div>
 
 
             <div class="col-sm-2">
               <div class="row">
-                  <div class="col-sm-10 career_chart chart">
+
+                <div class="col-sm-1 btn-group switch-btn">
+                  <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
+                    1
+                    <span class="caret"></span>
+                  </a>
+                  <ul class="dropdown-menu  parcoods dropdown-menu-right">
+                    <li><a tabindex="-1" href="#">CDF Chart</a></li>
+                    <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
+                    <li><a tabindex="-1" href="#">Histogram</a></li>
+                    <li><a tabindex="-1" href="#">History Line Chart</a></li>
+                    <li><a tabindex="-1" href="#">Player Line Chart</a></li>
+                    <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
+
+                  </ul>
+                </div>
+
+                  <div class="col-sm-11 small-chart">
                       <div id="histogram-section"></div>
                   </div>
 
-                  <div class="col-sm-2 btn-group">
-                    <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
-                      1
-                      <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-right">
-                      <li><a tabindex="-1" href="#">CDF Chart</a></li>
-                      <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
-                      <li><a tabindex="-1" href="#">Histogram</a></li>
-                      <li><a tabindex="-1" href="#">History Line Chart</a></li>
-                      <li><a tabindex="-1" href="#">Player Line Chart</a></li>
-                      <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
 
-                    </ul>
-                  </div>
               </div>
 
               <div class="row">
-                  <div class="col-sm-10 career_chart chart">
+
+                <div class="col-sm-2 btn-group switch-btn">
+                  <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
+                    2
+                    <span class="caret"></span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-right">
+                    <li><a tabindex="-1" href="#">CDF Chart</a></li>
+                    <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
+                    <li><a tabindex="-1" href="#">Histogram</a></li>
+                    <li><a tabindex="-1" href="#">History Line Chart</a></li>
+                    <li><a tabindex="-1" href="#">Player Line Chart</a></li>
+                    <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
+
+                  </ul>
+                </div>
+
+                  <div class="col-sm-10 parcoords small-chart">
                       <div id="history-line-section"></div>
                   </div>
 
-                  <div class="col-sm-2 btn-group">
-                    <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
-                      2
-                      <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-right">
-                      <li><a tabindex="-1" href="#">CDF Chart</a></li>
-                      <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
-                      <li><a tabindex="-1" href="#">Histogram</a></li>
-                      <li><a tabindex="-1" href="#">History Line Chart</a></li>
-                      <li><a tabindex="-1" href="#">Player Line Chart</a></li>
-                      <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
 
-                    </ul>
-                  </div>
               </div>
 
               <div class="row">
-                  <div class="col-sm-10 career_chart chart">
+
+
+                <div class="col-sm-1 btn-group switch-btn">
+                  <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
+                    3
+                    <span class="caret"></span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-right">
+                    <li><a tabindex="-1" href="#">CDF Chart</a></li>
+                    <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
+                    <li><a tabindex="-1" href="#">Histogram</a></li>
+                    <li><a tabindex="-1" href="#">History Line Chart</a></li>
+                    <li><a tabindex="-1" href="#">Player Line Chart</a></li>
+                    <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
+
+                  </ul>
+                </div>
+
+                  <div class="col-sm-10 parcoords small-chart">
                       <div id="line-chart-section"></div>
                   </div>
 
-                  <div class="col-sm-2 btn-group">
-                    <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
-                      3
-                      <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-right">
-                      <li><a tabindex="-1" href="#">CDF Chart</a></li>
-                      <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
-                      <li><a tabindex="-1" href="#">Histogram</a></li>
-                      <li><a tabindex="-1" href="#">History Line Chart</a></li>
-                      <li><a tabindex="-1" href="#">Player Line Chart</a></li>
-                      <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
 
-                    </ul>
-                  </div>
               </div>
 
               <div class="row">
+
+                <div class="col-sm-1 btn-group switch-btn">
+                  <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
+                    4
+                    <span class="caret"></span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-right">
+                    <li><a tabindex="-1" href="#">CDF Chart</a></li>
+                    <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
+                    <li><a tabindex="-1" href="#">Histogram</a></li>
+                    <li><a tabindex="-1" href="#">History Line Chart</a></li>
+                    <li><a tabindex="-1" href="#">Player Line Chart</a></li>
+                    <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
+
+                  </ul>
+                </div>
+
                   <div class="col-sm-10 parcoords career_chart chart"   id="pcplot-section"></div>
 
-                  <div class="col-sm-2 btn-group">
-                    <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
-                      4
-                      <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-right">
-                      <li><a tabindex="-1" href="#">CDF Chart</a></li>
-                      <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
-                      <li><a tabindex="-1" href="#">Histogram</a></li>
-                      <li><a tabindex="-1" href="#">History Line Chart</a></li>
-                      <li><a tabindex="-1" href="#">Player Line Chart</a></li>
-                      <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
 
-                    </ul>
-                  </div>
               </div>
 
             </div>
@@ -358,16 +372,28 @@
     var lassoed_items = [];
 
     //CONSTANTS
-    var scatter_margin = { top: 10, right: 30, bottom: 33, left: 45 };
-    var scatter_width = 900 - scatter_margin.right - scatter_margin.left;
-    var scatter_height = 400 - scatter_margin.top - scatter_margin.bottom;
-    var scatter_padding = 100;
 
-    var cdf_margin = { top: 10, right: 30, bottom: 33, left: 45 };
-    var cdf_width = 900 - cdf_margin.right - cdf_margin.left;
-    var cdf_height = 400 - cdf_margin.top - cdf_margin.bottom;
+    // var scatter_margin = { top: 10, right: 30, bottom: 33, left: 45 };
+    // var scatter_width = 900 - scatter_margin.right - scatter_margin.left;
+    // var scatter_height = 400 - scatter_margin.top - scatter_margin.bottom;
+    // var scatter_padding = 100;
 
-    var swap_sound = new Audio( 'sounds/whip_crack.mp3' );
+    var scatter_margin = { top: 10, right: 30, bottom: 33, left: 45 }
+        , width = parseInt(d3.select('.large-chart').style('width'), 10)
+        , scatter_width = width - scatter_margin.left - scatter_margin.right
+        , height = parseInt(d3.select('.large-chart').style('height'), 10)
+        , scatter_height = height - scatter_margin.top - scatter_margin.bottom;
+
+    // var cdf_margin = { top: 10, right: 30, bottom: 33, left: 45 };
+    // var cdf_width = 900 - cdf_margin.right - cdf_margin.left;
+    // var cdf_height = 400 - cdf_margin.top - cdf_margin.bottom;
+
+    var cdf_margin = { top: 10, right: 30, bottom: 33, left: 45 }
+        , cdf_width = width - cdf_margin.right - cdf_margin.left
+        , cdf_height = height - cdf_margin.top - cdf_margin.bottom;
+
+    // var swap_sound = new Audio('sounds/whip_crack.mp3');
+
 
     var dot_init_size = 3;
     var dot_hover_size = 7;
