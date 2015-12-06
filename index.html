@@ -19,6 +19,8 @@
     <script src="js/lasso.js"></script>
     <script src="js/d3.parcoords.js"></script>
     <script src="js/pcplot.js"></script>
+    <script src="js/histogram.js"></script>
+    <script src="js/historyline.js"></script>
     <script src="lib/AutoComplete/dist/jquery.autocomplete.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/mathjs/2.4.2/math.min.js"></script>
 
@@ -122,55 +124,106 @@
     <!-- Create Chart Display Areas -->
     <div class="col-sm-12 main">
         <div class="row">
-            <div class="col-sm-2" id="filter-section">
+            <div class="col-sm-2">
+              <div class ="row" id="filter-section" style="height: 200px; overflow:auto">
                 <h4>Filter Section</h4>
-                <table id="filters_table">
+                <table id="filters_table" style="height:150px; overflow:auto">
                 </table>
+              </div>
+              <div class="row">
                 <h4>Add Player</h4>
                 <input type="text" name="add_player_input_field" id="add_player_input_field"/>
 
                 <div class="autocomplete-suggestions" id="autocomplete_results_div">
-                    <div class="autocomplete-group" id="autocomplete_group"><strong>Added Players</strong></div>
+                    <div class="autocomplete-group" id="autocomplete_group" style="height:100px; overflow:auto"><strong>Added Players</strong></div>
                     <!--<div class="autocomplete-suggestion autocomplete-selected">...</div>-->
                     <!--<div class="autocomplete-suggestion">...</div>-->
                     <!--<div class="autocomplete-suggestion">...</div>-->
                 </div>
             </div>
-            <div class="col-sm-8">
-                <div class="row">
-                    <div class="btn-group" data-toggle="buttons-radio">
-                        <button type="button" id="career" class="btn active switch btn-primary btn-xs"
-                                onclick="transitionTo('career')">Career View
-                        </button>
-                        <button type="button" id="seasonal" class="btn switch btn-primary btn-xs"
-                                onclick="transitionTo('seasonal')">Player Comparison
-                        </button>
-                        <!-- <button type="button" id="area" class="btn switch">Area</button> -->
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12 career_chart chart" id="scatter_chart"></div>
-                </div>
+            <div class="row">
+              <h4>Player Data Table</h4>
+              <table class="table table-row-border table-hover" id="data_table" cellspacing="0" margin-top="750px" width="100%">
+                  <thead>
+                  <tr class="header">
+                      <th>Name</th>
+                      <th>Pos</th>
+                      <th>Pts</th>
+                      <th>Win %</th>
+                  </tr>
+                  </thead>
+              </table>
+            </div>
+          </div>
+            <div class="col-sm-7">
+                <!-- <div class="row">
+                  <div class="btn-group" data-toggle="buttons-radio">
+                    <button type="button" id="career" class="btn active switch btn-primary btn-xs" onclick="transitionTo('career')">Career View</button>
+                    <button type="button" id="seasonal" class="btn switch btn-primary btn-xs" onclick="transitionTo('seasonal')">Player Comparison</button>
+
+                  </div>
+                </div> -->
 
                 <div class="row">
-                    <div class="col-sm-12 career_chart chart">
+                    <div class="col-sm-11 career_chart chart">
+                        <button type="button" id="cdf_year_swap" class="btn-primary btn-xs">CHANGE AXIS</button>
                         <div id="cdf_chart"></div>
                     </div>
-                </div>
+                    <div class="col-sm-1 btn-group">
+                      <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
+                        Section 1
+                        <span class="caret"></span>
+                      </a>
+                      <ul class="dropdown-menu dropdown-menu-right">
+                        <li><a tabindex="-1" href="#">CDF Chart</a></li>
+                        <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
+                        <li><a tabindex="-1" href="#">Histogram</a></li>
+                        <li><a tabindex="-1" href="#">History Line Chart</a></li>
+                        <li><a tabindex="-1" href="#">Player Line Chart</a></li>
+                        <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
 
-                <div class="row">
+                      </ul>
+                    </div>
+                  </div>
+
+
+                  <div class="row">
+                    <div class="col-sm-11 career_chart chart" id="scatter_chart"></div>
+
+                    <div class="col-sm-1 btn-group">
+                      <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
+                        Section 2
+                        <span class="caret"></span>
+                      </a>
+                      <ul class="dropdown-menu dropdown-menu-right">
+                        <li><a tabindex="-1" href="#">CDF Chart</a></li>
+                        <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
+                        <li><a tabindex="-1" href="#">Histogram</a></li>
+                        <li><a tabindex="-1" href="#">History Line Chart</a></li>
+                        <li><a tabindex="-1" href="#">Player Line Chart</a></li>
+                        <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
+
+                      </ul>
+                    </div>
+
+                  </div>
+                <!-- <div class="row">
+                  <div class="col-sm-12 parcoords career_chart chart" id="pcplot-section"></div>
+              </div> -->
+
+
+
+                <!-- <div class="row">
                     <div class="col-sm-12 seasonal_chart chart" id="seasonal_line" style="display: none"></div>
-                </div>
+                </div> -->
 
 
                 <div class="row">
-                    <div class="col-sm-8 seasonal_chart chart" style="display: none">
-                        <div class="btn-group" data-toggle="buttons-radio">
-                            <button type="button" id="average" class="btn active switch btn-primary btn-xs">Average
-                            </button>
-                            <button type="button" id="good" class="btn switch btn-primary btn-xs">Good</button>
-                            <button type="button" id="elite" class="btn switch btn-primary btn-xs">Elite</button>
-                        </div>
+                  <div class="col-sm-8 seasonal_chart chart" style="display: none">
+                    <div class="btn-group" data-toggle="buttons-radio">
+                      <button type="button" id="average" class="btn active switch btn-primary btn-xs">Average</button>
+                      <button type="button" id="good" class="btn switch btn-primary btn-xs" >Good</button>
+                      <button type="button" id="elite" class="btn switch btn-primary btn-xs" >Elite</button>
                     </div>
                     <div class="col-sm-4 seasonal_chart chart" style="display: none">
                         <button type="button" id="year" class="btn-primary btn-xs">Year</button>
@@ -178,23 +231,99 @@
                 </div>
 
                 <div class="row">
-                    <div id="pcplot" class="parcoords col-sm-12 seasonal_chart chart" style="display:none"></div>
+                    <div id="pcplot" class="parcoords col-sm-12 seasonal_chart chart" style="display:none" ></div>
                 </div>
 
             </div>
 
+
             <div class="col-sm-2">
-                <h4>Player Data Table</h4>
-                <table class="table table-row-border table-hover" id="data_table" width="100%">
-                    <thead>
-                    <tr class="header">
-                        <th>Name</th>
-                        <th>Pos</th>
-                        <th>Pts</th>
-                        <th>Win %</th>
-                    </tr>
-                    </thead>
-                </table>
+              <div class="row">
+                  <div class="col-sm-10 career_chart chart">
+                      <div id="histogram-section"></div>
+                  </div>
+
+                  <div class="col-sm-2 btn-group">
+                    <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
+                      1
+                      <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                      <li><a tabindex="-1" href="#">CDF Chart</a></li>
+                      <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
+                      <li><a tabindex="-1" href="#">Histogram</a></li>
+                      <li><a tabindex="-1" href="#">History Line Chart</a></li>
+                      <li><a tabindex="-1" href="#">Player Line Chart</a></li>
+                      <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
+
+                    </ul>
+                  </div>
+              </div>
+
+              <div class="row">
+                  <div class="col-sm-10 career_chart chart">
+                      <div id="history-line-section"></div>
+                  </div>
+
+                  <div class="col-sm-2 btn-group">
+                    <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
+                      2
+                      <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                      <li><a tabindex="-1" href="#">CDF Chart</a></li>
+                      <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
+                      <li><a tabindex="-1" href="#">Histogram</a></li>
+                      <li><a tabindex="-1" href="#">History Line Chart</a></li>
+                      <li><a tabindex="-1" href="#">Player Line Chart</a></li>
+                      <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
+
+                    </ul>
+                  </div>
+              </div>
+
+              <div class="row">
+                  <div class="col-sm-10 career_chart chart">
+                      <div id="line-chart-section"></div>
+                  </div>
+
+                  <div class="col-sm-2 btn-group">
+                    <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
+                      3
+                      <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                      <li><a tabindex="-1" href="#">CDF Chart</a></li>
+                      <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
+                      <li><a tabindex="-1" href="#">Histogram</a></li>
+                      <li><a tabindex="-1" href="#">History Line Chart</a></li>
+                      <li><a tabindex="-1" href="#">Player Line Chart</a></li>
+                      <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
+
+                    </ul>
+                  </div>
+              </div>
+
+              <div class="row">
+                  <div class="col-sm-10 parcoords career_chart chart"   id="pcplot-section"></div>
+
+                  <div class="col-sm-2 btn-group">
+                    <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
+                      4
+                      <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                      <li><a tabindex="-1" href="#">CDF Chart</a></li>
+                      <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
+                      <li><a tabindex="-1" href="#">Histogram</a></li>
+                      <li><a tabindex="-1" href="#">History Line Chart</a></li>
+                      <li><a tabindex="-1" href="#">Player Line Chart</a></li>
+                      <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
+
+                    </ul>
+                  </div>
+              </div>
+
             </div>
         </div>
     </div>
@@ -409,6 +538,8 @@
             } );
 
             setupNameMap();
+            generateHistogram();
+            generateHistoryLine();
             loadScatterPlot();
             createTable();
             drawPCChart();
@@ -421,6 +552,7 @@
     // generateCDFChart();
 
     generateLineChart();
+
 
     /**
      * To be used by tooltips when you want the playername
@@ -558,11 +690,8 @@
                 } )
                 .attr( "stroke", "black" )
                 .attr( "stroke-width", 1 )
-                .attr( "fill-opacity", 0.7 )
-                .on( "click", function ( d )
-                {
-                    refreshPlayerDataTable( d );
-                } )
+                .attr("fill-opacity", 0.7)
+
                 .on( "mouseover", function ( d )
                 {
                     d3.select( this )
@@ -647,23 +776,21 @@
 
             data_table = $( "#data_table" ).DataTable( {
                 select: true,
-                fixedColumns: {
-                    heightMatch: 'none'
-                },
+                bLengthChange: false,
                 data: lassoed_items,
                 columns: [
                     { data: "name" },
                     { data: "pos_long" },
                     { data: "fantPt" },
                     { data: "winPct" }
-                ],
-                dom: 'Bfrtip',
-                buttons: [
-                    'selected',
-                    'selectAll',
-                    'selectNone',
-                    'selectRows'
-                ]
+                ]//,
+                // dom:  'Bfrtip',
+                // buttons: [
+                //   'selected',
+                //   'selectAll',
+                //   'selectNone',
+                //   'selectRows'
+                // ]
             } );
 
             // $('#data_table tbody').on( 'click', 'tr', function () {
