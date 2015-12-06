@@ -16,7 +16,7 @@ var yeartuples = []
 
 d3.json('http://localhost:8000/careers/', function(error,data){
     if (error) throw error;
-      
+
     data.results.forEach(function(d,i) {
         if (d.ff_pts != 0) {
          careerlist.push(d.ff_pts)
@@ -24,7 +24,7 @@ d3.json('http://localhost:8000/careers/', function(error,data){
          tot_points += d.ff_pts
         }
     });
-    
+
     d3.json('http://localhost:8000/seasons_subset/', function(error,s_data){
         s_data.results.forEach(function(d) {
             if (d.year != 2015) {
@@ -36,7 +36,7 @@ d3.json('http://localhost:8000/careers/', function(error,data){
                 yeartuples.push([d.year, d.season_ff_pts]);
             }
         });
-        
+
         yeartuples.sort(function(a, b) {
             a = a[0];
             b = b[0];
@@ -65,9 +65,11 @@ d3.json('http://localhost:8000/careers/', function(error,data){
     // A formatter for counts.
         var formatCount = d3.format(",.0f");
 
-        var margin = {top: 10, right: 30, bottom: 30, left: 30},
-            width = 960 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
+        var margin = { top: 10, right: 30, bottom: 33, left: 45 }
+            , width = parseInt(d3.select('.small-chart').style('width'), 10)
+            , width = width - margin.left - margin.right
+            , height = parseInt(d3.select('.small-chart').style('height'), 10)
+            , height = height - margin.top - margin.bottom;
 
         var x = d3.scale.linear()
                 .domain([0,5000])
@@ -77,10 +79,10 @@ d3.json('http://localhost:8000/careers/', function(error,data){
 //         var data = d3.layout.histogram()
 //                 .bins(x.ticks(numbins+1))
 //                 (careerlist);
-// 
+//
 //         console.log(data)
         binList = CalcBins(careerlist, numbins)
-        
+
         var y = d3.scale.linear()
             .domain([0, d3.max(binList, function(d) { return d; })])
             .range([height, 0]);
@@ -91,8 +93,7 @@ d3.json('http://localhost:8000/careers/', function(error,data){
             .tickFormat(d3.format("d"))
             .orient("bottom");
 
-        d3.select("body").append("div").attr("id","histogram")
-        var svg = d3.select("#histogram").append("svg")
+        var svg = d3.select("#histogram-section").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
@@ -102,8 +103,8 @@ d3.json('http://localhost:8000/careers/', function(error,data){
                      .data(binList)
                      .enter().append("g")
                      .attr("class", "bar")
-                     .attr("transform", function(d, i) { 
-                        return "translate(" + x(i*binsize) + "," + y(d) + ")"; 
+                     .attr("transform", function(d, i) {
+                        return "translate(" + x(i*binsize) + "," + y(d) + ")";
                       });
 
         bar.append("rect")
@@ -133,12 +134,12 @@ d3.json('http://localhost:8000/careers/', function(error,data){
                               .data(years)
                               .enter()
                               .append("option");
-                      
+
         options.text(function (d, i) { return d; })
                .attr("value", function (d, i) { return d; })
 
         dropDown.on("change",menuChanged);
-        
+
         function menuChanged(){
 //             console.log(d3.event.target.value)
             var selection = d3.event.target.value;
@@ -150,15 +151,15 @@ d3.json('http://localhost:8000/careers/', function(error,data){
 
                     var updatebar = d3.select("#histogram").selectAll("g.bar")
                                        .data(binList);
-                    
-                    updatebar.attr("transform", function(d, i) { 
-                        return "translate(" + x(i*binsize) + "," + y(d) + ")"; 
+
+                    updatebar.attr("transform", function(d, i) {
+                        return "translate(" + x(i*binsize) + "," + y(d) + ")";
                       });
 
                     updatebar.selectAll("rect")
                         .attr("width", x(binsize) - 1)
                         .attr("height", function(d) { return height - y(d); })
-                        
+
                     updatebar.selectAll("text")
                              .text(function(d) { return formatCount(d); });
 

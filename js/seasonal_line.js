@@ -6,9 +6,11 @@ function generateLineChart(){
     var color = d3.scale.category10();
 
 
-    var margin = {top: 20, right: 20, bottom: 40, left: 50},
-        width = 700 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+    var margin = { top: 10, right: 30, bottom: 33, left: 45 }
+        , width = parseInt(d3.select('.small-chart').style('width'), 10)
+        , width = width - margin.left - margin.right
+        , height = parseInt(d3.select('.small-chart').style('height'), 10)
+        , height = height - margin.top - margin.bottom;
 
     var absyear = false;
 
@@ -32,7 +34,7 @@ function generateLineChart(){
                     return y(d.season_ff_pts);
                 });
 
-    var svg = d3.select("#seasonal_line").append("svg")
+    var svg = d3.select("#line-chart-section").append("svg")
                 .attr("id","seasonal_line")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
@@ -125,7 +127,7 @@ function generateLineChart(){
             yearlist[numyears-1].push(d.season_ff_pts)
         }
     });
-    
+
     yeartuples.sort(function(a, b) {
         a = a[0];
         b = b[0];
@@ -167,7 +169,7 @@ function generateLineChart(){
     season_dev2.push(stddev)
 
     avgjoe.key = "AvgJoe"
-    avgjoe.values = []    
+    avgjoe.values = []
     for (var i = 0; i < avgcnt.length; i++) {
         if (avgcnt[i] > 1){
             season_pts = Math.round(avgpoints[i]/avgcnt[i])
@@ -325,7 +327,7 @@ function generateLineChart(){
                             cfb= d3.rgb("cornflowerblue")
                             if (+rgb[0]==cfb.r && +rgb[1]==cfb.g && +rgb[2]==cfb.b) {
                                 console.log(iline)
-                                iline.style("stroke","whitesmoke");                            
+                                iline.style("stroke","whitesmoke");
                             } else {
                                 iline.style("stroke","cornflowerblue");
                             }
@@ -339,7 +341,7 @@ function generateLineChart(){
                             cfb= d3.rgb("cornflowerblue")
                             rgb = color_attr.split("(")[1].split(")")[0].split(",")
                             if (+rgb[0]==cfb.r && +rgb[1]==cfb.g && +rgb[2]==cfb.b) {
-                                iline.style("stroke","cornflowerblue");                            
+                                iline.style("stroke","cornflowerblue");
                             } else {
                                 iline.style("stroke","steelblue");
                             }
@@ -353,7 +355,7 @@ function generateLineChart(){
                             cfb= d3.rgb(selected_color)
                             rgb = color_attr.split("(")[1].split(")")[0].split(",")
                             if (+rgb[0]==cfb.r && +rgb[1]==cfb.g && +rgb[2]==cfb.b) {
-                                iline.style("stroke", selected_color);                            
+                                iline.style("stroke", selected_color);
                             } else {
                                 iline.style("stroke","whitesmoke");
                                 sel.moveToBack();
@@ -400,14 +402,14 @@ function generateLineChart(){
                         });
 
     });
-    
+
     dispatch.on("lasso_seasonal", function(lassoed_items) {
         if(lassoed_items.length > 0){
             lassoed_items.forEach(function(d){
                 d3.select('path#'+d.pguid)
                   .style("stroke", selected_color);
             });
-        } 
+        }
     });
 //  *****************************************************
 //  BUILD THE REFERENCE LINES
