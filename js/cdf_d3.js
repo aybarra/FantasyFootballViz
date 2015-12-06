@@ -100,12 +100,18 @@ function generateCDF_D3Chart(){
         });
         
     dispatch.on("lasso", function(lassoed_items) {
-      console.log(lassoed_items);
-      lassoed_items.forEach(function (d){
-        console.log("Pguid is: " + d.pguid);
-        d3.select('#path_' + d.pguid)
-        .style('stroke-width','10px');
-      });
+      // console.log(lassoed_items);
+      if(lassoed_items.length > 0){
+        lassoed_items.forEach(function (d){
+          // console.log("Pguid is: " + d.pguid);
+          d3.select('#path_' + d.pguid)
+          .style('stroke-width','3px');
+        });
+      } else {
+        var paths = d3.selectAll("*[id^='path']");
+        // console.log(paths);
+        paths.style('stroke-width', '1.5px');
+      }
     });
 
     player.append("text")
