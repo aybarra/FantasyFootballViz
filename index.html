@@ -138,13 +138,17 @@
             </div>
             <div class="col-sm-8">
                 <div class="row">
-                  <div class="btn-group" data-toggle="buttons-radio">
-                    <button type="button" id="career" class="btn active switch btn-primary btn-xs" onclick="transitionTo('career')">Career View</button>
-                    <button type="button" id="seasonal" class="btn switch btn-primary btn-xs" onclick="transitionTo('seasonal')">Player Comparison</button>
-                    <!-- <button type="button" id="area" class="btn switch">Area</button> -->
-                  </div>
+                    <div class="btn-group" data-toggle="buttons-radio">
+                        <button type="button" id="career" class="btn active switch btn-primary btn-xs"
+                                onclick="transitionTo('career')">Career View
+                        </button>
+                        <button type="button" id="seasonal" class="btn switch btn-primary btn-xs"
+                                onclick="transitionTo('seasonal')">Player Comparison
+                        </button>
+                        <!-- <button type="button" id="area" class="btn switch">Area</button> -->
+                    </div>
                 </div>
-                  <div class="row">
+                <div class="row">
                     <div class="col-sm-12 career_chart chart" id="scatter_chart"></div>
                 </div>
 
@@ -160,20 +164,21 @@
 
 
                 <div class="row">
-                  <div class="col-sm-8 seasonal_chart chart" style="display: none">
-                    <div class="btn-group" data-toggle="buttons-radio">
-                      <button type="button" id="average" class="btn active switch btn-primary btn-xs">Average</button>
-                      <button type="button" id="good" class="btn switch btn-primary btn-xs" >Good</button>
-                      <button type="button" id="elite" class="btn switch btn-primary btn-xs" >Elite</button>
+                    <div class="col-sm-8 seasonal_chart chart" style="display: none">
+                        <div class="btn-group" data-toggle="buttons-radio">
+                            <button type="button" id="average" class="btn active switch btn-primary btn-xs">Average
+                            </button>
+                            <button type="button" id="good" class="btn switch btn-primary btn-xs">Good</button>
+                            <button type="button" id="elite" class="btn switch btn-primary btn-xs">Elite</button>
+                        </div>
                     </div>
-                  </div>
-                  <div class = "col-sm-4 seasonal_chart chart" style="display: none">
-                    <button type="button" id="year" class="btn-primary btn-xs">Year</button>
-                  </div>
+                    <div class="col-sm-4 seasonal_chart chart" style="display: none">
+                        <button type="button" id="year" class="btn-primary btn-xs">Year</button>
+                    </div>
                 </div>
 
                 <div class="row">
-                    <div id="pcplot" class="parcoords col-sm-12 seasonal_chart chart" style="display:none" ></div>
+                    <div id="pcplot" class="parcoords col-sm-12 seasonal_chart chart" style="display:none"></div>
                 </div>
 
             </div>
@@ -212,7 +217,7 @@
     // Global variable mapping the pguid to player name
     // var PGUID_TO_NAME_MAP = {};
     var PGUID_TO_NAME_MAP = {};
-    var dispatch = d3.dispatch("lasso_seasonal", "lasso_cdf");
+    var dispatch = d3.dispatch( "lasso_seasonal", "lasso_cdf" );
 
     var yearFormat = d3.time.format( '%Y' );
 
@@ -231,7 +236,7 @@
     var cdf_width = 900 - cdf_margin.right - cdf_margin.left;
     var cdf_height = 400 - cdf_margin.top - cdf_margin.bottom;
 
-    var swap_sound = new Audio('sounds/whip_crack.mp3');
+    var swap_sound = new Audio( 'sounds/whip_crack.mp3' );
 
     var dot_init_size = 3;
     var dot_hover_size = 7;
@@ -276,17 +281,18 @@
             .style( "opacity", 0 )//1e-6)
             .style( "background", "rgba(250,250,250,.9)" );
 
-    tooltip.append( "img" )
+    tooltip.append( "div" )
+            .attr( 'id', "tooltip_image_div" )
+            .style( "float", "left" )
+            .append( "img" )
             .attr( "id", "tooltipImg" )
             .attr( "height", 100 )
             .attr( "width", 100 )
             .style( "opacity", "1" );
 
-    var printDetails = [
-        { 'var': 'name', 'print': 'Name' },
-        { 'var': 'pos_long', 'print': 'Position' },
-        { 'var': 'fantPt', 'print': 'Fantasy Pts' },
-        { 'var': 'winPct', 'print': 'Win %' } ];
+    tooltip.append( "div" )
+            .style( "float", "left" )
+            .attr( 'id', "tooltip_data_div" );
 
     // Lasso functions to execute while lassoing
     var lasso_start = function ()
@@ -329,7 +335,7 @@
             return d.selected === true
         } )
                 .classed( { "not_possible": false, "possible": false } )
-                .transition().duration(dot_trans)
+                .transition().duration( dot_trans )
                 .attr( "r", dot_hover_size );
 
         // Reset the style of the not selected dots
@@ -402,7 +408,6 @@
                 defaultFilterObject.players.push( player );
             } );
 
-
             setupNameMap();
             loadScatterPlot();
             createTable();
@@ -416,7 +421,7 @@
     // generateCDFChart();
 
     generateLineChart();
-    
+
     /**
      * To be used by tooltips when you want the playername
      */
@@ -424,19 +429,20 @@
     {
         d3.json( 'http://localhost:8000/careers', function ( error, data )
         {
-          // console.log(data);
-          data['results'].forEach( function ( career )
-          {
-              if( PGUID_TO_NAME_MAP[ career[ 'pguid' ] ] === undefined ) {
-                  PGUID_TO_NAME_MAP[ career[ 'pguid' ] ] = new Array(2);
-                  PGUID_TO_NAME_MAP[ career[ 'pguid' ] ][0] = career[ 'player_name' ];
-                  PGUID_TO_NAME_MAP[ career[ 'pguid' ] ][1] = career[ 'pos_type'];
-              }
-          });
+            // console.log(data);
+            data[ 'results' ].forEach( function ( career )
+            {
+                if( PGUID_TO_NAME_MAP[ career[ 'pguid' ] ] === undefined )
+                {
+                    PGUID_TO_NAME_MAP[ career[ 'pguid' ] ] = new Array( 2 );
+                    PGUID_TO_NAME_MAP[ career[ 'pguid' ] ][ 0 ] = career[ 'player_name' ];
+                    PGUID_TO_NAME_MAP[ career[ 'pguid' ] ][ 1 ] = career[ 'pos_type' ];
+                }
+            } );
 
-          generateCDF_D3Chart();
-          // animateLines();
-        });
+            generateCDF_D3Chart();
+            // animateLines();
+        } );
     }
 
     /**
@@ -486,16 +492,12 @@
         var x = d3.scale.linear().range( [ 0, scatter_width ] );
         var y = d3.scale.linear().range( [ scatter_height, 0 ] );
 
-
-
         // Define the axes
         var xAxis = d3.svg.axis().scale( x )
                 .orient( "bottom" ).ticks( 6 );
 
         var yAxis = d3.svg.axis().scale( y )
                 .orient( "left" ).ticks( 10 );
-
-
 
         var scat_xaxis_padding = 0;
         var scat_yaxis_padding = 0;
@@ -552,11 +554,11 @@
                 .attr( "class", "dot" )
                 .style( "fill", function ( d )
                 {
-                  return colorScale( d.pos );
+                    return colorScale( d.pos );
                 } )
                 .attr( "stroke", "black" )
                 .attr( "stroke-width", 1 )
-                .attr("fill-opacity", 0.7)
+                .attr( "fill-opacity", 0.7 )
                 .on( "click", function ( d )
                 {
                     refreshPlayerDataTable( d );
@@ -564,7 +566,7 @@
                 .on( "mouseover", function ( d )
                 {
                     d3.select( this )
-                            .transition().duration(dot_trans)
+                            .transition().duration( dot_trans )
                             .attr( "stroke", "black" )
                             .attr( "stroke-width", 2 )
                             .attr( "r", dot_hover_size )
@@ -589,7 +591,7 @@
                 .on( "mouseout", function ( d )
                 {
                     d3.select( this )
-                            .transition().duration(dot_trans)
+                            .transition().duration( dot_trans )
                             .attr( "stroke", "black" )
                             .attr( "stroke-width", 1 )
                             .attr( "r", function ( d )
@@ -616,22 +618,22 @@
                 .attr( "class", "x axis" )
                 .attr( "transform", "translate(0," + scatter_height + ")" )
                 .call( xAxis )
-                .append("text")
-                .attr("text-anchor", "middle")
-                .attr("transform", "translate("+ (scatter_width/2) +","+(scatter_height)+")")
-                .text("Win Percentage");
+                .append( "text" )
+                .attr( "text-anchor", "middle" )
+                .attr( "transform", "translate(" + (scatter_width / 2) + "," + (scatter_height) + ")" )
+                .text( "Win Percentage" );
 
         // Add the Y Axis
         svg_scatter.append( "g" )
                 .attr( "class", "y axis" )
                 .call( yAxis )
-                .append("text")
-                .attr("text-anchor", "middle")
-                .attr("transform", "translate("+ 10 +","+(scatter_height/2)+")rotate(-90)")
-                .text("Fantasy Points");
+                .append( "text" )
+                .attr( "text-anchor", "middle" )
+                .attr( "transform", "translate(" + 10 + "," + (scatter_height / 2) + ")rotate(-90)" )
+                .text( "Fantasy Points" );
 
-                // Init the lasso on the svg:g that contains the dots
-                svg_scatter.call( lasso );
+        // Init the lasso on the svg:g that contains the dots
+        svg_scatter.call( lasso );
 
         lasso.items( d3.selectAll( ".dot" ) );
 
@@ -646,7 +648,7 @@
             data_table = $( "#data_table" ).DataTable( {
                 select: true,
                 fixedColumns: {
-                  heightMatch: 'none'
+                    heightMatch: 'none'
                 },
                 data: lassoed_items,
                 columns: [
@@ -655,12 +657,12 @@
                     { data: "fantPt" },
                     { data: "winPct" }
                 ],
-                dom:  'Bfrtip',
+                dom: 'Bfrtip',
                 buttons: [
-                  'selected',
-                  'selectAll',
-                  'selectNone',
-                  'selectRows'
+                    'selected',
+                    'selectAll',
+                    'selectNone',
+                    'selectRows'
                 ]
             } );
 
@@ -706,33 +708,33 @@
         var image = new Image();
         image.onload = function ()
         {
-          document.getElementById( "tooltipImg" ).src = 'player_pics/' + player.pguid + '.jpg';
-          // image.src = 'player_pics/' + player.pguid + '.jpg';
+            $( "#tooltipImg" ).attr("src", 'player_pics/' + player.pguid + '.jpg');
 
-        }
-        image.onerror = function(){
-          document.getElementById( "tooltipImg" ).src = 'images/' + player.pos + '.jpg';
-          // image.src = 'images/' + player.pos + '.jpg';
-
-        }
-        // image.src = 'images/' + player.pos + '.jpg';
+        };
+        image.onerror = function ()
+        {
+            $( "#tooltipImg" ).attr("src", 'images/' + player.pos + '.jpg');
+        };
         image.src = 'player_pics/' + player.pguid + '.jpg';
 
-        tooltip.selectAll( "div" ).remove();
-        tooltip.selectAll( "div" ).data( printDetails ).enter()
-                .append( "div" )
-                .append( 'span' )
-                .text( function ( d )
-                {
-                    return d.print + ": ";
-                } )
-                .attr( "class", "boldDetail" )
-                .insert( 'span' )
-                .text( function ( d )
-                {
-                    return player[ d.var ];
-                } )
-                .attr( "class", "normalDetail" );
+        //Get a reference to the tooltip data div
+        var dataDiv = $("#tooltip_data_div" );
+
+        //Clear out all of the information in the data tooltip div
+        dataDiv.empty();
+
+        //Add all player data content to the tooltip
+        dataDiv.append('<div></div>').append('<span class="boldDetail"> Name: </span>' )
+                .append( '<span class="normalDetail">' + player['name'] + '</span>' );
+
+        dataDiv.append('<div></div>').append('<span class="boldDetail"> Position: </span>' )
+                .append( '<span class="normalDetail">' + player['pos_long'] + '</span>' );
+
+        dataDiv.append('<div></div>').append('<span class="boldDetail"> Fantasy Pts: </span>' )
+                .append( '<span class="normalDetail">' + player['fantPt'] + '</span>' );
+
+        dataDiv.append('<div></div>').append('<span class="boldDetail"> Win %: </span>' )
+                .append( '<span class="normalDetail">' + player['winPct'] + '</span>' );
     }
 
     /**
@@ -745,44 +747,52 @@
         data_table.draw();
     }
 
-    function transitionTo(name){
-      var x = document.getElementsByClassName("career_chart");
-      var y = document.getElementsByClassName("seasonal_chart");
-      // swap_sound.play();
-      if (name == "seasonal"){
-        // if ($("#cdf_chart").has("svg").length==0){
-        //   console.log("calling cdf chart");
-        //   generateCDF_D3Chart();
-        // }
-        // document.getElementById('scatter_chart').style.display = 'none';
-        // document.getElementById('cdf_chart').style.display = 'none';
-        // document.getElementById('seasonal_line').style.display = 'block';
-        for (var i =0; i < x.length; i++){
-            x[i].style.display = "none";
-          }
-
-          for (var i =0; i < y.length; i++){
-              y[i].style.display = "block";
+    function transitionTo( name )
+    {
+        var x = document.getElementsByClassName( "career_chart" );
+        var y = document.getElementsByClassName( "seasonal_chart" );
+        // swap_sound.play();
+        if( name == "seasonal" )
+        {
+            // if ($("#cdf_chart").has("svg").length==0){
+            //   console.log("calling cdf chart");
+            //   generateCDF_D3Chart();
+            // }
+            // document.getElementById('scatter_chart').style.display = 'none';
+            // document.getElementById('cdf_chart').style.display = 'none';
+            // document.getElementById('seasonal_line').style.display = 'block';
+            for ( var i = 0; i < x.length; i++ )
+            {
+                x[ i ].style.display = "none";
             }
 
-          document.getElementById("pcplot").style.display = 'block';
-       };
-
-      if (name == "career"){
-        // d3.select("#cdf_chart").select("svg").remove();
-
-        // document.getElementById('scatter_chart').style.display = 'block';
-        // document.getElementById('cdf_chart').style.display = 'block';
-        // document.getElementById('seasonal_line').style.display = 'none';
-
-        for (i =0; i < y.length; i++){
-            y[i].style.display = "none";
-          }
-
-          for (i =0; i < x.length; i++){
-              x[i].style.display = "block";
+            for ( var i = 0; i < y.length; i++ )
+            {
+                y[ i ].style.display = "block";
             }
-      }
+
+            document.getElementById( "pcplot" ).style.display = 'block';
+        }
+        ;
+
+        if( name == "career" )
+        {
+            // d3.select("#cdf_chart").select("svg").remove();
+
+            // document.getElementById('scatter_chart').style.display = 'block';
+            // document.getElementById('cdf_chart').style.display = 'block';
+            // document.getElementById('seasonal_line').style.display = 'none';
+
+            for ( i = 0; i < y.length; i++ )
+            {
+                y[ i ].style.display = "none";
+            }
+
+            for ( i = 0; i < x.length; i++ )
+            {
+                x[ i ].style.display = "block";
+            }
+        }
 
     }
 
