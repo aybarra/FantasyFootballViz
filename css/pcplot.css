@@ -1,0 +1,17 @@
+#pcplot {
+       height: 400px
+       width: 700px
+       position: relative;
+       float: left;
+       top: 20px;
+       font-family: sans-serif;
+       font-size: 10px;
+       color:black;
+    }
+
+#pctooltip{
+        font-family: sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+        color:black;
+    }

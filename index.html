@@ -17,6 +17,8 @@
     <script src="js/helper/menu_helper.js"></script>
     <script src="js/model/FilterObject.js"></script>
     <script src="js/lasso.js"></script>
+    <script src="js/d3.parcoords.js"></script>
+    <script src="js/pcplot.js"></script>
     <script src="lib/AutoComplete/dist/jquery.autocomplete.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/mathjs/2.4.2/math.min.js"></script>
 
@@ -38,6 +40,8 @@
     <!-- <link href="dc/dc.css" rel="stylesheet" type="text/css">
     <link href="css/dashboard.css" rel="stylesheet"> -->
     <link href="css/layout.css" rel="stylesheet">
+    <link href="css/d3.parcoords.css" rel="stylesheet">
+    <link href="css/pcplot.css" rel="stylesheet">
     <link href="lib/DataTables/datatables.min.css" rel="stylesheet">
     <link href="lib/AutoComplete/content/styles.css" rel="stylesheet">
 
@@ -155,7 +159,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-sm-12 seasonal_chart chart" id="seasonal_parallel"style="display: none"></div>
+                    <div id="pcplot" class="parcoords" style="width:700px; height:400px"></div>
                 </div>
                 <div class="row">
                   <div class="col-sm-8 seasonal_chart chart" style="display: none">
@@ -390,6 +394,8 @@
             setupNameMap();
             loadScatterPlot();
             createTable();
+            drawPCChart();
+
         }
     } );
 
