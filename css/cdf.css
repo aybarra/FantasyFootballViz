@@ -15,6 +15,13 @@
   stroke-width: 1.5px;
 }
 
+.cdf_line {
+  fill: none;
+  stroke: steelblue;
+  stroke-linecap: round;
+  stroke-width: 1.75px;
+}
+
 .button {
   background: #3498db;
   background-image: -webkit-linear-gradient(top, #3498db, #2980b9);

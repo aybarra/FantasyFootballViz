@@ -401,15 +401,13 @@ function generateLineChart(){
 
     });
     
-    dispatch.on("lasso", function(lassoed_items) {
+    dispatch.on("lasso_seasonal", function(lassoed_items) {
         if(lassoed_items.length > 0){
             lassoed_items.forEach(function(d){
-                d3.select('path#'+d.pguid);
+                d3.select('path#'+d.pguid)
                 .style("stroke", selected_color);
             });
-        } else {
-            
-        }
+        } 
     });
 //  *****************************************************
 //  BUILD THE REFERENCE LINES
