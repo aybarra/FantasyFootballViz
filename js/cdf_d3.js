@@ -75,8 +75,15 @@ function generateCDF_D3Chart(){
         .attr("class", "player");
 
     player.append("path")
-        .attr("class", "line")
+        // .attr("class", "line")
+        .attr("class", "cdf_line")
         .attr("d", function(d) { return line(d.values); })
+        .attr("id" , function(d){
+              var key_updated = d.key.toString().replace(/\./g, '');
+              // console.log(key_updated);
+              return 'path_' + key_updated;
+        })
+        .attr("stroke-linecap","round")
         .style("stroke", function(d) { return d3.hsl('#dddddd') })
         .on('mouseover', function(d) { 
             var line = d3.select(this);
@@ -94,14 +101,25 @@ function generateCDF_D3Chart(){
             d3.select(this.nextSibling)
               .attr("opacity", "0")
         });
-    // var totalLength = player_path.node().getTotalLength();
-    // player_path
-    //     .attr("stroke-dasharray", totalLength + " " + totalLength)
-    //     .attr("stroke-dashoffset", totalLength)
-    //     .transition()
-    //       .duration(2000)
-    //       .ease("linear")
-    //       .attr("stroke-dashoffset", 0);
+        
+        // Set them to not show at first
+        d3.selectAll(".cdf_line").style("opacity","0");
+        animateLines();
+
+    dispatch.on("lasso_cdf", function(lassoed_items) {
+      // console.log(lassoed_items);
+      if(lassoed_items.length > 0){
+        lassoed_items.forEach(function (d){
+          // console.log("Pguid is: " + d.pguid);
+          d3.select('#path_' + d.pguid)
+          .style('stroke-width','3.5px');
+        });
+      } else {
+        // var paths = d3.selectAll("*[id^='path']");
+        var paths = d3.selectAll(".cdf_line");
+        paths.style('stroke-width', '1.75px');
+      }
+    });
 
     player.append("text")
         .datum(function(d_sub) { 
@@ -115,6 +133,27 @@ function generateCDF_D3Chart(){
     });
 }
 
+
+function animateLines(){
+  d3.selectAll(".cdf_line").style("opacity","0.5");
+      
+  //Select All of the lines and process them one by one
+  d3.selectAll(".cdf_line").each(function(d,i){
+    var key_updated = d.key.toString().replace(/\./g, '');
+    // Get the length of each line in turn
+    var totalLength = d3.select("#path_" + key_updated).node().getTotalLength();
+
+      d3.selectAll("#path_" + key_updated).attr("stroke-dasharray", totalLength + " " + totalLength)
+        .attr("stroke-dashoffset", totalLength)
+        .transition()
+        .duration(2000)
+        .delay(100*i)
+        .ease("quad") //Try linear, quad, bounce... see other examples here - http://bl.ocks.org/hunzy/9929724
+        .attr("stroke-dashoffset", 0)
+        .style("stroke-width",3)
+  });
+
+}
 // Returns an array of objects of the form:
 //  [{
 //      key: pguid

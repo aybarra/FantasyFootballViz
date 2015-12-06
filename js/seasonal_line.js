@@ -1,7 +1,7 @@
 function generateLineChart(){
 
     var dataset = [];
-
+    var selected_color = "cornflowerblue"
     var parseDate = d3.time.format("%Y").parse;
     var color = d3.scale.category10();
 
@@ -73,12 +73,13 @@ function generateLineChart(){
         var avgjoe = {}
         var yearlist = []
         var season_dev = []
+        var yeartuples = []
 
-      data.results.forEach(function(d) {
+        data.results.forEach(function(d) {
             d.guid = d.season_guid.split("_")[0]
-            if (d.guid.indexOf('.') != -1) {
-                d.guid = d.guid.replace('.','');
-            }
+                if (d.guid.indexOf('.') != -1) {
+                    d.guid = d.guid.replace('.','');
+                }
             d.year = +d.season_guid.split("_")[1]
             curyear = d.year
             d.real_year = d.year
@@ -86,6 +87,9 @@ function generateLineChart(){
 //             d.year = parseDate(d.year)
 //             console.log(d)
             d.season_ff_pts = +d.season_ff_pts;
+            if (d.year != 2015) {
+                yeartuples.push([d.year, d.season_ff_pts]);
+            }
             if (curid != d.guid){
                 curid = d.guid
                 startyear = +d.year
@@ -121,18 +125,64 @@ function generateLineChart(){
             yearlist[numyears-1].push(d.season_ff_pts)
         }
     });
-
+    
+    yeartuples.sort(function(a, b) {
+        a = a[0];
+        b = b[0];
+        return a < b ? -1 : (a > b ? 1 : 0);
+    });
+    var curyear = 0
+    var yeartotals = []
+    var yearcnts = []
+    for (var i = 0; i < yeartuples.length; i++) {
+        if (curyear != yeartuples[i][0]) {
+            curyear = yeartuples[i][0]
+            yeartotals.push([curyear,0])
+            yearcnts.push(0)
+        }
+        index = yeartotals.length - 1
+        runningsum = yeartotals[index][1] + yeartuples[i][1]
+        yeartotals[index] = [curyear, runningsum]
+        yearcnts[index] += 1
+    }
     for (var i = 0; i < yearlist.length; i++) {
         var stddev = math.std(yearlist[i])
         season_dev.push(stddev)
     }
 
+    var season_dev2 = []
+    var templist = []
+    var curyear = yeartuples[0][0]
+    for (var i = 0; i < yeartuples.length; i++) {
+        if (curyear != yeartuples[i][0]){
+            var stddev = math.std(templist)
+            season_dev2.push(stddev)
+            templist = []
+            curyear = yeartuples[i][0]
+        } else {
+            templist.push(yeartuples[i][1])
+        }
+    }
+    var stddev = math.std(templist)
+    season_dev2.push(stddev)
+
     avgjoe.key = "AvgJoe"
-    avgjoe.values = []
+    avgjoe.values = []    
     for (var i = 0; i < avgcnt.length; i++) {
         if (avgcnt[i] > 1){
             season_pts = Math.round(avgpoints[i]/avgcnt[i])
             avgjoe.values.push({"season_ff_pts":season_pts, "year":i+1})
+        }
+    }
+
+    var avgjoe2 = {}
+    avgjoe2.key = "AvgJoe2"
+    avgjoe2.values = []
+    for (var i = 0; i < yearcnts.length; i++) {
+        if (yearcnts[i] > 1){
+            season_pts = Math.round(yeartotals[i][1]/yearcnts[i])
+            year = parseDate(yeartotals[i][0].toString())
+            avgjoe2.values.push({"season_ff_pts":season_pts, "real_year":year})
         }
     }
 
@@ -148,6 +198,22 @@ function generateLineChart(){
             goodguy.values.push({"season_ff_pts":season_pts, "year":i+1})
             season_pts = Math.round(avgjoe.values[i].season_ff_pts + (2*season_dev[i]))
             eliteguy.values.push({"season_ff_pts":season_pts, "year":i+1})
+        }
+    }
+
+    var goodguy2 = {}
+    var eliteguy2 = {}
+    goodguy2.key="GoodGuy2"
+    eliteguy2.key="Elite2"
+    goodguy2.values = []
+    eliteguy2.values = []
+    for (var i = 0; i < yearcnts.length; i++) {
+        if (yearcnts[i] > 1){
+            season_pts = Math.round(yeartotals[i][1]/yearcnts[i] + season_dev2[i])
+            year = parseDate(yeartotals[i][0].toString())
+            goodguy2.values.push({"season_ff_pts":season_pts, "real_year":year})
+            season_pts = Math.round(yeartotals[i][1]/yearcnts[i] + 2*season_dev2[i])
+            eliteguy2.values.push({"season_ff_pts":season_pts, "real_year":year})
         }
     }
 
@@ -253,17 +319,46 @@ function generateLineChart(){
                        .attr("fill","none")
                        .style('stroke-width', 3)
                        .style("stroke", "whitesmoke")
+                       .on("click", function() {
+                            color_attr = d3.select(this).style("stroke")
+                            rgb = color_attr.split("(")[1].split(")")[0].split(",")
+                            cfb= d3.rgb("cornflowerblue")
+                            if (+rgb[0]==cfb.r && +rgb[1]==cfb.g && +rgb[2]==cfb.b) {
+                                console.log(iline)
+                                iline.style("stroke","whitesmoke");                            
+                            } else {
+                                iline.style("stroke","cornflowerblue");
+                            }
+                       })
                        .on("mouseover", function() {
                             focus.style("display", null);
-                            iline.style("stroke","steelblue")
+//                             iline.style("stroke","steelblue")
                             var sel = d3.select(this);
                             sel.moveToFront();
+                            color_attr = d3.select(this).style("stroke")
+                            cfb= d3.rgb("cornflowerblue")
+                            rgb = color_attr.split("(")[1].split(")")[0].split(",")
+                            if (+rgb[0]==cfb.r && +rgb[1]==cfb.g && +rgb[2]==cfb.b) {
+                                iline.style("stroke","cornflowerblue");                            
+                            } else {
+                                iline.style("stroke","steelblue");
+                            }
+
                         })
                       .on("mouseout", function() {
                             focus.style("display", "none");
-                            iline.style("stroke","whitesmoke");
+//                             iline.style("stroke","whitesmoke");
                             var sel = d3.select(this);
-                            sel.moveToBack();
+                            color_attr = d3.select(this).style("stroke")
+                            cfb= d3.rgb(selected_color)
+                            rgb = color_attr.split("(")[1].split(")")[0].split(",")
+                            if (+rgb[0]==cfb.r && +rgb[1]==cfb.g && +rgb[2]==cfb.b) {
+                                iline.style("stroke", selected_color);                            
+                            } else {
+                                iline.style("stroke","whitesmoke");
+                                sel.moveToBack();
+                            }
+
                         })
                       .on("mousemove", function(){
                             if (absyear == true) {
@@ -303,8 +398,17 @@ function generateLineChart(){
                             pointsline.select("text").text("Total Points: " + totpts);
                             averageline.select("text").text("Average/Season: " + avg + " (Best: "+bestyr+", Worst: " + worstyr+")");
                         });
-    });
 
+    });
+    
+    dispatch.on("lasso_seasonal", function(lassoed_items) {
+        if(lassoed_items.length > 0){
+            lassoed_items.forEach(function(d){
+                d3.select('path#'+d.pguid)
+                .style("stroke", selected_color);
+            });
+        } 
+    });
 //  *****************************************************
 //  BUILD THE REFERENCE LINES
 // ******************************************************
@@ -436,6 +540,9 @@ function generateLineChart(){
                                .duration(1500)
                                .attr("d",line(d.values))
                         });
+                        d3.select("#avgjoeline").attr("d",line(avgjoe2.values))
+                        d3.select("#goodguyline").attr("d",line(goodguy2.values))
+                        d3.select("#eliteguyline").attr("d",line(eliteguy2.values))
                       } else {
                             yrtog.text("Years")
                             xAxis.scale(x);
@@ -447,6 +554,10 @@ function generateLineChart(){
                                        .duration(1500)
                                        .attr("d",line(d.values))
                             });
+                            d3.select("#avgjoeline").attr("d",line(avgjoe.values))
+                            d3.select("#goodguyline").attr("d",line(goodguy.values))
+                            d3.select("#eliteguyline").attr("d",line(eliteguy.values))
+
                       }
                   });
    }); //Close d3.json call
