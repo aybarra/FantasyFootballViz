@@ -1,7 +1,6 @@
 
 function drawPCChart(){
 
-
 var color_set = d3.scale.linear()
     .range(["#3182bd", "#f33"]);
 
@@ -45,11 +44,11 @@ firstCell.forEach(function(d){
 
 
 // get parallel coordinates
-graph = d3.parcoords()('#pcplot')
+graph = d3.parcoords()('#pcplot-section')
         //.margin({ top: 30, left: 3 * textLength, bottom: 40, right: 0 })
         .alpha(0.6)
-        .height(375)
-        .width(800)
+        .height(200)
+        .width(300)
         .mode("queue")
         .rate(10)
         //.bundlingStrength(0.2)
@@ -60,6 +59,8 @@ graph = d3.parcoords()('#pcplot')
 
         for(i in plotdata){
             delete plotdata[i].kr_tds;
+            delete plotdata[i].year;
+            delete plotdata[i].season_ff_pts;
             delete plotdata[i].pr_tds;
             delete plotdata[i].rec_tds;
             delete plotdata[i].rec_yds;

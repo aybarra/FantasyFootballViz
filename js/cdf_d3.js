@@ -1,4 +1,10 @@
-function generateCDF_D3Chart(){
+function generateCDF_D3Chart(data){
+
+  var absyear = false;
+  var parseDate = d3.time.format("%Y").parse;
+
+  var xTime = d3.time.scale()
+                  .range([0, cdf_width]);
 
   var x = d3.scale.linear().range([0, cdf_width]);
   var y = d3.scale.linear().range([cdf_height, 0]);
@@ -15,8 +21,21 @@ function generateCDF_D3Chart(){
 
   var line = d3.svg.line()
       .interpolate("basis")
-      .x(function(d) { return x(d.x); })
-      .y(function(d) { return y(d.y); });
+      .x(function(d) {
+        if (absyear == false){
+          return x(d.x);
+        } else if(absyear == true && d.year !== NaN){
+          return xTime(d.year)
+        }
+      })
+      .y(function(d) {
+          if(d.year !== NaN){
+            return y(d.y);
+          }
+      });
+
+      // .x(function(d) { return x(d.x); })
+      // .y(function(d) { return y(d.y); });
 
   var svg = d3.select("#cdf_chart").append("svg")
       .attr("width", cdf_width + cdf_margin.left + cdf_margin.right)
@@ -32,10 +51,12 @@ function generateCDF_D3Chart(){
   });
   // console.log(filter_string);
 
-  d3.json('http://localhost:8000/seasons_subset/'+filter_string, function(error,data){
-    if (error) throw error;
+  var data_conv;
 
-    var data_conv = convertData(data);
+  // d3.json('http://localhost:8000/seasons_subset/'+filter_string, function(error,data){
+  //   if (error) throw error;
+
+    data_conv = convertData(data);
 
     var keys = d3.keys(data_conv);
     color.domain(d3.keys(data_conv));
@@ -44,6 +65,8 @@ function generateCDF_D3Chart(){
       0,
       d3.max(data_conv, function(d) { return d.values.length; })  // Want the longest length career
     ]);
+
+    xTime.domain(d3.extent(data_conv, function(d) {return d.year;}));
 
     y.domain([
       d3.min(data_conv, function(d) { return d3.min(d.values, function(v) { return v.y; }); }),
@@ -123,14 +146,49 @@ function generateCDF_D3Chart(){
 
     player.append("text")
         .datum(function(d_sub) { 
-          // console.log(d_sub.key);
+          // console.log("TEST STRING PRIOR");
           return {name: PGUID_TO_NAME_MAP[d_sub.key][0], value: d_sub.values[d_sub.values.length - 1]}; })
         .attr("transform", function(d_sub) { return "translate(" + x(d_sub.value.x) + "," + y(d_sub.value.y) + ")"; })
         .attr("x", 3)
         .attr("dy", ".35em")
         .text(function(d_sub) { return d_sub.name + ' (' + d_sub.value.y + ') ' ; })
         .attr("opacity", "0");
-    });
+    
+    var yrtog = d3.select("#cdf_year_swap")
+            .on("click",function(){
+                absyear = !absyear;
+                // absyear = absyear ? false : true;
+                if (absyear) {
+                  yrtog.text("Relative")
+                  xAxis.scale(xTime);
+                  svg.select("g .x.axis")
+                     .call(xAxis);
+                  var sel = d3.select("body").transition();
+                  data_conv.forEach(function(d){
+                    var key_updated = d.key.toString().replace(/\./g, '');
+                    // console.log(d.values);
+                    // var temp = sel.select("#path_"+key_updated);
+                    // console.log(temp);
+                    // console.log(d.values);
+                    sel.select("#path_"+key_updated)
+                       .duration(1500)
+                       .attr("d", line(d.values));
+                  });
+                } else {
+                  yrtog.text("Years")
+                  xAxis.scale(x);
+                  svg.select("g .x.axis")
+                     .call(xAxis);
+                  var sel = d3.select("body").transition();
+                  data_conv.forEach(function(d){
+                    var key_updated = d.key.toString().replace(/\./g, '');
+                    // sel.select("#path_"+key_updated)
+                    //    .duration(1500)
+                    //    .attr("d", line(d.values));
+                  });
+                }
+            });
+    // }); 
 }
 
 
@@ -147,7 +205,7 @@ function animateLines(){
         .attr("stroke-dashoffset", totalLength)
         .transition()
         .duration(2000)
-        .delay(100*i)
+        .delay(10*i)
         .ease("quad") //Try linear, quad, bounce... see other examples here - http://bl.ocks.org/hunzy/9929724
         .attr("stroke-dashoffset", 0)
         .style("stroke-width",3)
@@ -165,45 +223,42 @@ function convertData(data){
   var lines = {};
   var plot_data = [];
 
-  var nameDict = {};
-  for(var item in data.results){
-    var pguid = data.results[item].season_guid.split("_")[0];
-    var player_name;
-    // if(nameDict[pguid] === undefined){
-    //   d3.json('http://localhost:8000/careers/' + pguid, function(error,data){
-    //     // console.log(data);
-    //     nameDict[pguid] = data['player_name'];
-    //   });
-    // }
-    // console.log(player_name);
-    var season_year = data.results[item].season_guid.split("_")[1];
-    var ff_pts = data.results[item].season_ff_pts;
-    if(!(pguid in lines)){
-      lines[pguid] = {'values': [{x: 0, y: 0, year: NaN}]};
-      // lines[pguid] = {'values': [{x: 1, y: ff_pts, year: season_year}]};
-      lines[pguid]['values'].push({x: 1, y: ff_pts, year: season_year});
+  if(data !== undefined && data.length > 0){
+    var nameDict = {};
+    for(var item in data.results){
+      var pguid = data.results[item].season_guid.split("_")[0];
+      var player_name;
+      // console.log(player_name);
+      var season_year = data.results[item].season_guid.split("_")[1];
+      var ff_pts = data.results[item].season_ff_pts;
+      if(!(pguid in lines)){
+        lines[pguid] = {'values': [{x: 0, y: 0, year: NaN}]};
+        // lines[pguid] = {'values': [{x: 1, y: ff_pts, year: season_year}]};
+        lines[pguid]['values'].push({x: 1, y: ff_pts, year: d3.time.format("%Y").parse(season_year)});
 
-    } else {
-      var last = lines[pguid]['values'].length;
-      lines[pguid]['values'].push({x: last++, y: ff_pts, year: season_year});
-    }
-  }
-  // console.log(lines);
-
-  for(var key_obj in lines){
-
-    // Update these to be cumsum
-    var vals = lines[key_obj]['values'];
-
-    if(vals.length > 1){
-      for(var i = 1; i < vals.length; i++){
-        vals[i].y += vals[i-1].y;
+      } else {
+        var last = lines[pguid]['values'].length;
+        lines[pguid]['values'].push({x: last++, y: ff_pts, year: d3.time.format("%Y").parse(season_year)});
       }
     }
+    // console.log(lines);
 
-    plot_data.push({key: key_obj, values: vals});
+    for(var key_obj in lines){
 
+      // Update these to be cumsum
+      var vals = lines[key_obj]['values'];
+
+      if(vals.length > 1){
+        for(var i = 1; i < vals.length; i++){
+          vals[i].y += vals[i-1].y;
+        }
+      }
+
+      plot_data.push({key: key_obj, values: vals});
+
+    }
   }
+  // Otherwise the data's empty
   // console.log(plot_data);
   return plot_data;
 }
