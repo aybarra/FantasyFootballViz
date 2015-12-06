@@ -267,6 +267,22 @@ function animateLines()
     } );
 
 }
+
+
+
+function updateCDFData(data){
+
+  // var data_conv = convertData(data);
+  // // Scale the range of the data again 
+  // x.domain([0, d3.max(data_conv, function(d) { return d.x; })]);
+  // y.domain([0, d3.max(data_conv, function(d) { return d.y; })]);
+  d3.select(".x axis").remove();
+  d3.select(".y axis").remove();
+  d3.selectAll(".cdf_line").remove();
+  
+  generateCDF_D3Chart(data);
+}
+
 // Returns an array of objects of the form:
 //  [{
 //      key: pguid
