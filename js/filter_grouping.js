@@ -21,6 +21,7 @@ var fantasyPointSelectionChart = null;
 
 function drawSelectionFilter()
 {
+    console.log( "test" );
     //Draw the two main charts
     drawFilterYearsChart();
     drawFilterPointsChart();
@@ -87,6 +88,9 @@ function drawSelectionFilter()
 
                 //Call the sliding drawer click function to close the drawer
                 menuTrigger.trigger( "click" );
+
+                //Make a call to reload all of the tables.
+                reloadAllChartData();
             }
         } );
 
@@ -481,6 +485,9 @@ function deleteFilterObject( index )
 
         //redraw the table to give new i values to rows
         drawCurrentFilterTable();
+
+        //Reload all of the tables because a filter item was added
+        reloadAllChartData();
     }
     else
     {

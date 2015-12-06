@@ -549,6 +549,7 @@
     //Initial calls to load data and setup page.
     drawSelectionFilter();
 
+
     /**
      *
      */
@@ -948,13 +949,19 @@
             }
         } );
 
+        loadScatterPlot(); //Loads from filters
         generateCDF_D3Chart( season_subset_data );
         generateHistogram();
-        generateHistoryLine();
-        loadScatterPlot(); //Loads from filters
         createTable(); //Not a chart
         drawPCChart();
-        generateLineChart(season_subset_data);
+        //TODO uncomment below after js errors are fixed.
+        //generateHistoryLine(season_subset_data);
+        //generateLineChart(season_subset_data);
+    }
+
+    function reloadAllChartData()
+    {
+        console.log( "filters Changes" );
     }
 
 </script>
