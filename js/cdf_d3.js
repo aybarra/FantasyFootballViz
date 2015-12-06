@@ -270,7 +270,7 @@ function animateLines()
 
 
 
-function updateData(data){
+function updateCDFData(data){
 
   // var data_conv = convertData(data);
   // // Scale the range of the data again 
