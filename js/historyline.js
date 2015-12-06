@@ -1,4 +1,4 @@
-function generateLineChart(){
+function generateHistoryLine(){
 
     var dataset = [];
     var selected_color = "cornflowerblue"
@@ -32,7 +32,7 @@ function generateLineChart(){
                     return y(d.season_ff_pts);
                 });
 
-    var svg = d3.select("#line-chart-section").append("svg")
+    var svg = d3.select("#history-line-section").append("svg")
                 .attr("id","seasonal_line")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
@@ -309,107 +309,6 @@ function generateLineChart(){
                .attr("y", 55)
 
 //  *****************************************************
-//  BUILD THE LINE CHART
-// ******************************************************
-    dataGroup.forEach(function(d, i) {
-        var iline = svg.append("path")
-                       .attr("class", "playerlines")
-                       .attr("id", d.key)
-                       .attr("d", line(d.values))
-                       .attr("fill","none")
-                       .style('stroke-width', 3)
-                       .style("stroke", "whitesmoke")
-                       .on("click", function() {
-                            color_attr = d3.select(this).style("stroke")
-                            rgb = color_attr.split("(")[1].split(")")[0].split(",")
-                            cfb= d3.rgb("cornflowerblue")
-                            if (+rgb[0]==cfb.r && +rgb[1]==cfb.g && +rgb[2]==cfb.b) {
-                                console.log(iline)
-                                iline.style("stroke","whitesmoke");
-                            } else {
-                                iline.style("stroke","cornflowerblue");
-                            }
-                       })
-                       .on("mouseover", function() {
-                            focus.style("display", null);
-//                             iline.style("stroke","steelblue")
-                            var sel = d3.select(this);
-                            sel.moveToFront();
-                            color_attr = d3.select(this).style("stroke")
-                            cfb= d3.rgb("cornflowerblue")
-                            rgb = color_attr.split("(")[1].split(")")[0].split(",")
-                            if (+rgb[0]==cfb.r && +rgb[1]==cfb.g && +rgb[2]==cfb.b) {
-                                iline.style("stroke","cornflowerblue");
-                            } else {
-                                iline.style("stroke","steelblue");
-                            }
-
-                        })
-                      .on("mouseout", function() {
-                            focus.style("display", "none");
-//                             iline.style("stroke","whitesmoke");
-                            var sel = d3.select(this);
-                            color_attr = d3.select(this).style("stroke")
-                            cfb= d3.rgb(selected_color)
-                            rgb = color_attr.split("(")[1].split(")")[0].split(",")
-                            if (+rgb[0]==cfb.r && +rgb[1]==cfb.g && +rgb[2]==cfb.b) {
-                                iline.style("stroke", selected_color);
-                            } else {
-                                iline.style("stroke","whitesmoke");
-                                sel.moveToBack();
-                            }
-
-                        })
-                      .on("mousemove", function(){
-                            if (absyear == true) {
-                                var rawX = xTime.invert(d3.mouse(this)[0])
-                                var year = rawX.getFullYear()
-                                relyear = year - d.values[0].real_year.getFullYear()
-                                var pts = d.values[relyear].season_ff_pts
-                                var yr_date = parseDate(year.toString())
-                            } else {
-                                var rawX = x.invert(d3.mouse(this)[0])
-                                var year = Math.round(rawX)
-                                var pts = d.values[year-1].season_ff_pts
-                            }
-                            var totpts = 0
-                            var totyears = d.values.length
-                            var bestyr = -10000
-                            var worstyr = 10000
-                            for (var i = 0; i < totyears; i++) {
-                                totpts += d.values[i].season_ff_pts
-                                if (d.values[i].season_ff_pts > bestyr) {
-                                    bestyr = d.values[i].season_ff_pts
-                                }
-                                if (d.values[i].season_ff_pts < worstyr) {
-                                    worstyr = d.values[i].season_ff_pts
-                                }
-                            }
-                            var avg = Math.round(totpts/totyears)
-                            if (absyear == true) {
-                                focus.attr("transform", "translate(" + xTime(yr_date) + "," + y(pts) + ")")
-                            } else {
-                                focus.attr("transform", "translate(" + x(year) + "," + y(pts) + ")")
-                            }
-                            focus.select("text").text(d.key+"\n  Year: "+year+"\n  Pts:"+pts);
-                            focus.moveToFront();
-                            nameline.select("text").text("Name: " + d.key);
-                            yearline.select("text").text("Years: " + totyears);
-                            pointsline.select("text").text("Total Points: " + totpts);
-                            averageline.select("text").text("Average/Season: " + avg + " (Best: "+bestyr+", Worst: " + worstyr+")");
-                        });
-
-    });
-
-    dispatch.on("lasso_seasonal", function(lassoed_items) {
-        if(lassoed_items.length > 0){
-            lassoed_items.forEach(function(d){
-                d3.select('path#'+d.pguid)
-                  .style("stroke", selected_color);
-            });
-        }
-    });
-//  *****************************************************
 //  BUILD THE REFERENCE LINES
 // ******************************************************
     var avgjoeline = svg.append("path")
@@ -417,7 +316,6 @@ function generateLineChart(){
                         .attr("id","avgjoeline")
                         .attr("d",line(avgjoe.values))
                         .attr("fill","none")
-                        .style("opacity",0)
                         .style("stroke-width",2)
                         .style("stroke","firebrick")
                         .on("mouseover", function() {
@@ -450,25 +348,6 @@ function generateLineChart(){
                                 goodguyline.style("stroke","seagreen");
                         });
 
-    var eliteguyline = svg.append("path")
-                          .attr("class","distribution_lines")
-                          .attr("id","eliteguyline")
-                          .attr("d",line(eliteguy.values))
-                          .attr("fill","none")
-                          .style("stroke-width",2)
-                          .style("stroke","salmon")
-                          .style("opacity",0)
-                          .on("mouseover", function() {
-                                focus.style("display", null);
-                                eliteguyline.style("stroke","darksalmon")
-                                var sel = d3.select(this)
-                                sel.moveToFront();
-                          })
-                          .on("mouseout", function() {
-                                focus.style("display", "none");
-                                eliteguyline.style("stroke","salmon");
-                          });
-    eliteguyline.active = true
     goodguyline.active = true
     avgjoeline.active = true
 
@@ -477,56 +356,12 @@ function generateLineChart(){
 // ******************************************************
     b_height = height+margin.bottom+margin.top;
 
-
-    var d_button = d3.select("#average")
-    // d3.select("#seasonal_line").append("button")
-    //                  .attr("class","button")
-    //                  .style("position","relative")
-    //                  .style("left", -width-20+"px")
-    //                  .text("Average Player")
-                     .on("click",function(){
-                            var active = avgjoeline.active ? false : true;
-                            var opacity = active ? 0 : 1;
-                            d3.select("#avgjoeline").style("opacity", opacity);
-                            avgjoeline.active = active;
-                     });
-
-    // d3.select("#seasonal_line").append("button")
-    //                  .attr("class","button")
-    //                  .style("position","relative")
-    //                  .style("left", -width+"px")
-    //                  .style("width","60px")
-    //                  .text("Good")
-    d3.select("#good")
-                     .on("click",function(){
-                            var active = goodguyline.active ? false : true;
-                            var opacity = active ? 0 : 1;
-                            d3.select("#goodguyline").style("opacity", opacity);
-                            goodguyline.active = active;
-                     });
-
-    // d3.select("#seasonal_line").append("button")
-    //                  .attr("class","button")
-    //                  .style("position","relative")
-    //                 //  .style("top",-24+"px")
-    //                  .style("left", -width + 20+"px")
-    //                  .style("width","60px")
-    //                  .text("Elite")
-    d3.select("#elite")
-                     .on("click",function(){
-                            var active = eliteguyline.active ? false : true;
-                            var opacity = active ? 0 : 1;
-                            d3.select("#eliteguyline").style("opacity", opacity);
-                            eliteguyline.active = active;
-                     });
-
-    var yrtog = d3.select("#year")
-    // d3.select("#seasonal_line").append("button")
-    //               .attr("class","button")
-    //               .style("position","relative")
-    //               // .style("top",-24+"px")
-    //               .style("right", width +"px")
-    //               .text("Years")
+    var yrtog = d3.select("#seasonal_line").append("button")
+                  .attr("class","button")
+                  .style("position","relative")
+//                   .style("top",-24+"px")
+                  .style("right", width-350 +"px")
+                  .text("Years")
                   .on("click",function(){
                       absyear = absyear ? false : true;
                       if (absyear) {
