@@ -14,7 +14,7 @@ headers = {
 
 #urllib.urlretrieve(, "Mann.jpg")
 
-urlpath = 'http://localhost:8000/careers/'
+urlpath = 'http://localhost:8000/careers/?page=2'
 request = Request(urlpath, headers=headers)
 response_body = urlopen(request).read()
 data = json.loads(response_body)
