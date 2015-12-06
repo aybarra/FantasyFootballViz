@@ -40,11 +40,13 @@ firstCell.forEach(function(d){
 
 
 
-    
+
 // get parallel coordinates
 graph = d3.parcoords()('#pcplot')
         //.margin({ top: 30, left: 3 * textLength, bottom: 40, right: 0 })
         .alpha(0.6)
+        .height(375)
+        .width(800)
         .mode("queue")
         .rate(10)
         //.bundlingStrength(0.2)
@@ -83,7 +85,7 @@ d3.select("#pcplot svg").append("text")
         .reorderable() // I removed this for now as it can mess up with pctooltips
         .interactive();
 
-console.log(graph.width(), graph.height());        
+console.log(graph.width(), graph.height());
 
 
 // set the initial coloring based on the 1st column
@@ -98,7 +100,7 @@ graph.svg.selectAll(".dimension")
 //add hover event
 d3.select("#pcplot svg")
     .on("mousemove", function() {
-        var mousePosition = d3.mouse(this);             
+        var mousePosition = d3.mouse(this);
         highlightLineOnClick(mousePosition, true); //true will also add pctooltip
     })
     .on("mouseout", function(){
@@ -108,13 +110,13 @@ d3.select("#pcplot svg")
 
 
 }); //End seasons
-    
+
 }); //End careers
 
 
 // update color and font weight of chart based on axis selection
 // modified from here: https://syntagmatic.github.io/parallel-coordinates/
-function update_colors(dimension) { 
+function update_colors(dimension) {
     // change the fonts to bold
     graph.svg.selectAll(".dimension")
         .style("font-weight", "normal")
@@ -123,12 +125,12 @@ function update_colors(dimension) {
 
     // change color of lines
     // set domain of color scale
-    var values = graph.data().map(function(d){return parseFloat(d[dimension])}); 
+    var values = graph.data().map(function(d){return parseFloat(d[dimension])});
     color_set.domain([d3.min(values), d3.max(values)]);
-    
+
     // change colors for each line
     graph.color(function(d){return color_set([d[dimension]])}).render();
-};      
+};
 
 
 // Add highlight for every line on click
@@ -139,14 +141,14 @@ function getCentroids(data){
     // but I couldn't find it so I just wrote this for now
     var margins = graph.margin();
     var graphCentPts = [];
-    
+
     data.forEach(function(d){
-        
+
         var initCenPts = graph.compute_centroids(d).filter(function(d, i){return i%2==0;});
-        
+
         // move points based on margins
         var cenPts = initCenPts.map(function(d){
-            return [d[0] + margins["left"], d[1]+ margins["top"]]; 
+            return [d[0] + margins["left"], d[1]+ margins["top"]];
         });
 
         graphCentPts.push(cenPts);
@@ -172,7 +174,7 @@ function isOnLine(startPt, endPt, testPt, tol){
     var y2 = endPt[1];
     var Dx = x2 - x1;
     var Dy = y2 - y1;
-    var delta = Math.abs(Dy*x0 - Dx*y0 - x1*y2+x2*y1)/Math.sqrt(Math.pow(Dx, 2) + Math.pow(Dy, 2)); 
+    var delta = Math.abs(Dy*x0 - Dx*y0 - x1*y2+x2*y1)/Math.sqrt(Math.pow(Dx, 2) + Math.pow(Dy, 2));
     //console.log(delta);
     if (delta <= tol) return true;
     return false;
@@ -205,7 +207,7 @@ function cleanTooltip(){
 }
 
 function addTooltip(clicked, clickedCenPts){
-    
+
     // sdd tooltip to multiple clicked lines
     var clickedDataSet = [];
     var margins = graph.margin()
@@ -252,7 +254,7 @@ function addTooltip(clicked, clickedCenPts){
             .attr("fill", "Black")
             .attr("text-anchor", "middle")
             .attr("font-size", fontSize)
-            .text( function (d){ return d[2];})    
+            .text( function (d){ return d[2];})
 }
 
 function getClickedLines(mouseClick){
@@ -270,23 +272,23 @@ function getClickedLines(mouseClick){
     // find between which axes the point is
     var axeNum = findAxes(mouseClick, graphCentPts[0]);
     if (!axeNum) return false;
-    
+
     graphCentPts.forEach(function(d, i){
         if (isOnLine(d[axeNum-1], d[axeNum], mouseClick, 2)){
             clicked.push(activeData[i]);
             clickedCenPts.push(graphCentPts[i]); // for tooltip
         }
     });
-    
+
     return [clicked, clickedCenPts]
 }
 
 
 function highlightLineOnClick(mouseClick, drawTooltip){
-    
+
     var clicked = [];
     var clickedCenPts = [];
-    
+
     clickedData = getClickedLines(mouseClick);
 
     if (clickedData && clickedData[0].length!=0){
@@ -296,7 +298,7 @@ function highlightLineOnClick(mouseClick, drawTooltip){
 
         // highlight clicked line
         graph.highlight(clicked);
-        
+
         if (drawTooltip){
             // clean if anything is there
             cleanTooltip();
