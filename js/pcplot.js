@@ -1,6 +1,12 @@
 
 function drawPCChart(){
 
+  var margin = { top: 10, right: 30, bottom: 33, left: 45 }
+      , width = parseInt(d3.select('.small-chart').style('width'), 10)
+      , width = width// - margin.left - margin.right
+      , height = parseInt(d3.select('.small-chart').style('height'), 10)
+      , height = height// - margin.top - margin.bottom;
+
 var color_set = d3.scale.linear()
     .range(["#3182bd", "#f33"]);
 
@@ -44,8 +50,8 @@ firstCell.forEach(function(d){
 graph = d3.parcoords()('#pcplot-section')
         //.margin({ top: 30, left: 3 * textLength, bottom: 40, right: 0 })
         .alpha(0.6)
-        .height(200)
-        .width(300)
+        .height(height)
+        .width(width)
         .mode("queue")
         .rate(10)
         //.bundlingStrength(0.2)

@@ -6,9 +6,11 @@ function generateLineChart(){
     var color = d3.scale.category10();
 
 
-    var margin = {top: 20, right: 20, bottom: 20, left: 20},
-        width = 350 - margin.left - margin.right,
-        height = 200 - margin.top - margin.bottom;
+    var margin = { top: 10, right: 30, bottom: 33, left: 45 }
+        , width = parseInt(d3.select('.small-chart').style('width'), 10)
+        , width = width - margin.left - margin.right
+        , height = parseInt(d3.select('.small-chart').style('height'), 10)
+        , height = height - margin.top - margin.bottom;
 
     var absyear = false;
 
