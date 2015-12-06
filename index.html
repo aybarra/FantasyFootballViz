@@ -379,7 +379,7 @@
             setupNameMap();
             loadScatterPlot();
             createTable();
-            generateCDF_D3Chart();
+            
             
         }
     } );
@@ -405,6 +405,8 @@
                   PGUID_TO_NAME_MAP[ career[ 'pguid' ] ][1] = career[ 'pos_type'];
               }
           });
+
+          generateCDF_D3Chart();
         });
     }
 
