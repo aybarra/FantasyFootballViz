@@ -37,7 +37,7 @@ function generateCDF_D3Chart(data){
       // .x(function(d) { return x(d.x); })
       // .y(function(d) { return y(d.y); });
 
-  var svg = d3.select("#cdf_chart").append("svg")
+  var cdf_svg = d3.select("#lrg-sec-1").append("svg")
       .attr("width", cdf_width + cdf_margin.left + cdf_margin.right)
       .attr("height", cdf_height + cdf_margin.top + cdf_margin.bottom)
       .append("g")
@@ -73,7 +73,7 @@ function generateCDF_D3Chart(data){
       d3.max(data_conv, function(d) { return d3.max(d.values, function(v) { return v.y; }); })
     ]);
 
-    svg.append("g")
+    cdf_svg.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + cdf_height + ")")
         .call(xAxis)
@@ -82,7 +82,7 @@ function generateCDF_D3Chart(data){
           .attr("transform", "translate("+ (cdf_width/2) +","+cdf_height+")")
           .text("Years Played");
 
-    svg.append("g")
+    cdf_svg.append("g")
         .attr("class", "y axis")
         .call(yAxis)
       .append("text")
@@ -92,7 +92,7 @@ function generateCDF_D3Chart(data){
         .style("text-anchor", "end")
         .text("Cumulative Fantasy Points");
 
-    var player = svg.selectAll(".player")
+    var player = cdf_svg.selectAll(".player")
         .data(data_conv)
       .enter().append("g")
         .attr("class", "player");
@@ -108,15 +108,15 @@ function generateCDF_D3Chart(data){
         })
         .attr("stroke-linecap","round")
         .style("stroke", function(d) { return d3.hsl('#dddddd') })
-        .on('mouseover', function(d) { 
+        .on('mouseover', function(d) {
             var line = d3.select(this);
             line.style('stroke', colorScale(PGUID_TO_NAME_MAP[d.key][1]))
             // line.style('stroke', d3.hsl('#33b9ff'));
-            this.parentNode.parentNode.appendChild(this.parentNode);  
+            this.parentNode.parentNode.appendChild(this.parentNode);
             d3.select(this.nextSibling)
-              .attr("opacity", "1")  
+              .attr("opacity", "1")
         })
-        .on('mouseout', function(d) { 
+        .on('mouseout', function(d) {
             // console.log(d);
             var line = d3.select(this);
             line.style('stroke', d3.hsl('#dddddd'));
@@ -124,7 +124,7 @@ function generateCDF_D3Chart(data){
             d3.select(this.nextSibling)
               .attr("opacity", "0")
         });
-        
+
         // Set them to not show at first
         d3.selectAll(".cdf_line").style("opacity","0");
         animateLines();
@@ -145,7 +145,7 @@ function generateCDF_D3Chart(data){
     });
 
     player.append("text")
-        .datum(function(d_sub) { 
+        .datum(function(d_sub) {
           // console.log("TEST STRING PRIOR");
           return {name: PGUID_TO_NAME_MAP[d_sub.key][0], value: d_sub.values[d_sub.values.length - 1]}; })
         .attr("transform", function(d_sub) { return "translate(" + x(d_sub.value.x) + "," + y(d_sub.value.y) + ")"; })
@@ -153,7 +153,7 @@ function generateCDF_D3Chart(data){
         .attr("dy", ".35em")
         .text(function(d_sub) { return d_sub.name + ' (' + d_sub.value.y + ') ' ; })
         .attr("opacity", "0");
-    
+
     var yrtog = d3.select("#cdf_year_swap")
             .on("click",function(){
                 absyear = !absyear;
@@ -161,7 +161,7 @@ function generateCDF_D3Chart(data){
                 if (absyear) {
                   yrtog.text("Relative")
                   xAxis.scale(xTime);
-                  svg.select("g .x.axis")
+                  cdf_svg.select("g .x.axis")
                      .call(xAxis);
                   var sel = d3.select("body").transition();
                   data_conv.forEach(function(d){
@@ -177,7 +177,7 @@ function generateCDF_D3Chart(data){
                 } else {
                   yrtog.text("Years")
                   xAxis.scale(x);
-                  svg.select("g .x.axis")
+                  cdf_svg.select("g .x.axis")
                      .call(xAxis);
                   var sel = d3.select("body").transition();
                   data_conv.forEach(function(d){
@@ -188,13 +188,13 @@ function generateCDF_D3Chart(data){
                   });
                 }
             });
-    // }); 
+    // });
 }
 
 
 function animateLines(){
   d3.selectAll(".cdf_line").style("opacity","0.5");
-      
+
   //Select All of the lines and process them one by one
   d3.selectAll(".cdf_line").each(function(d,i){
     var key_updated = d.key.toString().replace(/\./g, '');

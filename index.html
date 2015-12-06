@@ -166,17 +166,39 @@
 
                 <div class="row">
 
-                    <div class="col-sm-10 large-chart">
-                        <!-- <button type="button" id="cdf_year_swap" class="btn-primary btn-xs">CHANGE AXIS</button> -->
-                        <div id="cdf_chart"></div>
+                    <div class="col-sm-12 large-chart">
+                      <div class="row">
+                        <button type="button" id="cdf_year_swap" class="btn-primary btn-xs">CHANGE AXIS</button>
+                        <div class="btn-group switch-btn">
+                          <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
+                            Section 1
+                            <span class="caret"></span>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-right">
+                            <li><a tabindex="-1" onclick="transitionTo('cdf')">CDF Chart</a></li>
+                            <li><a tabindex="-1" onclick="transitionTo('scatter', '#lrg-sec-1','large-chart')">Scatterplot Chart</a></li>
+                            <li><a tabindex="-1" href="#">Histogram</a></li>
+                            <li><a tabindex="-1" href="#">History Line Chart</a></li>
+                            <li><a tabindex="-1" href="#">Player Line Chart</a></li>
+                            <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
+
+                          </ul>
+                        </div>
+                      </div>
+                        <div id="lrg-sec-1"></div>
                     </div>
-                    <div class="col-sm-2 btn-group switch-btn">
+
+                  </div>
+
+
+                  <div class="row">
+                    <div class="btn-group switch-btn">
                       <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
-                        Section 1
+                        Section 2
                         <span class="caret"></span>
                       </a>
                       <ul class="dropdown-menu dropdown-menu-right">
-                        <li><a tabindex="-1" href="#">CDF Chart</a></li>
+                        <li><a tabindex="-1" onclick="transitionTo('cdf', '#lrg-sec-2','large-chart')">CDF Chart</a></li>
                         <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
                         <li><a tabindex="-1" href="#">Histogram</a></li>
                         <li><a tabindex="-1" href="#">History Line Chart</a></li>
@@ -186,26 +208,9 @@
                       </ul>
                     </div>
                   </div>
-
-
                   <div class="row">
-                    <div class="col-sm-10 parcoords large-chart" id="scatter_chart"></div>
 
-                    <div class="col-sm-2 btn-group switch-btn">
-                      <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
-                        Section 2
-                        <span class="caret"></span>
-                      </a>
-                      <ul class="dropdown-menu dropdown-menu-right">
-                        <li><a tabindex="-1" href="#">CDF Chart</a></li>
-                        <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
-                        <li><a tabindex="-1" href="#">Histogram</a></li>
-                        <li><a tabindex="-1" href="#">History Line Chart</a></li>
-                        <li><a tabindex="-1" href="#">Player Line Chart</a></li>
-                        <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
-
-                      </ul>
-                    </div>
+                    <div class="col-sm-10 parcoords large-chart" id="lrg-sec-2"></div>
 
                   </div>
                 <!-- <div class="row">
@@ -241,7 +246,7 @@
             <div class="col-sm-2">
               <div class="row">
 
-                <div class="col-sm-1 btn-group switch-btn">
+                <div class="btn-group switch-btn">
                   <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
                     1
                     <span class="caret"></span>
@@ -256,17 +261,20 @@
 
                   </ul>
                 </div>
-
-                  <div class="col-sm-11 small-chart">
-                      <div id="histogram-section"></div>
-                  </div>
-
-
               </div>
+
+                <div class="row">
+                  <div class="col-sm-12 small-chart">
+                      <div id="sm-sec-1"></div>
+                  </div>
+                </div>
+
+
+
 
               <div class="row">
 
-                <div class="col-sm-2 btn-group switch-btn">
+                <div class="btn-group switch-btn">
                   <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
                     2
                     <span class="caret"></span>
@@ -281,18 +289,20 @@
 
                   </ul>
                 </div>
-
-                  <div class="col-sm-10 parcoords small-chart">
-                      <div id="history-line-section"></div>
-                  </div>
-
-
               </div>
+
+              <div class="row">
+                  <div class="col-sm-10 parcoords small-chart">
+                      <div id="sm-sec-2"></div>
+                  </div>
+                </div>
+
+
 
               <div class="row">
 
 
-                <div class="col-sm-1 btn-group switch-btn">
+                <div class="btn-group switch-btn">
                   <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
                     3
                     <span class="caret"></span>
@@ -307,17 +317,20 @@
 
                   </ul>
                 </div>
+              </div>
+
+                <div class="row">
 
                   <div class="col-sm-10 parcoords small-chart">
-                      <div id="line-chart-section"></div>
+                      <div id="sm-sec-3"></div>
                   </div>
+                </div>
 
 
-              </div>
 
               <div class="row">
 
-                <div class="col-sm-1 btn-group switch-btn">
+                <div class="btn-group switch-btn">
                   <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
                     4
                     <span class="caret"></span>
@@ -332,11 +345,12 @@
 
                   </ul>
                 </div>
-
-                  <div class="col-sm-10 parcoords career_chart chart"   id="pcplot-section"></div>
-
-
               </div>
+
+                <div class="row">
+                  <div class="col-sm-10 parcoords small-chart" id="sm-sec-4"></div>
+                </div>
+
 
             </div>
         </div>
@@ -404,7 +418,7 @@
             d3.scale.category10();
 
     // Adds the svg canvas
-    var svg_scatter = d3.select( "#scatter_chart" )
+    var svg_scatter = d3.select( "#lrg-sec-2" )
             .append( "svg" )
             .attr( "width", scatter_width + scatter_margin.left + scatter_margin.right )
             .attr( "height", scatter_height + scatter_margin.top + scatter_margin.bottom )
@@ -900,53 +914,68 @@
         data_table.draw();
     }
 
-    function transitionTo( name )
-    {
-        var x = document.getElementsByClassName( "career_chart" );
-        var y = document.getElementsByClassName( "seasonal_chart" );
-        // swap_sound.play();
-        if( name == "seasonal" )
-        {
-            // if ($("#cdf_chart").has("svg").length==0){
-            //   console.log("calling cdf chart");
-            //   generateCDF_D3Chart();
-            // }
-            // document.getElementById('scatter_chart').style.display = 'none';
-            // document.getElementById('cdf_chart').style.display = 'none';
-            // document.getElementById('seasonal_line').style.display = 'block';
-            for ( var i = 0; i < x.length; i++ )
-            {
-                x[ i ].style.display = "none";
-            }
+    // function transitionTo( name )
+    // {
+    //     var x = document.getElementsByClassName( "career_chart" );
+    //     var y = document.getElementsByClassName( "seasonal_chart" );
+    //     // swap_sound.play();
+    //     if( name == "seasonal" )
+    //     {
+    //         // if ($("#cdf_chart").has("svg").length==0){
+    //         //   console.log("calling cdf chart");
+    //         //   generateCDF_D3Chart();
+    //         // }
+    //         // document.getElementById('scatter_chart').style.display = 'none';
+    //         // document.getElementById('cdf_chart').style.display = 'none';
+    //         // document.getElementById('seasonal_line').style.display = 'block';
+    //         for ( var i = 0; i < x.length; i++ )
+    //         {
+    //             x[ i ].style.display = "none";
+    //         }
+    //
+    //         for ( var i = 0; i < y.length; i++ )
+    //         {
+    //             y[ i ].style.display = "block";
+    //         }
+    //
+    //         document.getElementById( "pcplot" ).style.display = 'block';
+    //     }
+    //     ;
+    //
+    //     if( name == "career" )
+    //     {
+    //         // d3.select("#cdf_chart").select("svg").remove();
+    //
+    //         // document.getElementById('scatter_chart').style.display = 'block';
+    //         // document.getElementById('cdf_chart').style.display = 'block';
+    //         // document.getElementById('seasonal_line').style.display = 'none';
+    //
+    //         for ( i = 0; i < y.length; i++ )
+    //         {
+    //             y[ i ].style.display = "none";
+    //         }
+    //
+    //         for ( i = 0; i < x.length; i++ )
+    //         {
+    //             x[ i ].style.display = "block";
+    //         }
+    //     }
+    //
+    // }
 
-            for ( var i = 0; i < y.length; i++ )
-            {
-                y[ i ].style.display = "block";
-            }
-
-            document.getElementById( "pcplot" ).style.display = 'block';
-        }
-        ;
-
-        if( name == "career" )
-        {
-            // d3.select("#cdf_chart").select("svg").remove();
-
-            // document.getElementById('scatter_chart').style.display = 'block';
-            // document.getElementById('cdf_chart').style.display = 'block';
-            // document.getElementById('seasonal_line').style.display = 'none';
-
-            for ( i = 0; i < y.length; i++ )
-            {
-                y[ i ].style.display = "none";
-            }
-
-            for ( i = 0; i < x.length; i++ )
-            {
-                x[ i ].style.display = "block";
-            }
-        }
-
+    function transitionTo(name, id, classification){
+      // switch (name) {
+      //   case 'cdf': d3.select(id).append("cdf_svg");
+      //
+      //     break;
+      //     case 'scatter':{
+      //       console.log("removing");
+      //       $(id).addID()
+      //       console.log("done");
+      //     }break;
+      //   default:
+      //
+      // }
     }
 
 </script>

@@ -47,7 +47,7 @@ firstCell.forEach(function(d){
 
 
 // get parallel coordinates
-graph = d3.parcoords()('#pcplot-section')
+graph = d3.parcoords()('#sm-sec-4')
         //.margin({ top: 30, left: 3 * textLength, bottom: 40, right: 0 })
         .alpha(0.6)
         .height(height)

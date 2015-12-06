@@ -34,7 +34,7 @@ function generateHistoryLine(){
                     return y(d.season_ff_pts);
                 });
 
-    var svg = d3.select("#history-line-section").append("svg")
+    var svg = d3.select("#sm-sec-2").append("svg")
                 .attr("id","seasonal_line")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
