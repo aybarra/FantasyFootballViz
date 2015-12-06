@@ -77,6 +77,10 @@ function generateCDF_D3Chart(){
     player.append("path")
         .attr("class", "line")
         .attr("d", function(d) { return line(d.values); })
+        .attr("id" , function(d){
+              // console.log(d);
+              return 'path_' + d.key;
+        })
         .style("stroke", function(d) { return d3.hsl('#dddddd') })
         .on('mouseover', function(d) { 
             var line = d3.select(this);
@@ -94,14 +98,15 @@ function generateCDF_D3Chart(){
             d3.select(this.nextSibling)
               .attr("opacity", "0")
         });
-    // var totalLength = player_path.node().getTotalLength();
-    // player_path
-    //     .attr("stroke-dasharray", totalLength + " " + totalLength)
-    //     .attr("stroke-dashoffset", totalLength)
-    //     .transition()
-    //       .duration(2000)
-    //       .ease("linear")
-    //       .attr("stroke-dashoffset", 0);
+        
+    dispatch.on("lasso", function(lassoed_items) {
+      console.log(lassoed_items);
+      lassoed_items.forEach(function (d){
+        console.log("Pguid is: " + d.pguid);
+        d3.select('#path_' + d.pguid)
+        .style('stroke-width','10px');
+      });
+    });
 
     player.append("text")
         .datum(function(d_sub) { 
