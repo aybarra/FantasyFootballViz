@@ -4,13 +4,13 @@ body {
   font: 'Lato',sans-serif;
 }
 
-[class*="col-"] {
+/*[class*="col-"] {
 
-  /*background-color: #eee;
-  background-color: rgba(86,61,124,.15);*/
+  background-color: #eee;
+  background-color: rgba(86,61,124,.15);
   border: 1px solid #ddd;
   border: 1px solid rgba(86,61,124,.2);
-}
+}*/
 
 
 #large-section {
@@ -108,14 +108,6 @@ div.tooltip p {
     height: 100px;
 }
 
-body .mybutton {
-  display:block;
-}
-
-body.loaded .mybutton {
-  display:none;
-}
-
 #events {
         margin-bottom: 1em;
         padding: 1em;
@@ -125,7 +117,3 @@ body.loaded .mybutton {
         height: 100px;
         overflow: auto;
     }
-
-#chart{
-   -webkit-transition:margin-left .5s ease-in-out;
-}

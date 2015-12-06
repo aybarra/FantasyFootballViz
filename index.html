@@ -157,7 +157,18 @@
                 <div class="row">
                     <div class="col-sm-12 seasonal_chart chart" id="seasonal_parallel"style="display: none"></div>
                 </div>
-
+                <div class="row">
+                  <div class="col-sm-8 seasonal_chart chart" style="display: none">
+                    <div class="btn-group" data-toggle="buttons-radio">
+                      <button type="button" id="average" class="btn active switch btn-primary btn-xs">Average</button>
+                      <button type="button" id="good" class="btn switch btn-primary btn-xs" >Good</button>
+                      <button type="button" id="elite" class="btn switch btn-primary btn-xs" >Elite</button>
+                    </div>
+                  </div>
+                  <div class = "col-sm-4 seasonal_chart chart" style="display: none">
+                    <button type="button" id="year" class="btn-primary btn-xs">Year</button>
+                  </div>
+                </div>
             </div>
 
             <div class="col-sm-2">
@@ -676,8 +687,10 @@
         image.onload = function ()
         {
             document.getElementById( "tooltipImg" ).src = 'images/' + player.pos + '.jpg';
+            // document.getElementById( "tooltipImg" ).src = 'player_pics/' + player.pguid + '.jpg';
         }
         image.src = 'images/' + player.pos + '.jpg';
+        // image.src = 'player_pics/' + player.pguid + '.jpg';
 
         tooltip.selectAll( "div" ).remove();
         tooltip.selectAll( "div" ).data( printDetails ).enter()
@@ -707,24 +720,40 @@
     }
 
     function transitionTo(name){
-
+      var x = document.getElementsByClassName("career_chart");
+      var y = document.getElementsByClassName("seasonal_chart");
       // swap_sound.play();
       if (name == "seasonal"){
         // if ($("#cdf_chart").has("svg").length==0){
         //   console.log("calling cdf chart");
         //   generateCDF_D3Chart();
         // }
-        document.getElementById('scatter_chart').style.display = 'none';
-        document.getElementById('cdf_chart').style.display = 'none';
-        document.getElementById('seasonal_line').style.display = 'block';
-      };
+        // document.getElementById('scatter_chart').style.display = 'none';
+        // document.getElementById('cdf_chart').style.display = 'none';
+        // document.getElementById('seasonal_line').style.display = 'block';
+        for (var i =0; i < x.length; i++){
+            x[i].style.display = "none";
+          }
+
+          for (var i =0; i < y.length; i++){
+              y[i].style.display = "block";
+            }
+       };
 
       if (name == "career"){
         // d3.select("#cdf_chart").select("svg").remove();
 
-        document.getElementById('scatter_chart').style.display = 'block';
-        document.getElementById('cdf_chart').style.display = 'block';
-        document.getElementById('seasonal_line').style.display = 'none';
+        // document.getElementById('scatter_chart').style.display = 'block';
+        // document.getElementById('cdf_chart').style.display = 'block';
+        // document.getElementById('seasonal_line').style.display = 'none';
+
+        for (i =0; i < y.length; i++){
+            y[i].style.display = "none";
+          }
+
+          for (i =0; i < x.length; i++){
+              x[i].style.display = "block";
+            }
       }
 
     }

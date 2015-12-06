@@ -371,14 +371,15 @@ function generateLineChart(){
 //  *****************************************************
 //  BUTTONS TO TOGGLE THE REFERENCE LINE
 // ******************************************************
-    b_height = height+margin.bottom+margin.top
+    b_height = height+margin.bottom+margin.top;
 
 
-    var d_button = d3.select("#seasonal_line").append("button")
-                     .attr("class","button")
-                     .style("position","relative")
-                     .style("left", -width-20+"px")
-                     .text("Average Player")
+    var d_button = d3.select("#average")
+    // d3.select("#seasonal_line").append("button")
+    //                  .attr("class","button")
+    //                  .style("position","relative")
+    //                  .style("left", -width-20+"px")
+    //                  .text("Average Player")
                      .on("click",function(){
                             var active = avgjoeline.active ? false : true;
                             var opacity = active ? 0 : 1;
@@ -386,12 +387,13 @@ function generateLineChart(){
                             avgjoeline.active = active;
                      });
 
-    d3.select("#seasonal_line").append("button")
-                     .attr("class","button")
-                     .style("position","relative")
-                     .style("left", -width+"px")
-                     .style("width","60px")
-                     .text("Good")
+    // d3.select("#seasonal_line").append("button")
+    //                  .attr("class","button")
+    //                  .style("position","relative")
+    //                  .style("left", -width+"px")
+    //                  .style("width","60px")
+    //                  .text("Good")
+    d3.select("#good")
                      .on("click",function(){
                             var active = goodguyline.active ? false : true;
                             var opacity = active ? 0 : 1;
@@ -399,13 +401,14 @@ function generateLineChart(){
                             goodguyline.active = active;
                      });
 
-    d3.select("#seasonal_line").append("button")
-                     .attr("class","button")
-                     .style("position","relative")
-                    //  .style("top",-24+"px")
-                     .style("left", -width + 20+"px")
-                     .style("width","60px")
-                     .text("Elite")
+    // d3.select("#seasonal_line").append("button")
+    //                  .attr("class","button")
+    //                  .style("position","relative")
+    //                 //  .style("top",-24+"px")
+    //                  .style("left", -width + 20+"px")
+    //                  .style("width","60px")
+    //                  .text("Elite")
+    d3.select("#elite")
                      .on("click",function(){
                             var active = eliteguyline.active ? false : true;
                             var opacity = active ? 0 : 1;
@@ -413,12 +416,13 @@ function generateLineChart(){
                             eliteguyline.active = active;
                      });
 
-    var yrtog = d3.select("#seasonal_line").append("button")
-                  .attr("class","button")
-                  .style("position","relative")
-                  // .style("top",-24+"px")
-                  .style("left", -width + 40 +"px")
-                  .text("Years")
+    var yrtog = d3.select("#year")
+    // d3.select("#seasonal_line").append("button")
+    //               .attr("class","button")
+    //               .style("position","relative")
+    //               // .style("top",-24+"px")
+    //               .style("right", width +"px")
+    //               .text("Years")
                   .on("click",function(){
                       absyear = absyear ? false : true;
                       if (absyear) {
