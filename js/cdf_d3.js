@@ -99,7 +99,7 @@ function generateCDF_D3Chart(){
               .attr("opacity", "0")
         });
         
-    dispatch.on("lasso", function(lassoed_items) {
+    dispatch.on("lasso_cdf", function(lassoed_items) {
       // console.log(lassoed_items);
       if(lassoed_items.length > 0){
         lassoed_items.forEach(function (d){
