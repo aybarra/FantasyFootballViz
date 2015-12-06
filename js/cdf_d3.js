@@ -1,6 +1,6 @@
 function generateCDF_D3Chart(){
 
-  var x = d3.time.scale().range([0, cdf_width]);
+  var x = d3.scale.linear().range([0, cdf_width]);
   var y = d3.scale.linear().range([cdf_height, 0]);
 
   var color = d3.scale.category10();
@@ -54,7 +54,10 @@ function generateCDF_D3Chart(){
         .attr("class", "x axis")
         .attr("transform", "translate(0," + cdf_height + ")")
         .call(xAxis)
-        .text("Years Played");
+        .append("text")
+          .attr("text-anchor", "middle")
+          .attr("transform", "translate("+ (cdf_width/2) +","+cdf_height+")")
+          .text("Years Played");
 
     svg.append("g")
         .attr("class", "y axis")
@@ -101,7 +104,9 @@ function generateCDF_D3Chart(){
     //       .attr("stroke-dashoffset", 0);
 
     player.append("text")
-        .datum(function(d_sub) { return {name: PGUID_TO_NAME_MAP[d_sub.key][0], value: d_sub.values[d_sub.values.length - 1]}; })
+        .datum(function(d_sub) { 
+          // console.log(d_sub.key);
+          return {name: PGUID_TO_NAME_MAP[d_sub.key][0], value: d_sub.values[d_sub.values.length - 1]}; })
         .attr("transform", function(d_sub) { return "translate(" + x(d_sub.value.x) + "," + y(d_sub.value.y) + ")"; })
         .attr("x", 3)
         .attr("dy", ".35em")
