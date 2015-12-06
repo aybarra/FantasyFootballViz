@@ -404,8 +404,8 @@ function generateLineChart(){
     dispatch.on("lasso", function(lassoed_items) {
         if(lassoed_items.length > 0){
             lassoed_items.forEach(function(d){
-                d3.select('path#'+d.pguid);
-                .style("stroke", selected_color);
+                d3.select('path#'+d.pguid)
+                  .style("stroke", selected_color);
             });
         } else {
             
