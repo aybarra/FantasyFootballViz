@@ -6,9 +6,9 @@ function generateHistoryLine(){
     var color = d3.scale.category10();
 
 
-    var margin = {top: 20, right: 20, bottom: 40, left: 50},
-        width = 700 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+    var margin = {top: 20, right: 20, bottom: 20, left: 20},
+        width = 350 - margin.left - margin.right,
+        height = 200 - margin.top - margin.bottom;
 
     var absyear = false;
 
@@ -32,9 +32,7 @@ function generateHistoryLine(){
                     return y(d.season_ff_pts);
                 });
 
-    d3.select("body").append("div").attr("id","seasonal_line");
-    
-    var svg = d3.select("#seasonal_line").append("svg")
+    var svg = d3.select("#history-line-section").append("svg")
                 .attr("id","seasonal_line")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
@@ -127,7 +125,7 @@ function generateHistoryLine(){
             yearlist[numyears-1].push(d.season_ff_pts)
         }
     });
-    
+
     yeartuples.sort(function(a, b) {
         a = a[0];
         b = b[0];
@@ -169,7 +167,7 @@ function generateHistoryLine(){
     season_dev2.push(stddev)
 
     avgjoe.key = "AvgJoe"
-    avgjoe.values = []    
+    avgjoe.values = []
     for (var i = 0; i < avgcnt.length; i++) {
         if (avgcnt[i] > 1){
             season_pts = Math.round(avgpoints[i]/avgcnt[i])
@@ -309,7 +307,7 @@ function generateHistoryLine(){
     averageline.append("text")
                .attr("x", 9)
                .attr("y", 55)
-    
+
 //  *****************************************************
 //  BUILD THE REFERENCE LINES
 // ******************************************************
