@@ -27,6 +27,9 @@ d3.json('http://localhost:8000/seasons/?page=2', function(error,data){
 //console.log(data.results);
 
 
+   var data_plot = jQuery.extend(true, {}, data2.results);
+   console.log("Data Plot", data_plot[23]);
+
 
 
 // collect text for first column to adjust left margin
@@ -90,7 +93,7 @@ console.log(graph.width(), graph.height());
 update_colors(d3.keys(data[0])[0]);
 
  // click label to activate coloring
-graph.svg.selectAll(".dimension")
+graph.svg.selectAll(".dimensions")
     .on("click", update_colors)
     .selectAll(".label")
         .style("font-size", "12px"); // change font sizes of selected lable
@@ -262,7 +265,7 @@ function getClickedLines(mouseClick){
     // find which data is activated right now
     var activeData = getActiveData();
 
-    // find centriod points
+    // find centroid points
     var graphCentPts = getCentroids(activeData);
 
     if (graphCentPts.length==0) return false;
