@@ -1,4 +1,4 @@
-function generateLineChart(){
+function generateLineChart(data){
 
     var dataset = [];
     var selected_color = "cornflowerblue"
@@ -61,8 +61,6 @@ function generateLineChart(){
 //  *****************************************************
 //  GET DATA AND MANIPULATE IT
 // ******************************************************
-    d3.json('http://localhost:8000/seasons_subset/', function(error,data){
-        if (error) throw error;
 
         var curid = []
         var startyear
@@ -75,7 +73,7 @@ function generateLineChart(){
         var season_dev = []
         var yeartuples = []
 
-        data.results.forEach(function(d) {
+        data.forEach(function(d) {
             d.guid = d.season_guid.split("_")[0]
                 if (d.guid.indexOf('.') != -1) {
                     d.guid = d.guid.replace('.','');
@@ -124,7 +122,6 @@ function generateLineChart(){
             avgcnt[numyears-1] += 1
             yearlist[numyears-1].push(d.season_ff_pts)
         }
-    });
 
     yeartuples.sort(function(a, b) {
         a = a[0];
