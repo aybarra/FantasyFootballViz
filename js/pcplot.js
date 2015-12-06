@@ -20,7 +20,7 @@ var color_set = d3.scale.linear()
     //console.log(pguid, players[pguid], values[pguid]);
 
   }
-   console.log(players['BradTo00'], values['BradTo00']);
+   // console.log(players['BradTo00'], values['BradTo00']);
 d3.json('http://localhost:8000/seasons/?page=2', function(error,data){
 
 //console.log((Math,array.map(function(o){return o.games_played;}))data.results.games_played);
@@ -65,7 +65,7 @@ graph = d3.parcoords()('#pcplot')
             delete plotdata[i].season_guid;
         }
 
-        console.log(plotdata[0])
+        // console.log(plotdata[0])
 
 /*
 // add instruction text
@@ -85,7 +85,7 @@ d3.select("#pcplot svg").append("text")
         .reorderable() // I removed this for now as it can mess up with pctooltips
         .interactive();
 
-console.log(graph.width(), graph.height());
+// console.log(graph.width(), graph.height());
 
 
 // set the initial coloring based on the 1st column
