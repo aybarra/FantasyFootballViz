@@ -1,5 +1,5 @@
-function generateLineChart(data){
-
+function generateLineChart(data) {
+//     console.log(data)
     var dataset = [];
     var selected_color = "cornflowerblue"
     var parseDate = d3.time.format("%Y").parse;
@@ -64,55 +64,63 @@ function generateLineChart(data){
 //  GET DATA AND MANIPULATE IT
 // ******************************************************
 
-        var curid = []
-        var startyear
-        var cumpoints
-        var numyears
-        var avgcnt = []
-        var avgpoints = []
-        var avgjoe = {}
-        var yearlist = []
-        var season_dev = []
-        var yeartuples = []
+    var curid = []
+    var startyear
+    var cumpoints
+    var numyears
+    var avgcnt = []
+    var avgpoints = []
+    var avgjoe = {}
+    var yearlist = []
+    var season_dev = []
+    var yeartuples = []
 
-        data.forEach(function(d) {
-            d.guid = d.season_guid.split("_")[0]
-                if (d.guid.indexOf('.') != -1) {
-                    d.guid = d.guid.replace('.','');
-                }
-            d.year = +d.season_guid.split("_")[1]
-            curyear = d.year
-            d.real_year = d.year
+    data.forEach(function(d) {
+        if (d.season_guid == "ThomDa03_2008") { return 0;}
+        if (d.season_guid == "ThomDa03_2009") { return 0;}
+        if (d.season_guid == "ThomDa03_2008" || d.season_guid == "ThomDa03_2009") {
+            console.log('pre',d)
+        }
+
+        d.guid = d.season_guid.split("_")[0]
+            if (d.guid.indexOf('.') != -1) {
+                d.guid = d.guid.replace('.','');
+            }
+        d.year = +d.season_guid.split("_")[1]
+        curyear = d.year
+        d.real_year = d.year
 //             d.year = d.season_guid.split("_")[1]
 //             d.year = parseDate(d.year)
 //             console.log(d)
-            d.season_ff_pts = +d.season_ff_pts;
-            if (d.year != 2015) {
-                yeartuples.push([d.year, d.season_ff_pts]);
-            }
-            if (curid != d.guid){
-                curid = d.guid
-                startyear = +d.year
-                numyears = 0
-                cumpoints = 0
-            }
+        d.season_ff_pts = +d.season_ff_pts;
+        if (d.year != 2015) {
+            yeartuples.push([d.year, d.season_ff_pts]);
+        }
+        if (curid != d.guid){
+            curid = d.guid
+            startyear = +d.year
+            numyears = 0
+            cumpoints = 0
+        }
         d.year -= (startyear - 1)
         numyears++
+        if (+d.real_year < 2010) {
+            console.log('post',d)
+        }
 
         while (numyears != d.year){
             base = {"guid":d.guid, "year":numyears,
-                    "real_year": parseDate(d.real_year.toString()),
+                    "real_year": parseDate((startyear+numyears-1).toString()),
                     "season_ff_pts":0}
             dataset.push(base);
-//             if (avgpoints.length < numyears){
-//                 avgpoints.push(0)
-//                 avgcnt.push(0)
-//             }
-//             avgcnt[numyears-1] += 1
+    //             if (avgpoints.length < numyears){
+    //                 avgpoints.push(0)
+    //                 avgcnt.push(0)
+    //             }
+    //             avgcnt[numyears-1] += 1
             numyears++
         }
-
-        if (curyear != 2015){
+        if (curyear != 2015) {
             d.real_year = parseDate(d.real_year.toString())
             dataset.push(d);
             if (avgpoints.length < numyears) {
@@ -124,6 +132,7 @@ function generateLineChart(data){
             avgcnt[numyears-1] += 1
             yearlist[numyears-1].push(d.season_ff_pts)
         }
+    }); //end data loading
 
     yeartuples.sort(function(a, b) {
         a = a[0];
@@ -148,12 +157,13 @@ function generateLineChart(data){
         var stddev = math.std(yearlist[i])
         season_dev.push(stddev)
     }
-
+//     console.log(yeartuples)
     var season_dev2 = []
     var templist = []
     var curyear = yeartuples[0][0]
     for (var i = 0; i < yeartuples.length; i++) {
         if (curyear != yeartuples[i][0]){
+             if (templist.length < 1) {templist.push(0);}
             var stddev = math.std(templist)
             season_dev2.push(stddev)
             templist = []
@@ -162,6 +172,7 @@ function generateLineChart(data){
             templist.push(yeartuples[i][1])
         }
     }
+    if (templist.length < 1) {templist.push(0);}
     var stddev = math.std(templist)
     season_dev2.push(stddev)
 
@@ -542,6 +553,7 @@ function generateLineChart(data){
                         d3.select("#avgjoeline").attr("d",line(avgjoe2.values))
                         d3.select("#goodguyline").attr("d",line(goodguy2.values))
                         d3.select("#eliteguyline").attr("d",line(eliteguy2.values))
+                        d3.select("#title").text("Average Points / Class");
                       } else {
                             yrtog.text("Years")
                             xAxis.scale(x);
@@ -556,9 +568,9 @@ function generateLineChart(data){
                             d3.select("#avgjoeline").attr("d",line(avgjoe.values))
                             d3.select("#goodguyline").attr("d",line(goodguy.values))
                             d3.select("#eliteguyline").attr("d",line(eliteguy.values))
+                            d3.select("#title").text("Average Points / Season");
 
                       }
                   });
-   }); //Close d3.json call
 ;  //not sure what this is about
 } // Close function generateLineChart
