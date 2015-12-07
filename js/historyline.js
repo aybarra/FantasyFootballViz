@@ -96,7 +96,7 @@ function generateHistoryLine(data){
         if (curid != d.guid){
             curid = d.guid
             startyear = +d.year
-            playerstart["pguid"] = startyear
+            playerstart[curid] = startyear
             numyears = 0
             cumpoints = 0
             playercnt++
@@ -108,7 +108,7 @@ function generateHistoryLine(data){
 
         d.year -= (startyear - 1)
         numyears++
-        classtuples.push([playerstart["pguid"], d.season_ff_pts])
+        classtuples.push([playerstart[curid], d.season_ff_pts])
         while (numyears != d.year){
             base = {"guid":d.guid, "year":numyears,
                     "real_year": parseDate((startyear+numyears-1).toString()),
@@ -160,7 +160,7 @@ function generateHistoryLine(data){
         yeartotals[index] = [curyear, runningsum]
         yearcnts[index] += 1
     }
-
+    console.log(classtuples)
     var curyear = 0
     var classtotals = []
     for (var i = 0; i < classtuples.length; i++) {
@@ -263,6 +263,7 @@ function generateHistoryLine(data){
 // ******************************************************
     var xAxis = d3.svg.axis()
                   .scale(xTime)
+                  .ticks(d3.time.year)
                   .orient("bottom");
 
     var yAxis = d3.svg.axis()
@@ -271,7 +272,8 @@ function generateHistoryLine(data){
 
 //     x.domain(d3.extent(dataset, function(d) { return d.year; }));
     y.domain(d3.extent(dataset, function(d) { return d.season_ff_pts; }));
-    xTime.domain(d3.extent(dataset, function(d) {return d.real_year;}));
+    xTime.domain(d3.extent(dataset, function(d) {return d.real_year;}))
+
 //     x.domain([1,d3.max(dataset, function(d) { return d.year; })]);
 //     y.domain([0,d3.max(dataset, function(d) { return d.season_ff_pts; })]);
 
@@ -430,17 +432,21 @@ function generateHistoryLine(data){
                       absyear = absyear ? false : true;
                       if (absyear) {
                         yrtog.text("Relative")
-                        y.domain(d3.extent(avgjoe2, function(d) { return d.season_ff_pts; }));
-                        xTime.domain(d3.extent(dataset, function(d) {return d.real_year;}));
+                        y.domain(d3.extent(avgjoe2.values, function(d) { return d.season_ff_pts; }));
+//                         xTime.domain(d3.extent(dataset, function(d) {return d.real_year;}));
+                            svg.selectAll("g .y.axis")
+                               .call(yAxis);
 
-                        svg.select("g.y.axis").call(yAxis)
+//                         svg.select("g.y.axis").call(yAxis)
                         d3.select("#avgjoeline").attr("d",area(avgjoe2.values))
 //                         d3.select("#goodguyline").attr("d",line(goodguy2.values))
                       } else {
                             yrtog.text("Years")
-                            y.domain(d3.extent(avgjoe, function(d) { return d.season_ff_pts; }));
-                            xTime.domain(d3.extent(dataset, function(d) {return d.real_year;}));
-                            svg.select("g.y.axis").call(yAxis)
+                            y.domain(d3.extent(avgjoe.values, function(d) { return d.season_ff_pts; }));
+//                             xTime.domain(d3.extent(dataset, function(d) {return d.real_year;}));
+//                             xAxis.scale(x);
+                            svg.selectAll("g .y.axis")
+                               .call(yAxis);
                             d3.select("#avgjoeline").attr("d",area(avgjoe.values))
 //                             d3.select("#goodguyline").attr("d",line(goodguy.values))
 
