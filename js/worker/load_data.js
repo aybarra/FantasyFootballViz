@@ -47,5 +47,23 @@ function loadPageData()
         }
     } );
 
+    $.ajax( {
+        url: 'http://localhost:8000/seasons/?players=' + filteredPlayersPguids().join(),
+        type: 'GET',
+        async: false,
+        data: {
+            format: 'json'
+        },
+        error: function ()
+        {
+            alert( "ERROR MAKING WEB REQUEST FOR PLAYER KEYS" )
+        },
+        success: function ( data )
+        {
+            //Get the result array
+            season_data = data[ 'results' ];
+        }
+    } );
+
     //postMessage(0);
 }

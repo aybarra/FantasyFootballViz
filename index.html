@@ -370,6 +370,7 @@
     var filterObjects = [];
 
     var season_subset_data = [];
+    var season_data = [];
 
     //Global variable used to hold array of extra player objects used for filtering
     var selectedPlayers = [];
@@ -559,7 +560,7 @@
     drawCurrentFilterTable();
 
     //Make a web call to get all of the pks for the default filter object
-    loadPageData();
+    loadPageWithAllChartData();
 
     //Initial calls to load data and setup page.
     drawSelectionFilter();
@@ -934,7 +935,7 @@
         generateCDF_D3Chart( season_subset_data );
         generateHistogram();
         createTable(); //Not a chart
-        drawPCChart();
+        drawPCChart(filteredPlayers(), season_data);
         generateLineChart(season_subset_data);
         generateHistoryLine(season_subset_data);
     }

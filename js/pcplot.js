@@ -1,5 +1,5 @@
 
-function drawPCChart(){
+function drawPCChart(careers, season_data){
 
   var margin = { top: 10, right: 30, bottom: 33, left: 45 }
       , width = parseInt(d3.select('.small-chart').style('width'), 10)
