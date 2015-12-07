@@ -43,20 +43,20 @@ function generateHistoryLine(data){
 //  *****************************************************
 //  MOVE SVG ITEM TO FRONT AND BACK
 // ******************************************************
-    d3.selection.prototype.moveToFront = function() {
-        return this.each(function(){
-            this.parentNode.appendChild(this);
-        });
-    }
-
-    d3.selection.prototype.moveToBack = function() {
-        return this.each(function() {
-            var firstChild = this.parentNode.firstChild;
-                if (firstChild) {
-                    this.parentNode.insertBefore(this, firstChild);
-                }
-        });
-    };
+//     d3.selection.prototype.moveToFront = function() {
+//         return this.each(function(){
+//             this.parentNode.appendChild(this);
+//         });
+//     }
+// 
+//     d3.selection.prototype.moveToBack = function() {
+//         return this.each(function() {
+//             var firstChild = this.parentNode.firstChild;
+//                 if (firstChild) {
+//                     this.parentNode.insertBefore(this, firstChild);
+//                 }
+//         });
+//     };
 
 //  *****************************************************
 //  GET DATA AND MANIPULATE IT
@@ -368,52 +368,11 @@ function generateHistoryLine(data){
 
     var avgjoeline = svg.append("path")
                         .attr("class","distribution_lines")
-                        .attr("id","avgjoeline")
-//                         .attr("d",line(avgjoe.values))
+                        .attr("id","historyline")
                         .attr("d", area(avgjoe.values))
                         .attr("fill","steelblue")
-//                         .style("stroke-width",2)
                         .style("stroke","black")
                         .text("Season")
-//                         .on("mouseover", function() {
-//                                 focus.style("display", null);
-//                                 avgjoeline.style("stroke","indianred")
-//                                 var sel = d3.select(this)
-//                                 sel.moveToFront();
-//                         })
-//                         .on("mouseout", function() {
-//                                 focus.style("display", "none");
-//                                 avgjoeline.style("stroke","firebrick");
-//                         });
-
-//     var goodguyline = svg.append("path")
-//                          .attr("class","distribution_lines")
-//                          .attr("id","goodguyline")
-//                          .attr("d",line(goodguy.values))
-//                          .attr("fill","none")
-//                          .style("opacity",0)
-//                          .style("stroke-width",2)
-//                          .style("stroke","seagreen")
-//                          .on("mouseover", function() {
-//                                 focus.style("display", null);
-//                                 goodguyline.style("stroke","mediumseagreen")
-//                                 var sel = d3.select(this)
-//                                 sel.moveToFront();
-//                          })
-//                          .on("mouseout", function() {
-//                                 focus.style("display", "none");
-//                                 goodguyline.style("stroke","seagreen");
-//                         });
-//      var button_text = svg.append("text")
-//                             .attr("dy", ".06em")
-//                             .attr("y", -3)
-//                             .attr("x", d3.select("#avgjoeline").)
-//                             .attr("text-anchor", "middle")
-//                             .style("stroke","black")
-//                             .text("Class");
-//     goodguyline.active = true
-    //console.log(avgjoeline)
-//     avgjoeline.active = true
 
 //  *****************************************************
 //  BUTTONS TO TOGGLE THE REFERENCE LINE
@@ -456,7 +415,7 @@ function generateHistoryLine(data){
 //                             xAxis.scale(x);
                             svg.selectAll("g .y.axis")
                                .call(yAxis);
-                            d3.select("#avgjoeline").attr("d",area(avgjoe.values))
+                            d3.select("#historyline").attr("d",area(avgjoe.values))
                         svg.select("#title").text("Average Points / Year");
 //                             d3.select("#goodguyline").attr("d",line(goodguy.values))
 
@@ -480,7 +439,7 @@ function generateHistoryLine(data){
                                .call(yAxis);
                             d3.select
 //                         svg.select("g.y.axis").call(yAxis)
-                        d3.select("#avgjoeline").attr("d",area(avgjoe2.values))
+                        d3.select("#historyline").attr("d",area(avgjoe2.values))
 //                         d3.select("#goodguyline").attr("d",line(goodguy2.values))
                         svg.select("#title").text("Average Points / Class");
                       } else {
@@ -490,8 +449,8 @@ function generateHistoryLine(data){
 //                             xAxis.scale(x);
                             svg.selectAll("g .y.axis")
                                .call(yAxis);
-                            d3.select("#avgjoeline").attr("d",area(avgjoe.values))
-                        svg.select("#title").text("Average Points / Year");
+                            d3.select("#historyline").attr("d",area(avgjoe.values))
+                        svg.select("#title").text("Average Class Points / Year");
 //                             d3.select("#goodguyline").attr("d",line(goodguy.values))
 
 
