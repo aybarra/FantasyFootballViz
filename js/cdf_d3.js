@@ -43,12 +43,12 @@ function generateCDF_D3Chart(data){
       .append("g")
       .attr("transform", "translate(" + cdf_margin.left + "," + cdf_margin.top + ")");
 
-  var selected_players = filteredPlayers();
-  // console.log(selected_players);
-  var filter_string = '?players=';
-  selected_players.forEach(function (d){
-    filter_string += (','+d.pguid);
-  });
+  // var selected_players = filteredPlayers();
+  // // console.log(selected_players);
+  // var filter_string = '?players=';
+  // selected_players.forEach(function (d){
+  //   filter_string += (','+d.pguid);
+  // });
   // console.log(filter_string);
 
   var data_conv;
@@ -191,27 +191,39 @@ function generateCDF_D3Chart(data){
     // });
 }
 
+function animateLines()
+{
+    d3.selectAll( ".cdf_line" ).style( "opacity", "0.5" );
 
-function animateLines(){
-  d3.selectAll(".cdf_line").style("opacity","0.5");
+    //Select All of the lines and process them one by one
+    d3.selectAll( ".cdf_line" ).each( function ( d, i )
+    {
+        var key_updated = d.key.toString().replace( /\./g, '' );
+        // Get the length of each line in turn
+        var totalLength = d3.select( "#path_" + key_updated ).node().getTotalLength();
 
-  //Select All of the lines and process them one by one
-  d3.selectAll(".cdf_line").each(function(d,i){
-    var key_updated = d.key.toString().replace(/\./g, '');
-    // Get the length of each line in turn
-    var totalLength = d3.select("#path_" + key_updated).node().getTotalLength();
-
-      d3.selectAll("#path_" + key_updated).attr("stroke-dasharray", totalLength + " " + totalLength)
-        .attr("stroke-dashoffset", totalLength)
-        .transition()
-        .duration(2000)
-        .delay(10*i)
-        .ease("quad") //Try linear, quad, bounce... see other examples here - http://bl.ocks.org/hunzy/9929724
-        .attr("stroke-dashoffset", 0)
-        .style("stroke-width",3)
-  });
+        d3.selectAll( "#path_" + key_updated ).attr( "stroke-dasharray", totalLength + " " + totalLength )
+            .attr( "stroke-dashoffset", totalLength )
+            .transition()
+            .duration( 2000 )
+            .delay( 10 * i )
+            .ease( "quad" ) //Try linear, quad, bounce... see other examples here - http://bl.ocks.org/hunzy/9929724
+            .attr( "stroke-dashoffset", 0 )
+            .style( "stroke-width", 3 )
+    } );
 
 }
+
+function updateCDFData(data){
+
+  d3.select(".x axis").remove();
+  d3.select(".y axis").remove();
+  d3.selectAll(".cdf_line").remove();
+  d3.select("#lrg-sec-1 svg").remove();
+  
+  generateCDF_D3Chart(data);
+}
+
 // Returns an array of objects of the form:
 //  [{
 //      key: pguid
@@ -225,12 +237,12 @@ function convertData(data){
 
   if(data !== undefined && data.length > 0){
     var nameDict = {};
-    for(var item in data.results){
-      var pguid = data.results[item].season_guid.split("_")[0];
+    for(var item in data){
+      var pguid = data[item].season_guid.split("_")[0];
       var player_name;
       // console.log(player_name);
-      var season_year = data.results[item].season_guid.split("_")[1];
-      var ff_pts = data.results[item].season_ff_pts;
+      var season_year = data[item].season_guid.split("_")[1];
+      var ff_pts = data[item].season_ff_pts;
       if(!(pguid in lines)){
         lines[pguid] = {'values': [{x: 0, y: 0, year: NaN}]};
         // lines[pguid] = {'values': [{x: 1, y: ff_pts, year: season_year}]};
