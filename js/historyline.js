@@ -28,6 +28,15 @@ function generateHistoryLine(data){
     var y = d3.scale.linear()
               .range([height, 0]);
 
+    var relx = d3.scale.linear()
+               .range([0, width+margin.left+margin.right])
+               .domain([0,100])
+               
+    var rely = d3.scale.linear()
+              .range([height+margin.top+margin.bottom, 0])
+              .domain([0,100])
+
+
     var line = d3.svg.line()
                  .x(function(d) {
                     return xTime(d.real_year)
@@ -82,8 +91,6 @@ function generateHistoryLine(data){
         var classcnts = {}
 
     history_data.forEach(function(d) {
-        if (d.season_guid == "ThomDa03_2008") { return 0;}
-        if (d.season_guid == "ThomDa03_2009") { return 0;}
         d.guid = d.season_guid.split("_")[0]
             if (d.guid.indexOf('.') != -1) {
                 d.guid = d.guid.replace('.','');
@@ -151,6 +158,8 @@ function generateHistoryLine(data){
         b = b[0];
         return a < b ? -1 : (a > b ? 1 : 0);
     });
+//     console.log(yeartuples)
+//     console.log(classtuples)
     var curyear = 0
     var yeartotals = []
     var yearcnts = []
@@ -203,11 +212,9 @@ function generateHistoryLine(data){
     avgjoe.key = "AvgJoe"
     avgjoe.values = []
     for (var i = 0; i < yearcnts.length; i++) {
-        if (yearcnts[i] > 1){
             season_pts = Math.round(yeartotals[i][1]/yearcnts[i])
             year = parseDate(yeartotals[i][0].toString())
             avgjoe.values.push({"season_ff_pts":season_pts, "real_year":year})
-        }
     }
 
     var avgjoe2 = {}
@@ -229,8 +236,6 @@ function generateHistoryLine(data){
             prevyear = year
         }
     }
-
-    //console.log(avgjoe2)
 
     var goodguy = {}
     var eliteguy = {}
@@ -273,6 +278,7 @@ function generateHistoryLine(data){
 
     var yAxis = d3.svg.axis()
                   .scale(y)
+                  .tickFormat(d3.format("d"))
                   .orient("left");
 
 //     x.domain(d3.extent(history_dataset, function(d) { return d.year; }));
@@ -386,79 +392,45 @@ function generateHistoryLine(data){
     var button_left = 20
     var button_top = 10
 
-    var yrtog = svg.append("rect")
-                  .attr("class","button")
-                  .attr("id","class_yr")
-                  .attr("x", button_left)
-                  .attr("y", button_top)
-                  .attr("rx",width/30)
-                  .attr("ry",height/30)
-                  .attr("width", width/10)
-                  .attr("height", height/15)
-                  .attr("stroke","black")
-                  .attr("fill","yellow")
-//                   .style("position","relative")
-//                   .style("top",-24+"px")
-//                   .style("right", width-350 +"px")
-                  .on("click",function(){
-                      absyear = absyear ? false : true;
-                      if (absyear) {
-                        yrtog.text("Relative")
-                        y.domain(d3.extent(avgjoe2.values, function(d) { return d.season_ff_pts; }));
-//                         xTime.domain(d3.extent(history_dataset, function(d) {return d.real_year;}));
-                            svg.selectAll("g .y.axis")
-                               .call(yAxis);
-                            d3.select
-//                         svg.select("g.y.axis").call(yAxis)
-                        d3.select("#histavgline").attr("d",area(avgjoe2.values))
-//                         d3.select("#histgoodlineline").attr("d",line(goodguy2.values))
-                        svg.select("#historytitle").text("Average Points / Class");
-                      } else {
-                            yrtog.text("Years")
-                            y.domain(d3.extent(avgjoe.values, function(d) { return d.season_ff_pts; }));
-//                             xTime.domain(d3.extent(history_dataset, function(d) {return d.real_year;}));
-//                             xAxis.scale(x);
-                            svg.selectAll("g .y.axis")
-                               .call(yAxis);
-                            d3.select("#historyline").attr("d",area(avgjoe.values))
-                        svg.select("#historytitle").text("Average Points / Year");
-//                             d3.select("#histgoodline").attr("d",line(goodguy.values))
-                      }
-                  });
+    var reltext = svg.append("text")
+                    .attr("x", relx(1))
+                    .attr("y", rely(100))
+                    .style("font-size", "10px")
+                    .text("Toggle Year")
 
-                  svg.append("text")
-                    .attr("x", button_left+1)
-                    .attr("y", button_top+4)
-                    .attr("dy", ".35em")
-                    .style("font-size", "6px")
-                    .text("Toggle")
-                  .on("click",function(){
-                      absyear = absyear ? false : true;
-                      if (absyear) {
-                        yrtog.text("Relative")
-                        y.domain(d3.extent(avgjoe2.values, function(d) { return d.season_ff_pts; }));
-//                         xTime.domain(d3.extent(history_dataset, function(d) {return d.real_year;}));
-                            svg.selectAll("g .y.axis")
-                               .call(yAxis);
-                            d3.select
-//                         svg.select("g.y.axis").call(yAxis)
-                        d3.select("#historyline").attr("d",area(avgjoe2.values))
-//                         d3.select("#histgoodline").attr("d",line(goodguy2.values))
-                        svg.select("#historytitle").text("Average Points / Class");
-                      } else {
-                            yrtog.text("Years")
-                            y.domain(d3.extent(avgjoe.values, function(d) { return d.season_ff_pts; }));
-//                             xTime.domain(d3.extent(history_dataset, function(d) {return d.real_year;}));
-//                             xAxis.scale(x);
-                            svg.selectAll("g .y.axis")
-                               .call(yAxis);
-                            d3.select("#historyline").attr("d",area(avgjoe.values))
-                        svg.select("#historytitle").text("Average Class Points / Year");
-//                             d3.select("#histgoodline").attr("d",line(goodguy.values))
+    svg.append("rect")
+          .attr("class","history_button")
+          .attr("id","avgbut")
+          .attr("x", relx(1))
+          .attr("y", rely(98))
+          .attr("rx",relx(1))
+          .attr("ry",rely(1))
+          .attr("width", relx(5))
+          .attr("height", rely(96.5))
+          .attr("stroke","black")
+          .attr("fill","white")
+          .on("click",function(){
+              absyear = absyear ? false : true;
+              var fillcol = absyear ? "black" : "white"
+              if (absyear) {
+                y.domain(d3.extent(avgjoe2.values, function(d) { return d.season_ff_pts; }));
+                svg.selectAll("g .y.axis").call(yAxis);
+                xTime.domain(d3.extent(avgjoe2.values, function(d) {return d.real_year;}))
+                svg.selectAll("g .x.axis").call(xAxis);
+                d3.select("#historyline").attr("d",area(avgjoe2.values))
+                svg.select("#historytitle").text("Average Points / Class");
+                d3.select(this).attr("fill",fillcol)
+              } else {
+                y.domain(d3.extent(avgjoe.values, function(d) { return d.season_ff_pts; }));
+                svg.selectAll("g .y.axis").call(yAxis);
+                xTime.domain(d3.extent(avgjoe.values, function(d) {return d.real_year;}))
+                svg.selectAll("g .x.axis").call(xAxis);
+                d3.select("#historyline").attr("d",area(avgjoe.values))
+                svg.select("#historytitle").text("Average Points / Year")
+                d3.select(this).attr("fill",fillcol)
+              }
+      });
 
-
-                      }
-                  });
 
 ;  //not sure what this is about
 } // Close function generateLineChart

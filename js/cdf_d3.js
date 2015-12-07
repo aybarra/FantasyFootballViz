@@ -28,6 +28,13 @@ function generateCDF_D3Chart(data){
 
     var y = d3.scale.linear()
               .range([height, 0]);
+    var relx = d3.scale.linear()
+               .range([0, width+margin.left+margin.right])
+               .domain([0,100])
+               
+    var rely = d3.scale.linear()
+              .range([height+margin.top+margin.bottom, 0])
+              .domain([0,100])
 
     var line = d3.svg.line()
                  .x(function(d) {
@@ -107,7 +114,7 @@ function generateCDF_D3Chart(data){
         while (numyears != d.year){
             base = {"guid":d.guid, "year":numyears,
                     "real_year": parseDate((startyear+numyears-1).toString()),
-                    "season_ff_pts":0}
+                    "season_ff_pts":cumpoints}
             cdf_dataset.push(base);
 //                 if (avgpoints.length < numyears){
     //                 avgpoints.push(0)
@@ -530,86 +537,115 @@ function generateCDF_D3Chart(data){
                                 focus.style("display", "none");
                                 eliteguyline.style("stroke","salmon");
                           });
-    cdfeliteguyline.active = true
-    cdfgoodguyline.active = true
-    cdfavgjoeline.active = true
+    eliteguyline.active = true
+    goodguyline.active = true
+    avgjoeline.active = true
 
 //  *****************************************************
 //  BUTTONS TO TOGGLE THE REFERENCE LINE
 // ******************************************************
     b_height = height+margin.bottom+margin.top;
 
-        svg.append("rect")
-                  .attr("class","cdfbutton")
-                  .attr("id","cdfcavgbut")
-                  .attr("x", width-margin.right)
-                  .attr("y", height+10)
-                  .attr("rx",width/30)
-                  .attr("ry",height/30)
-                  .attr("width", width/10)
-                  .attr("height", height/15)
+        var butgp = svg.append("g").attr("class","cdfbuttongroup")
+                       .attr("transform", "translate("+relx(1)+"," + rely(90) + ")");
+
+        butgp.append("rect")
+                  .attr("class","cdf_button")
+                  .attr("id","cdfavgbut")
+                  .attr("rx",relx(1))
+                  .attr("ry",rely(1))
+                  .attr("width", relx(5))
+                  .attr("height", rely(96.5))
                   .attr("stroke","black")
-                  .attr("fill","firebrick")
+                  .attr("fill","white")
                   .on("click",function(){
                         var active = avgjoeline.active ? false : true;
                         var opacity = active ? 0 : 1;
-                        d3.select("#cdfavgjoeline").style("opacity", opacity);
+                        var fillcol = active ? "white" : "firebrick"
+                        d3.select("#cdfjoeline").style("opacity", opacity);
+                        d3.select("#cdfavgbut").attr("fill",fillcol)
                         avgjoeline.active = active;
                      });
+            
+        butgp.append("text")
+             .attr("dx", relx(6))
+             .attr("dy", rely(98))
+             .style("font-size", "10px")
+             .text("Average")
 
-        svg.append("rect")
-                  .attr("class","cdfbutton")
+        butgp.append("rect")
+                  .attr("class","cdf_button")
                   .attr("id","cdfgoodbut")
-                  .attr("x", width-margin.right)
-                  .attr("y", height+20)
-                  .attr("rx",width/30)
-                  .attr("ry",height/30)
-                  .attr("width", width/10)
-                  .attr("height", height/15)
+                  .attr("y", rely(95.5))
+                  .attr("rx",relx(1))
+                  .attr("ry",rely(1))
+                  .attr("width", relx(5))
+                  .attr("height", rely(96.5))
                   .attr("stroke","black")
-                  .attr("fill","seagreen")
+                  .attr("fill","white")
                      .on("click",function(){
                             var active = goodguyline.active ? false : true;
                             var opacity = active ? 0 : 1;
+                            var fillcol = active ? "white" : "seagreen"
                             d3.select("#cdfgoodguyline").style("opacity", opacity);
+                            d3.select("#cdfgoodbut").attr("fill",fillcol)
                             goodguyline.active = active;
                      });
+              
+        butgp.append("text")
+             .attr("dx", relx(6))
+             .attr("dy", rely(93))
+             .style("font-size", "10px")
+             .text("Good")
 
-        svg.append("rect")
-                  .attr("class","cdfbutton")
+        butgp.append("rect")
+                  .attr("class","cdf_button")
                   .attr("id","cdfelitebut")
-                  .attr("x", width-margin.right)
-                  .attr("y", height+30)
-                  .attr("rx",width/30)
-                  .attr("ry",height/30)
-                  .attr("width", width/10)
-                  .attr("height", height/15)
+                  .attr("y", rely(91))
+                  .attr("rx",relx(1))
+                  .attr("ry",rely(1))
+                  .attr("width", relx(5))
+                  .attr("height", rely(96.5))
                   .attr("stroke","black")
-                  .attr("fill","salmon")
+                  .attr("fill","white")
                      .on("click",function(){
                             var active = eliteguyline.active ? false : true;
                             var opacity = active ? 0 : 1;
+                            var fillcol = active ? "white" : "salmon"
                             d3.select("#cdfeliteguyline").style("opacity", opacity);
+                            d3.select("#cdfelitebut").attr("fill",fillcol)
                             eliteguyline.active = active;
                      });
 
+        butgp.append("text")
+             .attr("dx", relx(6))
+             .attr("dy", rely(87.9))
+             .style("font-size", "10px")
+             .text("Elite")
+
+        var reltext = svg.append("text")
+                        .attr("x", relx(1))
+                        .attr("y", rely(100))
+                         .style("font-size", "10px")
+                        .text("Toggle Year")
+            
         var relbutton = svg.append("rect")
-                  .attr("class","cdfbutton")
-                  .attr("id","cdfrelabs")
-                  .attr("x", width - margin.right - 30)
-                  .attr("y", 10)
-                  .attr("rx",width/50)
-                  .attr("ry",height/50)
-                  .attr("width", width/20)
-                  .attr("height", height/25)
+                  .attr("class","season_button")
+                  .attr("id","relabs")
+                  .attr("x", relx(1))
+                  .attr("y", rely(98))
+                  .attr("rx",relx(1))
+                  .attr("ry",rely(1))
+                  .attr("width", relx(5))
+                  .attr("height", rely(96.5))
                   .attr("stroke","black")
-                  .attr("fill","yellow")
+                  .attr("fill","white")
                   .on("click",function(){
                       absyear = absyear ? false : true;
                       if (absyear) {
-                        relbutton.text("Relative")
-//                         xAxis.tickFormat(null)
-                        xAxis.scale(xTime)
+                        relbutton.attr("fill","black")
+                            reltext.text("Toggle Season")
+                            xAxis.scale(xTime)
                             .ticks(d3.time.year)
 
                         svg.selectAll("g .x.axis")
@@ -621,15 +657,15 @@ function generateCDF_D3Chart(data){
                                .duration(1500)
                                .attr("d",line(d.values))
                         });
-                        d3.select("#cdfavgjoeline").attr("d",line(avgjoe2.values))
-                        d3.select("#cdfgoodguyline").attr("d",line(goodguy2.values))
-                        d3.select("#cdfeliteguyline").attr("d",line(eliteguy2.values))
-                        d3.select("#cdftitle").text("Average Points / Class");
-                        
+                        d3.select("#cdfavgjoeline").attr("d",line(cdfavgjoe2.values))
+                        d3.select("#cdfgoodguyline").attr("d",line(cdfgoodguy2.values))
+                        d3.select("#cdfeliteguyline").attr("d",line(cdfeliteguy2.values))
+                        d3.select("#cdftitle").text("Points / Year");
+
 
                       } else {
-                            relbutton.text("Years")
-//                             xAxis.tickFormat(formatxAxis)
+                            relbutton.attr("fill","white")
+                            reltext.text("Toggle Year")
                             xAxis.scale(x)
                                 .ticks(range)
                             svg.selectAll("g .x.axis")
@@ -641,10 +677,10 @@ function generateCDF_D3Chart(data){
                                        .duration(1500)
                                        .attr("d",line(d.values))
                             });
-                            d3.select("#cdfavgjoeline").attr("d",line(avgjoe.values))
-                            d3.select("#cdfgoodguyline").attr("d",line(goodguy.values))
-                            d3.select("#cdfeliteguyline").attr("d",line(eliteguy.values))
-                            d3.select("#cdftitle").text("Average Points / Season");
+                            d3.select("#cdfavgjoeline").attr("d",line(cdfavgjoe.values))
+                            d3.select("#cdfgoodguyline").attr("d",line(cdfgoodguy.values))
+                            d3.select("#cdfeliteguyline").attr("d",line(cdfeliteguy.values))
+                            d3.select("#cdftitle").text("Points / Season");
 
                       }
                   });
