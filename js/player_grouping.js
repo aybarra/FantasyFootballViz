@@ -50,6 +50,9 @@ $( document ).ready( function ()
                 //Add player to selected player global array
                 selectedPlayers.push( data.data );
 
+                //Add the players name to the pguid map for use in other places.
+                addPlayerToPguidMap( data.data );
+
                 //Reload all of the tables because a filter item was added
                 reloadAllChartData();
             }

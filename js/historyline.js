@@ -1,4 +1,4 @@
-function generateHistoryLine(data){
+function generateHistoryLine(){
 
     var dataset = [];
     var selected_color = "cornflowerblue"
@@ -32,9 +32,7 @@ function generateHistoryLine(data){
                     return y(d.season_ff_pts);
                 });
 
-    d3.select("body").append("div").attr("id","seasonal_line");
-    
-    var svg = d3.select("#seasonal_line").append("svg")
+    var svg = d3.select("#sm-sec-2").append("svg")
                 .attr("id","seasonal_line")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
@@ -63,6 +61,9 @@ function generateHistoryLine(data){
 //  *****************************************************
 //  GET DATA AND MANIPULATE IT
 // ******************************************************
+    d3.json('http://localhost:8000/seasons_subset/', function(error,data){
+        if (error) throw error;
+
         var curid = []
         var startyear
         var cumpoints
@@ -77,8 +78,8 @@ function generateHistoryLine(data){
         var playercnt = 0
         var playerstart = {}
         var classcnts = {}
-        
-        data.forEach(function(d) {
+
+        data.results.forEach(function(d) {
             d.guid = d.season_guid.split("_")[0]
                 if (d.guid.indexOf('.') != -1) {
                     d.guid = d.guid.replace('.','');
@@ -103,7 +104,7 @@ function generateHistoryLine(data){
                 if (!(startyear in classcnts)) {
                     classcnts[startyear] = 0
                 }
-                classcnts[startyear]++ 
+                classcnts[startyear]++
             }
         d.year -= (startyear - 1)
         numyears++
@@ -133,6 +134,7 @@ function generateHistoryLine(data){
             avgcnt[numyears-1] += 1
             yearlist[numyears-1].push(d.season_ff_pts)
         }
+    });
 
     yeartuples.sort(function(a, b) {
         a = a[0];
@@ -194,7 +196,7 @@ function generateHistoryLine(data){
     season_dev2.push(stddev)
 
     avgjoe.key = "AvgJoe"
-    avgjoe.values = []    
+    avgjoe.values = []
     for (var i = 0; i < yearcnts.length; i++) {
         if (yearcnts[i] > 1){
             season_pts = Math.round(yeartotals[i][1]/yearcnts[i])
@@ -346,7 +348,7 @@ function generateHistoryLine(data){
     averageline.append("text")
                .attr("x", 9)
                .attr("y", 55)
-    
+
 //  *****************************************************
 //  BUILD THE REFERENCE LINES
 // ******************************************************
