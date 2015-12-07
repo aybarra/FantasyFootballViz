@@ -72,7 +72,7 @@ function fourth( data, textStatus, jqXHR )
     generateCDF_D3Chart( season_subset_data );
     generateHistogram( filteredPlayers(), season_subset_data );
     createTable(); //Not a chart
-    drawPCChart( filteredPlayers(), season_data );
+//     drawPCChart( filteredPlayers(), season_data );
     generateLineChart( season_subset_data );
     generateHistoryLine( season_subset_data );
 }

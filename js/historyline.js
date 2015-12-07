@@ -10,7 +10,7 @@ function generateHistoryLine(data){
     var parseDate = d3.time.format("%Y").parse;
     var color = d3.scale.category10();
 
-    var margin = { top: 10, right: 30, bottom: 33, left: 45 }
+    var margin = { top: 20, right: 30, bottom: 33, left: 45 }
 
         , width = parseInt(d3.select('.small-chart').style('width'), 10)
         , width = width - margin.left - margin.right
@@ -294,7 +294,7 @@ function generateHistoryLine(data){
        .append("text")
        .attr("transform", "rotate(-90)")
        .attr("y", -42)
-       .attr("x", -150)
+       .attr("x", -30)
        .attr("dy", ".71em")
        .style("text-anchor", "end")
        .text("Seasonal Fantasy Points");

@@ -101,6 +101,7 @@ function generateHistogram( careers, season_subset_data )
 //                 (careerlist);
 //
 //         console.log(data)
+
     binList = CalcBins( careerlist, numbins )
 
     var y = d3.scale.linear()
@@ -121,6 +122,15 @@ function generateHistogram( careers, season_subset_data )
         .attr( "height", height + margin.top + margin.bottom )
         .append( "g" )
         .attr( "transform", "translate(" + margin.left + "," + margin.top + ")" );
+
+        svg.append("text")
+            .attr("id","title")
+            .attr("x", 150)
+            .attr("y", 0 - (margin.top / 3))
+            .attr("text-anchor", "middle")
+            .style("font-size", "16px")
+            .style("text-decoration", "underline")
+            .text("Cumulative Points Distribution");
 
     var bar = svg.selectAll( ".bar" )
         .data( binList )
