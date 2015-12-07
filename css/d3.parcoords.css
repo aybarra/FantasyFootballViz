@@ -32,3 +32,8 @@
 .parcoords canvas.faded {
   opacity: 0.25;
 }
+
+.parcoords{
+  height: 150px;
+  width: 700px;
+}
