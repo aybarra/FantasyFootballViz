@@ -68,7 +68,7 @@ function third( data, textStatus, jqXHR )
 
 function fourth( data, textStatus, jqXHR )
 {
-    loadScatterPlot(); //Loads from filters
+    loadScatterPlot( filteredPlayers() ); //Loads from filters
     generateCDF_D3Chart( season_subset_data );
     generateHistogram( filteredPlayers(), season_subset_data );
     createTable(); //Not a chart
@@ -80,6 +80,7 @@ function fourth( data, textStatus, jqXHR )
 function fifth( data, textStatus, jqXHR )
 {
     updateCDFData( season_subset_data );
+    loadScatterPlot( filteredPlayers() );
 }
 
 function loadPageData()

@@ -1,6 +1,11 @@
 function generateLineChart(data) {
-//     console.log(data)
-    var dataset = [];
+    var temp_data = jQuery.extend(true, {}, data);
+    var seasonal_data = []
+    for (var key in temp_data) {
+        seasonal_data.push(temp_data[key])
+    }
+
+    var season_seasonal_dataset = [];
     var selected_color = "cornflowerblue"
     var parseDate = d3.time.format("%Y").parse;
     var color = d3.scale.category10();
@@ -35,7 +40,6 @@ function generateLineChart(data) {
                 });
 
     var svg = d3.select("#sm-sec-3").append("svg")
-                .attr("id","seasonal_line")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
                 .append("g")
@@ -60,79 +64,16 @@ function generateLineChart(data) {
         });
     };
 
-//  *****************************************************
-//  GET DATA AND MANIPULATE IT
-// ******************************************************
+// NOTE: THE seasonal_data MANIPULATION FROM HERE HAS BEEN MOVED
 
-    var curid = []
-    var startyear
-    var cumpoints
-    var numyears
-    var avgcnt = []
-    var avgpoints = []
     var avgjoe = {}
-    var yearlist = []
     var season_dev = []
-    var yeartuples = []
-
-    data.forEach(function(d) {
-        if (d.season_guid == "ThomDa03_2008") { return 0;}
-        if (d.season_guid == "ThomDa03_2009") { return 0;}
-        if (d.season_guid == "ThomDa03_2008" || d.season_guid == "ThomDa03_2009") {
-            console.log('pre',d)
-        }
-
-        d.guid = d.season_guid.split("_")[0]
-            if (d.guid.indexOf('.') != -1) {
-                d.guid = d.guid.replace('.','');
-            }
-        d.year = +d.season_guid.split("_")[1]
-        curyear = d.year
-        d.real_year = d.year
-//             d.year = d.season_guid.split("_")[1]
-//             d.year = parseDate(d.year)
-//             console.log(d)
-        d.season_ff_pts = +d.season_ff_pts;
-        if (d.year != 2015) {
-            yeartuples.push([d.year, d.season_ff_pts]);
-        }
-        if (curid != d.guid){
-            curid = d.guid
-            startyear = +d.year
-            numyears = 0
-            cumpoints = 0
-        }
-        d.year -= (startyear - 1)
-        numyears++
-        if (+d.real_year < 2010) {
-            console.log('post',d)
-        }
-
-        while (numyears != d.year){
-            base = {"guid":d.guid, "year":numyears,
-                    "real_year": parseDate((startyear+numyears-1).toString()),
-                    "season_ff_pts":0}
-            dataset.push(base);
-    //             if (avgpoints.length < numyears){
-    //                 avgpoints.push(0)
-    //                 avgcnt.push(0)
-    //             }
-    //             avgcnt[numyears-1] += 1
-            numyears++
-        }
-        if (curyear != 2015) {
-            d.real_year = parseDate(d.real_year.toString())
-            dataset.push(d);
-            if (avgpoints.length < numyears) {
-                avgpoints.push(0)
-                avgcnt.push(0)
-                yearlist.push([])
-            }
-            avgpoints[numyears-1] += d.season_ff_pts
-            avgcnt[numyears-1] += 1
-            yearlist[numyears-1].push(d.season_ff_pts)
-        }
-    }); //end data loading
+    seasonal_dataStuff = Handleseasonal_data(seasonal_data)
+    season_seasonal_dataset = seasonal_dataStuff[0]
+    yeartuples = seasonal_dataStuff[1]
+    avgcnt = seasonal_dataStuff[2]
+    avgpoints = seasonal_dataStuff[3]
+    yearlist = seasonal_dataStuff[4]
 
     yeartuples.sort(function(a, b) {
         a = a[0];
@@ -227,14 +168,14 @@ function generateLineChart(data) {
         }
     }
 
-    var dataGroup = d3.nest()
+    var season_seasonal_dataGroup = d3.nest()
                       .key(function(d) {
                         return d.guid;
                       })
-                     .entries(dataset);
+                     .entries(season_seasonal_dataset);
 
-    var keys = d3.keys(dataGroup);
-    color.domain(d3.keys(dataGroup));
+    var keys = d3.keys(season_seasonal_dataGroup);
+    color.domain(d3.keys(season_seasonal_dataGroup));
 
 
 //  *****************************************************
@@ -253,12 +194,12 @@ function generateLineChart(data) {
 
     
 
-    x.domain(d3.extent(dataset, function(d) { return d.year; }));
-//     y.domain(d3.extent(dataset, function(d) { return d.season_ff_pts; }));
-    xTime.domain(d3.extent(dataset, function(d) {return d.real_year;}));
-//     x.domain([1,d3.max(dataset, function(d) { return d.year; })]);
-    y.domain([-10,d3.max(dataset, function(d) { return d.season_ff_pts; })]);
-    minmax = d3.extent(dataset, function(d) {return d.real_year})
+    x.domain(d3.extent(season_seasonal_dataset, function(d) { return d.year; }));
+//     y.domain(d3.extent(season_seasonal_dataset, function(d) { return d.season_ff_pts; }));
+    xTime.domain(d3.extent(season_seasonal_dataset, function(d) {return d.real_year;}));
+//     x.domain([1,d3.max(season_seasonal_dataset, function(d) { return d.year; })]);
+    y.domain([-10,d3.max(season_seasonal_dataset, function(d) { return d.season_ff_pts; })]);
+    minmax = d3.extent(season_seasonal_dataset, function(d) {return d.real_year})
     range = minmax[1].getFullYear() - minmax[0].getFullYear()
     xAxis.ticks(range)
 
@@ -346,7 +287,7 @@ function generateLineChart(data) {
 //  *****************************************************
 //  BUILD THE LINE CHART
 // ******************************************************
-    dataGroup.forEach(function(d, i) {
+    season_seasonal_dataGroup.forEach(function(d, i) {
         var iline = svg.append("path")
                        .attr("class", "playerlines")
                        .attr("id", d.key)
@@ -427,7 +368,7 @@ function generateLineChart(data) {
                             }
                             focus.select("text").text(d.key+"\n  Year: "+year+"\n  Pts:"+pts);
                             focus.moveToFront();
-                            nameline.select("text").text("Name: " + d.key);
+                            nameline.select("text").text("Name: " + PGUID_TO_NAME_MAP[d.key][0]);
                             yearline.select("text").text("Years: " + totyears + "......  Total Points: " + totpts);
 //                             pointsline.select("text").text("Total Points: " + totpts);
                             averageline.select("text").text("Average/Season: " + avg + " (Best: "+bestyr+", Worst: " + worstyr+")");
@@ -442,9 +383,15 @@ function generateLineChart(data) {
     dispatch.on("lasso_seasonal", function(lassoed_items) {
         if(lassoed_items.length > 0){
             lassoed_items.forEach(function(d){
-                d3.select('path#'+d.pguid)
-                  .style("stroke", selected_color);
+                var item = d3.select('path#'+d.pguid)
+                
+                item.style("stroke", selected_color);
+                item.moveToFront();
+
             });
+        } else {
+                d3.selectAll('path.playerlines')
+                  .style("stroke", "whitesmoke");
         }
     });
 //  *****************************************************
@@ -592,7 +539,7 @@ function generateLineChart(data) {
                             .transition().duration(1000)
                            .call(xAxis);
                         var sel = d3.select("body").transition();
-                        dataGroup.forEach(function(d, i) {
+                        season_seasonal_dataGroup.forEach(function(d, i) {
                             sel.select("#"+d.key)
                                .duration(1500)
                                .attr("d",line(d.values))
@@ -612,7 +559,7 @@ function generateLineChart(data) {
                                 .transition().duration(1000)
                                .call(xAxis);
                             var sel = d3.select("body").transition();
-                                dataGroup.forEach(function(d, i) {
+                                season_seasonal_dataGroup.forEach(function(d, i) {
                                     sel.select("#"+d.key)
                                        .duration(1500)
                                        .attr("d",line(d.values))
@@ -626,3 +573,67 @@ function generateLineChart(data) {
                   });
 ;  //not sure what this is about
 } // Close function generateLineChart
+
+function Handleseasonal_data(seasonal_data) {
+//  *****************************************************
+//  GET seasonal_data AND MANIPULATE IT
+// ******************************************************
+    var season_seasonal_dataset = []
+    var curid = []
+    var startyear
+    var numyears
+    var avgcnt = []
+    var avgpoints = []
+    var yearlist = []
+    var yeartuples = []
+    var parseDate = d3.time.format("%Y").parse;
+    seasonal_data.forEach(function(d) {
+        d.guid = d.season_guid.split("_")[0]
+            if (d.guid.indexOf('.') != -1) {
+                d.guid = d.guid.replace('.','');
+            }
+        d.year = +d.season_guid.split("_")[1]
+        curyear = d.year
+        d.real_year = d.year
+//             d.year = d.season_guid.split("_")[1]
+//             d.year = parseDate(d.year)
+//             console.log(d)
+        d.season_ff_pts = +d.season_ff_pts;
+        if (d.year != 2015) {
+            yeartuples.push([d.year, d.season_ff_pts]);
+        }
+        if (curid != d.guid){
+            curid = d.guid
+            startyear = +d.year
+            numyears = 0
+        }
+        d.year -= (startyear - 1)
+        numyears++
+
+        while (numyears != d.year){
+            base = {"guid":d.guid, "year":numyears,
+                    "real_year": parseDate((startyear+numyears-1).toString()),
+                    "season_ff_pts":0}
+            season_seasonal_dataset.push(base);
+    //             if (avgpoints.length < numyears){
+    //                 avgpoints.push(0)
+    //                 avgcnt.push(0)
+    //             }
+    //             avgcnt[numyears-1] += 1
+            numyears++
+        }
+        if (curyear != 2015) {
+            d.real_year = parseDate(d.real_year.toString())
+            season_seasonal_dataset.push(d);
+            if (avgpoints.length < numyears) {
+                avgpoints.push(0)
+                avgcnt.push(0)
+                yearlist.push([])
+            }
+            avgpoints[numyears-1] += d.season_ff_pts
+            avgcnt[numyears-1] += 1
+            yearlist[numyears-1].push(d.season_ff_pts)
+        }
+    }); //end seasonal_data loading
+    return [season_seasonal_dataset, yeartuples, avgcnt, avgpoints, yearlist]
+}

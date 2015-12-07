@@ -417,13 +417,17 @@
     /**
      *
      */
-    function loadScatterPlot()
+    function loadScatterPlot( playerArray )
     {
         //TODO call this after adding more filters
         //TODO call this when deleting filters
         //TODO clear out old charts and graphs.
-        var playerArray = filteredPlayers();
+//         var playerArray = filteredPlayers();
 
+        d3.select("#lrg-sec-2").selectAll(".dot").remove()
+        d3.select("#lrg-sec-2").select(".x axis").remove()
+        d3.select("#lrg-sec-2").select(".y axis").remove()        
+        
         playerArray.forEach( function ( x )
         {
             x.short_year = x.start_year;
@@ -602,7 +606,7 @@
         svg_scatter.call( lasso );
 
         lasso.items( d3.selectAll( ".dot" ) );
-
+        
     }
 
     function createTable()

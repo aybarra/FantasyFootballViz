@@ -1,5 +1,17 @@
 function generateHistogram( careers, season_subset_data )
 {
+    var temp_data = jQuery.extend(true, {}, careers);
+    var hgram_careers = []
+    for (var key in temp_data) {
+        hgram_careers.push(temp_data[key])
+    }
+
+    var temp_data = jQuery.extend(true, {}, season_subset_data);
+    var hgram_season_subset_data = []
+    for (var key in temp_data) {
+        hgram_season_subset_data.push(temp_data[key])
+    }
+
     var numbins = 9
     var binning = [ 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500 ]
     var binsize = 500
@@ -14,7 +26,7 @@ function generateHistogram( careers, season_subset_data )
     var std_dev
     var yeartuples = []
 
-    careers.forEach( function ( d, i )
+    hgram_careers.forEach( function ( d, i )
     {
         if( d.ff_pts != 0 )
         {
@@ -24,7 +36,7 @@ function generateHistogram( careers, season_subset_data )
         }
     } );
 
-    season_subset_data.forEach( function ( d )
+    hgram_season_subset_data.forEach( function ( d )
     {
         if( d.year != 2015 )
         {

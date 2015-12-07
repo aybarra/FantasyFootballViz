@@ -1,6 +1,11 @@
 function generateHistoryLine(data){
-//     //console.log(data)
-    var dataset = [];
+    var temp_data = jQuery.extend(true, {}, data);
+    var history_data = []
+    for (var key in temp_data) {
+        history_data.push(temp_data[key])
+    }
+
+    var history_dataset = [];
     var selected_color = "cornflowerblue"
     var parseDate = d3.time.format("%Y").parse;
     var color = d3.scale.category10();
@@ -59,7 +64,7 @@ function generateHistoryLine(data){
 //     };
 
 //  *****************************************************
-//  GET DATA AND MANIPULATE IT
+//  GET history_data AND MANIPULATE IT
 // ******************************************************
         var curid = []
         var startyear
@@ -76,7 +81,7 @@ function generateHistoryLine(data){
         var playerstart = {}
         var classcnts = {}
 
-    data.forEach(function(d) {
+    history_data.forEach(function(d) {
         if (d.season_guid == "ThomDa03_2008") { return 0;}
         if (d.season_guid == "ThomDa03_2009") { return 0;}
         d.guid = d.season_guid.split("_")[0]
@@ -113,7 +118,7 @@ function generateHistoryLine(data){
             base = {"guid":d.guid, "year":numyears,
                     "real_year": parseDate((startyear+numyears-1).toString()),
                     "season_ff_pts":0}
-            dataset.push(base);
+            history_dataset.push(base);
     //             if (avgpoints.length < numyears){
     //                 avgpoints.push(0)
     //                 avgcnt.push(0)
@@ -124,7 +129,7 @@ function generateHistoryLine(data){
 
         if (curyear != 2015){
             d.real_year = parseDate(d.real_year.toString())
-            dataset.push(d);
+            history_dataset.push(d);
             if (avgpoints.length < numyears) {
                 avgpoints.push(0)
                 avgcnt.push(0)
@@ -134,7 +139,7 @@ function generateHistoryLine(data){
             avgcnt[numyears-1] += 1
             yearlist[numyears-1].push(d.season_ff_pts)
         }
-    }) //end data.foreach Loop
+    }) //end history_data.foreach Loop
 
     yeartuples.sort(function(a, b) {
         a = a[0];
@@ -270,12 +275,12 @@ function generateHistoryLine(data){
                   .scale(y)
                   .orient("left");
 
-//     x.domain(d3.extent(dataset, function(d) { return d.year; }));
+//     x.domain(d3.extent(history_dataset, function(d) { return d.year; }));
     y.domain(d3.extent(avgjoe.values, function(d) { return d.season_ff_pts; }));
     xTime.domain(d3.extent(avgjoe.values, function(d) {return d.real_year;}))
 
-//     x.domain([1,d3.max(dataset, function(d) { return d.year; })]);
-//     y.domain([0,d3.max(dataset, function(d) { return d.season_ff_pts; })]);
+//     x.domain([1,d3.max(history_dataset, function(d) { return d.year; })]);
+//     y.domain([0,d3.max(history_dataset, function(d) { return d.season_ff_pts; })]);
 
 
     svg.append("g")
@@ -400,7 +405,7 @@ function generateHistoryLine(data){
                       if (absyear) {
                         yrtog.text("Relative")
                         y.domain(d3.extent(avgjoe2.values, function(d) { return d.season_ff_pts; }));
-//                         xTime.domain(d3.extent(dataset, function(d) {return d.real_year;}));
+//                         xTime.domain(d3.extent(history_dataset, function(d) {return d.real_year;}));
                             svg.selectAll("g .y.axis")
                                .call(yAxis);
                             d3.select
@@ -411,15 +416,13 @@ function generateHistoryLine(data){
                       } else {
                             yrtog.text("Years")
                             y.domain(d3.extent(avgjoe.values, function(d) { return d.season_ff_pts; }));
-//                             xTime.domain(d3.extent(dataset, function(d) {return d.real_year;}));
+//                             xTime.domain(d3.extent(history_dataset, function(d) {return d.real_year;}));
 //                             xAxis.scale(x);
                             svg.selectAll("g .y.axis")
                                .call(yAxis);
                             d3.select("#historyline").attr("d",area(avgjoe.values))
                         svg.select("#title").text("Average Points / Year");
 //                             d3.select("#goodguyline").attr("d",line(goodguy.values))
-
-
                       }
                   });
 
@@ -434,7 +437,7 @@ function generateHistoryLine(data){
                       if (absyear) {
                         yrtog.text("Relative")
                         y.domain(d3.extent(avgjoe2.values, function(d) { return d.season_ff_pts; }));
-//                         xTime.domain(d3.extent(dataset, function(d) {return d.real_year;}));
+//                         xTime.domain(d3.extent(history_dataset, function(d) {return d.real_year;}));
                             svg.selectAll("g .y.axis")
                                .call(yAxis);
                             d3.select
@@ -445,7 +448,7 @@ function generateHistoryLine(data){
                       } else {
                             yrtog.text("Years")
                             y.domain(d3.extent(avgjoe.values, function(d) { return d.season_ff_pts; }));
-//                             xTime.domain(d3.extent(dataset, function(d) {return d.real_year;}));
+//                             xTime.domain(d3.extent(history_dataset, function(d) {return d.real_year;}));
 //                             xAxis.scale(x);
                             svg.selectAll("g .y.axis")
                                .call(yAxis);
