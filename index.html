@@ -128,7 +128,7 @@
             <div class="col-sm-2">
                 <div class="row" id="filter-section" style="height: 200px; overflow:auto">
                     <h4>Filter Section</h4>
-                    <table id="filters_table" style="height:150px; overflow:auto">
+                    <table id="filters_table" style="overflow:auto">
                     </table>
                 </div>
                 <div class="row">
@@ -613,57 +613,18 @@
             data_table = $( "#data_table" ).DataTable( {
                 select: true,
                 bLengthChange: false,
+                bFilter: false,
                 data: filteredPlayers(),
                 columns: [
                     { data: "player_name" },
                     { data: "pos_type" },
                     { data: "ff_pts" },
                     { data: "win_pct" }
-                ]//,
-                // dom:  'Bfrtip',
-                // buttons: [
-                //   'selected',
-                //   'selectAll',
-                //   'selectNone',
-                //   'selectRows'
-                // ]
+                ]
             } );
-
-            // $('#data_table tbody').on( 'click', 'tr', function () {
-            //   $(this).toggleClass('selected');
-            // } );
 
         } );
 
-        // $('#example tbody').on( 'click', 'tr', function () {
-        //   $(this).toggleClass('selected');
-        // } );
-
-        // data_table = $( "#data_table" ).dataTable( {
-        //     "bPaginate": true,
-        //     "pagingType": "full_numbers",
-        //     "bLengthChange": false,
-        //     // "bFilter": false,
-        //     "bSort": true,
-        //     // "bInfo": false,
-        //     "bAutoWidth": false,
-        //     // "bDeferRender": true,
-        //     "aoData": "lassoed_items",
-        //     // "bDestroy": true,
-        //     "aoColumns": [
-        //         { "mData": "name",
-        //           "defaultContent": "<i>Empty</i>"},
-        //         { "mData": "pos_long",
-        //       "defaultContent": "<i>Empty</i>"},
-        //
-        //         { "mData": "fantPt",
-        //       "defaultContent": "<i>Empty</i>"},
-        //         { "mData": "winPct",
-        //       "defaultContent": "<i>Empty</i>"}
-        //
-        //   ]
-        //
-        // } );
     }
 
     function updateDetails( player )
