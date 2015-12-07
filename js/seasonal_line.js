@@ -34,7 +34,7 @@ function generateLineChart(data) {
                     return y(d.season_ff_pts);
                 });
 
-    var svg = d3.select("#line-chart-section").append("svg")
+    var svg = d3.select("#sm-sec-3").append("svg")
                 .attr("id","seasonal_line")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
@@ -103,7 +103,7 @@ function generateLineChart(data) {
             cumpoints = 0
         }
         d.year -= (startyear - 1)
-        numyears++        
+        numyears++
         if (+d.real_year < 2010) {
             console.log('post',d)
         }

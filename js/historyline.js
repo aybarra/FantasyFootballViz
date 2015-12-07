@@ -5,8 +5,8 @@ function generateHistoryLine(data){
     var parseDate = d3.time.format("%Y").parse;
     var color = d3.scale.category10();
 
+    var margin = { top: 10, right: 30, bottom: 33, left: 45 }
 
-    var margin = {top: 20, right: 20, bottom: 40, left: 50}
         , width = parseInt(d3.select('.small-chart').style('width'), 10)
         , width = width - margin.left - margin.right
         , height = parseInt(d3.select('.small-chart').style('height'), 10)
@@ -32,13 +32,13 @@ function generateHistoryLine(data){
                 });
 
 //     d3.select("body").append("div").attr("id","seasonal_line");
-    
-    var svg = d3.select("#history-line-section").append("svg")
+
+    var svg = d3.select("#sm-sec-2").append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-                
+
 
 //  *****************************************************
 //  MOVE SVG ITEM TO FRONT AND BACK
@@ -75,7 +75,7 @@ function generateHistoryLine(data){
         var playercnt = 0
         var playerstart = {}
         var classcnts = {}
-        
+
     data.forEach(function(d) {
         if (d.season_guid == "ThomDa03_2008") { return 0;}
         if (d.season_guid == "ThomDa03_2009") { return 0;}
@@ -103,7 +103,7 @@ function generateHistoryLine(data){
             if (!(startyear in classcnts)) {
                 classcnts[startyear] = 0
             }
-            classcnts[startyear]++ 
+            classcnts[startyear]++
         }
 
         d.year -= (startyear - 1)
@@ -135,7 +135,7 @@ function generateHistoryLine(data){
             yearlist[numyears-1].push(d.season_ff_pts)
         }
     }) //end data.foreach Loop
-    
+
     yeartuples.sort(function(a, b) {
         a = a[0];
         b = b[0];
@@ -196,7 +196,7 @@ function generateHistoryLine(data){
     season_dev2.push(stddev)
 
     avgjoe.key = "AvgJoe"
-    avgjoe.values = []    
+    avgjoe.values = []
     for (var i = 0; i < yearcnts.length; i++) {
         if (yearcnts[i] > 1){
             season_pts = Math.round(yeartotals[i][1]/yearcnts[i])
@@ -340,7 +340,7 @@ function generateHistoryLine(data){
     averageline.append("text")
                .attr("x", 9)
                .attr("y", 55)
-    
+
 //  *****************************************************
 //  BUILD THE REFERENCE LINES
 // ******************************************************
@@ -359,11 +359,11 @@ function generateHistoryLine(data){
                     });
     svg.append("text")
         .attr("id","title")
-        .attr("x", (width / 2))             
+        .attr("x", (width / 2))
         .attr("y", 0 - (margin.top / 3))
-        .attr("text-anchor", "middle")  
-        .style("font-size", "16px") 
-        .style("text-decoration", "underline")  
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("text-decoration", "underline")
         .text("Average Points / Season");
 
     var avgjoeline = svg.append("path")
@@ -422,12 +422,12 @@ function generateHistoryLine(data){
 
                       }
                   });
-                  
+
                   svg.append("text")
                     .attr("x", button_left+1)
                     .attr("y", button_top+4)
                     .attr("dy", ".35em")
-                    .style("font-size", "6px") 
+                    .style("font-size", "6px")
                     .text("Toggle")
                   .on("click",function(){
                       absyear = absyear ? false : true;
