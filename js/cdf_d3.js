@@ -279,6 +279,7 @@ function updateCDFData(data){
   d3.select(".x axis").remove();
   d3.select(".y axis").remove();
   d3.selectAll(".cdf_line").remove();
+  d3.select("#cdf_chart svg").remove();
   
   generateCDF_D3Chart(data);
 }
