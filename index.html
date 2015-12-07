@@ -15,6 +15,7 @@
     <script src="js/player_grouping.js"></script>
     <script src="js/helper/filter_helper.js"></script>
     <script src="js/helper/menu_helper.js"></script>
+    <script src="js/worker/load_data.js"></script>
     <script src="js/model/FilterObject.js"></script>
     <script src="js/lasso.js"></script>
     <script src="js/d3.parcoords.js"></script>
@@ -226,6 +227,7 @@
     // Global variable mapping the pguid to player name
     // var PGUID_TO_NAME_MAP = {};
     var PGUID_TO_NAME_MAP = {};
+
     var dispatch = d3.dispatch( "lasso_seasonal", "lasso_cdf" );
 
     var yearFormat = d3.time.format( '%Y' );
@@ -400,7 +402,7 @@
     // svg_scatter.call( lasso );
 
     //Add Default Filter
-    var defaultFilterObject = new FilterObject( 2010, 2015, 100, 10000, null, [ 2 ] );
+    var defaultFilterObject = new FilterObject( 2003, 2006, 100, 10000, null, [ 2 ] );
     filterObjects.push( defaultFilterObject );
 
     //Draw the current filter table with the default filter applied.
@@ -758,78 +760,54 @@
     //
     // }
 
-    /**
-     * Call to make all the web requests to the server to get all the data for the pages.
-     */
-    function loadPageData()
-    {
-        $.ajax( {
-            url: defaultFilterObject.generateCareerUrl(),
-            type: 'GET',
-            async: false,
-            data: {
-                format: 'json'
-            },
-            error: function ()
-            {
-                alert( "ERROR MAKING WEB REQUEST FOR PLAYER KEYS" )
-            },
-            success: function ( data )
-            {
-                //Get the result array
-                data = data[ 'results' ];
+    function transitionTo(name, id, classification){
+      // switch (name) {
+      //   case 'cdf': d3.select(id).append("cdf_svg");
+      //
+      //     break;
+      //     case 'scatter':{
+      //       console.log("removing");
+      //       $(id).addID()
+      //       console.log("done");
+      //     }break;
+      //   default:
+      //
+      // }
 
-                //Loop through the array and get all of the player pks
-                $.each( data, function ( index, player )
-                {
-                    if( PGUID_TO_NAME_MAP[ player[ 'pguid' ] ] === undefined )
-                    {
-                        PGUID_TO_NAME_MAP[ player[ 'pguid' ] ] = new Array( 2 );
-                        PGUID_TO_NAME_MAP[ player[ 'pguid' ] ][ 0 ] = player[ 'player_name' ];
-                        PGUID_TO_NAME_MAP[ player[ 'pguid' ] ][ 1 ] = player[ 'pos_type' ];
-                    }
-                    defaultFilterObject.players.push( player );
-                } );
-
-            }
-        } );
-
-        $.ajax( {
-            url: 'http://localhost:8000/seasons_subset/?players=' + filteredPlayersPguids().join(),
-            type: 'GET',
-            async: false,
-            data: {
-                format: 'json'
-            },
-            error: function ()
-            {
-                alert( "ERROR MAKING WEB REQUEST FOR PLAYER KEYS" )
-            },
-            success: function ( data )
-            {
-                //Get the result array
-                season_subset_data = data[ 'results' ];
-            }
-        } );
     }
 
-    function loadPageWithAllChartData()
-    {
-        loadPageData();
-        loadScatterPlot(); //Loads from filters
-        generateCDF_D3Chart( season_subset_data );
-        generateHistogram(filteredPlayers(), season_subset_data);
-        createTable(); //Not a chart
-        drawPCChart();
-        //TODO uncomment below after js errors are fixed.
-        generateLineChart(season_subset_data);
-        generateHistoryLine(season_subset_data);
-    }
+//    function loadPageWithAllChartData()
+//    {
+//        loadPageData();
+//        loadScatterPlot(); //Loads from filters
+//        generateCDF_D3Chart( season_subset_data );
+//        generateHistogram(filteredPlayers(), season_subset_data);
+//        createTable(); //Not a chart
+//        drawPCChart(filteredPlayers(), season_data);
+//        generateLineChart(season_subset_data);
+//        generateHistoryLine(season_subset_data);
+//    }
 
-    function reloadAllChartData()
+//    function reloadAllChartData()
+//    {
+////        w = new Worker("load_data.js");
+////        w.onmessage = function(event)
+////        {
+////
+////        };
+//        loadPageData();
+//        updateCDFData( season_subset_data );
+//
+//    }
+
+    function addPlayerToPguidMap(player)
     {
-        loadPageData();
-        updateCDFData( season_subset_data );
+        if( PGUID_TO_NAME_MAP[ player[ 'pguid' ] ] === undefined )
+        {
+            PGUID_TO_NAME_MAP[ player[ 'pguid' ] ] = new Array( 2 );
+            PGUID_TO_NAME_MAP[ player[ 'pguid' ] ][ 0 ] = player[ 'player_name' ];
+            PGUID_TO_NAME_MAP[ player[ 'pguid' ] ][ 1 ] = player[ 'pos_type' ];
+        }
     }
 
 </script>
