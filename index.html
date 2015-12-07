@@ -56,12 +56,12 @@
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid ">
         <div id="navbar">
-            <!-- <img src="images/logo.jpg"></scr> -->
+
             <a class="navbar-brand" id="menu-trigger"
                style="cursor:pointer; -webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;">Filter</a>
 
-            <p class="navbar-brand nav navbar-nav navbar-right" id="title">Armchair Fantasy Football</p>
-
+            <p class="navbar-brand nav navbar-nav navbar-right" id="title"> Armchair Fantasy Football </p>
+            <img class="navbar-right"  src="images/logo.png"></scr>
         </div>
     </div>
 </nav>
@@ -170,7 +170,7 @@
                     <div class="col-sm-12 large-chart">
                       <div class="row">
                         <button type="button" id="cdf_year_swap" class="btn-primary btn-xs">CHANGE AXIS</button>
-                        <div class="btn-group switch-btn">
+                        <!-- <div class="btn-group switch-btn">
                           <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
                             Section 1
                             <span class="caret"></span>
@@ -184,7 +184,7 @@
                             <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
 
                           </ul>
-                        </div>
+                        </div> -->
                       </div>
                         <div id="lrg-sec-1"></div>
                     </div>
@@ -192,7 +192,7 @@
                   </div>
 
 
-                  <div class="row">
+                  <!-- <div class="row">
                     <div class="btn-group switch-btn">
                       <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
                         Section 2
@@ -208,7 +208,7 @@
 
                       </ul>
                     </div>
-                  </div>
+                  </div> -->
                   <div class="row">
 
                     <div class="col-sm-10 parcoords large-chart" id="lrg-sec-2"></div>
@@ -245,7 +245,7 @@
 
 
             <div class="col-sm-2">
-              <div class="row">
+              <!-- <div class="row">
 
                 <div class="btn-group switch-btn">
                   <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
@@ -262,7 +262,7 @@
 
                   </ul>
                 </div>
-              </div>
+              </div> -->
 
                 <div class="row">
                   <div class="col-sm-12 small-chart">
@@ -273,7 +273,7 @@
 
 
 
-              <div class="row">
+              <!-- <div class="row">
 
                 <div class="btn-group switch-btn">
                   <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
@@ -290,7 +290,7 @@
 
                   </ul>
                 </div>
-              </div>
+              </div> -->
 
               <div class="row">
                   <div class="col-sm-10 parcoords small-chart">
@@ -300,7 +300,7 @@
 
 
 
-              <div class="row">
+              <!-- <div class="row">
 
 
                 <div class="btn-group switch-btn">
@@ -318,7 +318,7 @@
 
                   </ul>
                 </div>
-              </div>
+              </div> -->
 
                 <div class="row">
 
@@ -329,7 +329,7 @@
 
 
 
-              <div class="row">
+              <!-- <div class="row">
 
                 <div class="btn-group switch-btn">
                   <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
@@ -346,7 +346,7 @@
 
                   </ul>
                 </div>
-              </div>
+              </div> -->
 
                 <div class="row">
                   <div class="col-sm-10 parcoords small-chart" id="sm-sec-4"></div>
@@ -689,8 +689,8 @@
                             .attr( "r", dot_hover_size )
                             .attr( "fill-opacity", 1 );
                     tooltip
-                            .style( "left", (d3.event.pageX + 5) + "px" )
-                            .style( "top", (d3.event.pageY - 5) + "px" )
+                            .style( "left", (d3.event.pageX + 10) + "px" )
+                            .style( "top", (d3.event.pageY - 75) + "px" )
                             .transition().duration( tooltip_trans_in )
                             .style( "opacity", 1 )
                             .style( "display", "block" )
