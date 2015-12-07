@@ -6,9 +6,9 @@ function generateHistoryLine(){
     var color = d3.scale.category10();
 
 
-    var margin = {top: 20, right: 20, bottom: 20, left: 20},
-        width = 350 - margin.left - margin.right,
-        height = 200 - margin.top - margin.bottom;
+    var margin = {top: 20, right: 20, bottom: 40, left: 50},
+        width = 700 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
 
     var absyear = false;
 
@@ -32,7 +32,7 @@ function generateHistoryLine(){
                     return y(d.season_ff_pts);
                 });
 
-    var svg = d3.select("#history-line-section").append("svg")
+    var svg = d3.select("#sm-sec-2").append("svg")
                 .attr("id","seasonal_line")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
@@ -74,6 +74,10 @@ function generateHistoryLine(){
         var yearlist = []
         var season_dev = []
         var yeartuples = []
+        var classtuples = []
+        var playercnt = 0
+        var playerstart = {}
+        var classcnts = {}
 
         data.results.forEach(function(d) {
             d.guid = d.season_guid.split("_")[0]
@@ -93,12 +97,18 @@ function generateHistoryLine(){
             if (curid != d.guid){
                 curid = d.guid
                 startyear = +d.year
+                playerstart["pguid"] = startyear
                 numyears = 0
                 cumpoints = 0
+                playercnt++
+                if (!(startyear in classcnts)) {
+                    classcnts[startyear] = 0
+                }
+                classcnts[startyear]++
             }
         d.year -= (startyear - 1)
         numyears++
-
+        classtuples.push([playerstart["pguid"], d.season_ff_pts])
         while (numyears != d.year){
             base = {"guid":d.guid, "year":numyears,
                     "real_year": parseDate(d.real_year.toString()),
@@ -131,6 +141,11 @@ function generateHistoryLine(){
         b = b[0];
         return a < b ? -1 : (a > b ? 1 : 0);
     });
+    classtuples.sort(function(a, b) {
+        a = a[0];
+        b = b[0];
+        return a < b ? -1 : (a > b ? 1 : 0);
+    });
     var curyear = 0
     var yeartotals = []
     var yearcnts = []
@@ -145,6 +160,20 @@ function generateHistoryLine(){
         yeartotals[index] = [curyear, runningsum]
         yearcnts[index] += 1
     }
+
+    var curyear = 0
+    var classtotals = []
+    for (var i = 0; i < classtuples.length; i++) {
+        if (curyear != classtuples[i][0]) {
+            curyear = classtuples[i][0]
+            classtotals.push([curyear,0])
+        }
+        index = classtotals.length - 1
+        runningsum = classtotals[index][1] + classtuples[i][1]
+        classtotals[index] = [curyear, runningsum]
+    }
+    console.log(classtotals)
+    console.log(classcnts)
     for (var i = 0; i < yearlist.length; i++) {
         var stddev = math.std(yearlist[i])
         season_dev.push(stddev)
@@ -168,23 +197,35 @@ function generateHistoryLine(){
 
     avgjoe.key = "AvgJoe"
     avgjoe.values = []
-    for (var i = 0; i < avgcnt.length; i++) {
-        if (avgcnt[i] > 1){
-            season_pts = Math.round(avgpoints[i]/avgcnt[i])
-            avgjoe.values.push({"season_ff_pts":season_pts, "year":i+1})
+    for (var i = 0; i < yearcnts.length; i++) {
+        if (yearcnts[i] > 1){
+            season_pts = Math.round(yeartotals[i][1]/yearcnts[i])
+            year = parseDate(yeartotals[i][0].toString())
+            avgjoe.values.push({"season_ff_pts":season_pts, "real_year":year})
         }
     }
 
     var avgjoe2 = {}
     avgjoe2.key = "AvgJoe2"
     avgjoe2.values = []
-    for (var i = 0; i < yearcnts.length; i++) {
-        if (yearcnts[i] > 1){
-            season_pts = Math.round(yeartotals[i][1]/yearcnts[i])
-            year = parseDate(yeartotals[i][0].toString())
-            avgjoe2.values.push({"season_ff_pts":season_pts, "real_year":year})
+    prevyear = classtotals[0][0] - 1
+    for (var i = 0; i < classtotals.length; i++) {
+        year = classtotals[i][0]
+        console.log(year, prevyear)
+        season_pts = Math.round(classtotals[i][1]/classcnts[year])
+        if (!(year == prevyear + 1)) {
+            year = prevyear + 1
+            season_pts = 0
+            date = parseDate(year.toString())
+            avgjoe2.values.push({"season_ff_pts":season_pts, "real_year":date})
+        } else {
+            date = parseDate(year.toString())
+            avgjoe2.values.push({"season_ff_pts":season_pts, "real_year":date})
+            prevyear = year
         }
     }
+
+    console.log(avgjoe2)
 
     var goodguy = {}
     var eliteguy = {}
@@ -231,7 +272,7 @@ function generateHistoryLine(){
 //  BUILD AXIS
 // ******************************************************
     var xAxis = d3.svg.axis()
-                  .scale(x)
+                  .scale(xTime)
                   .orient("bottom");
 
     var yAxis = d3.svg.axis()
@@ -311,44 +352,66 @@ function generateHistoryLine(){
 //  *****************************************************
 //  BUILD THE REFERENCE LINES
 // ******************************************************
+//     var area = d3.svg.area()
+//                 .x(function(d) { return x(d.year); })
+//                 .y0(height)
+//                 .y1(function(d) { return y(d.close); });
+
+     var area = d3.svg.area()
+                  .x(function(d) {
+                        return xTime(d.real_year)
+                  })
+                .y0(height)
+                .y1(function(d) {
+                        return y(d.season_ff_pts);
+                    });
+
     var avgjoeline = svg.append("path")
                         .attr("class","distribution_lines")
                         .attr("id","avgjoeline")
-                        .attr("d",line(avgjoe.values))
-                        .attr("fill","none")
-                        .style("stroke-width",2)
-                        .style("stroke","firebrick")
-                        .on("mouseover", function() {
-                                focus.style("display", null);
-                                avgjoeline.style("stroke","indianred")
-                                var sel = d3.select(this)
-                                sel.moveToFront();
-                        })
-                        .on("mouseout", function() {
-                                focus.style("display", "none");
-                                avgjoeline.style("stroke","firebrick");
-                        });
+//                         .attr("d",line(avgjoe.values))
+                        .attr("d", area(avgjoe.values))
+                        .attr("fill","steelblue")
+//                         .style("stroke-width",2)
+                        .style("stroke","black")
+                        .text("Season")
+//                         .on("mouseover", function() {
+//                                 focus.style("display", null);
+//                                 avgjoeline.style("stroke","indianred")
+//                                 var sel = d3.select(this)
+//                                 sel.moveToFront();
+//                         })
+//                         .on("mouseout", function() {
+//                                 focus.style("display", "none");
+//                                 avgjoeline.style("stroke","firebrick");
+//                         });
 
-    var goodguyline = svg.append("path")
-                         .attr("class","distribution_lines")
-                         .attr("id","goodguyline")
-                         .attr("d",line(goodguy.values))
-                         .attr("fill","none")
-                         .style("opacity",0)
-                         .style("stroke-width",2)
-                         .style("stroke","seagreen")
-                         .on("mouseover", function() {
-                                focus.style("display", null);
-                                goodguyline.style("stroke","mediumseagreen")
-                                var sel = d3.select(this)
-                                sel.moveToFront();
-                         })
-                         .on("mouseout", function() {
-                                focus.style("display", "none");
-                                goodguyline.style("stroke","seagreen");
-                        });
-
-    goodguyline.active = true
+//     var goodguyline = svg.append("path")
+//                          .attr("class","distribution_lines")
+//                          .attr("id","goodguyline")
+//                          .attr("d",line(goodguy.values))
+//                          .attr("fill","none")
+//                          .style("opacity",0)
+//                          .style("stroke-width",2)
+//                          .style("stroke","seagreen")
+//                          .on("mouseover", function() {
+//                                 focus.style("display", null);
+//                                 goodguyline.style("stroke","mediumseagreen")
+//                                 var sel = d3.select(this)
+//                                 sel.moveToFront();
+//                          })
+//                          .on("mouseout", function() {
+//                                 focus.style("display", "none");
+//                                 goodguyline.style("stroke","seagreen");
+//                         });
+//      var button_text = svg.append("text")
+//                             .attr("dy", ".06em")
+//                             .attr("y", -3)
+//                             .attr("x", d3.select("#avgjoeline").)
+//                             .attr("text-anchor", "middle")
+//                             .style("stroke","black")
+//                             .text("Class");
+//     goodguyline.active = true
     avgjoeline.active = true
 
 //  *****************************************************
@@ -356,42 +419,36 @@ function generateHistoryLine(){
 // ******************************************************
     b_height = height+margin.bottom+margin.top;
 
-    var yrtog = d3.select("#seasonal_line").append("button")
+    var yrtog = svg.append("rect")
                   .attr("class","button")
-                  .style("position","relative")
+                  .attr("id","class_yr")
+                  .attr("x", 20)
+                  .attr("y", 10)
+                  .attr("rx",25)
+                  .attr("ry",25)
+                  .attr("width", 150)
+                  .attr("height", 100)
+                  .attr("stroke","black")
+                  .attr("fill","steelblue")
+//                   .style("position","relative")
 //                   .style("top",-24+"px")
-                  .style("right", width-350 +"px")
-                  .text("Years")
+//                   .style("right", width-350 +"px")
+                  .text("Class")
                   .on("click",function(){
                       absyear = absyear ? false : true;
                       if (absyear) {
                         yrtog.text("Relative")
-                        xAxis.scale(xTime);
-                        svg.selectAll("g .x.axis")
-                           .call(xAxis);
-                        var sel = d3.select("body").transition();
-                        dataGroup.forEach(function(d, i) {
-                            sel.select("#"+d.key)
-                               .duration(1500)
-                               .attr("d",line(d.values))
-                        });
-                        d3.select("#avgjoeline").attr("d",line(avgjoe2.values))
-                        d3.select("#goodguyline").attr("d",line(goodguy2.values))
-                        d3.select("#eliteguyline").attr("d",line(eliteguy2.values))
+                        y.domain(d3.extent(avgjoe2, function(d) { return d.season_ff_pts; }));
+                        svg.select("g.y.axis").call(yAxis)
+                        d3.select("#avgjoeline").attr("d",area(avgjoe2.values))
+//                         d3.select("#goodguyline").attr("d",line(goodguy2.values))
                       } else {
                             yrtog.text("Years")
-                            xAxis.scale(x);
-                            svg.selectAll("g .x.axis")
-                               .call(xAxis);
-                            var sel = d3.select("body").transition();
-                                dataGroup.forEach(function(d, i) {
-                                    sel.select("#"+d.key)
-                                       .duration(1500)
-                                       .attr("d",line(d.values))
-                            });
-                            d3.select("#avgjoeline").attr("d",line(avgjoe.values))
-                            d3.select("#goodguyline").attr("d",line(goodguy.values))
-                            d3.select("#eliteguyline").attr("d",line(eliteguy.values))
+                            y.domain(d3.extent(avgjoe, function(d) { return d.season_ff_pts; }));
+                            svg.select("g.y.axis").call(yAxis)
+                            d3.select("#avgjoeline").attr("d",area(avgjoe.values))
+//                             d3.select("#goodguyline").attr("d",line(goodguy.values))
+
 
                       }
                   });

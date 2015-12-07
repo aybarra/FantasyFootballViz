@@ -65,9 +65,11 @@ d3.json('http://localhost:8000/careers/', function(error,data){
     // A formatter for counts.
         var formatCount = d3.format(",.0f");
 
-        var margin = {top: 10, right: 30, bottom: 30, left: 30},
-            width = 300 - margin.left - margin.right,
-            height = 200 - margin.top - margin.bottom;
+        var margin = { top: 10, right: 30, bottom: 33, left: 45 }
+            , width = parseInt(d3.select('.small-chart').style('width'), 10)
+            , width = width - margin.left - margin.right
+            , height = parseInt(d3.select('.small-chart').style('height'), 10)
+            , height = height - margin.top - margin.bottom;
 
         var x = d3.scale.linear()
                 .domain([0,5000])
@@ -91,7 +93,7 @@ d3.json('http://localhost:8000/careers/', function(error,data){
             .tickFormat(d3.format("d"))
             .orient("bottom");
 
-        var svg = d3.select("#histogram-section").append("svg")
+        var svg = d3.select("#sm-sec-1").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")

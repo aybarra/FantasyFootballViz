@@ -49,6 +49,12 @@ $( document ).ready( function ()
 
                 //Add player to selected player global array
                 selectedPlayers.push( data.data );
+
+                //Add the players name to the pguid map for use in other places.
+                addPlayerToPguidMap( data.data );
+
+                //Reload all of the tables because a filter item was added
+                reloadAllChartData();
             }
             else
             {
@@ -69,7 +75,13 @@ function deletePlayerObject(playerGuidToDelete)
         //If they have the same pguid, they are the same person. Delete from array and stop execution. There should never be duplicates.
         if( playerGuidToDelete === player['pguid'] )
         {
+            //Remove the player from the global array
             selectedPlayers.splice( index, 1 );
+
+            //Reload all of the tables because a filter item was added
+            reloadAllChartData();
+
+            //return false to break out of the each loop
             return false;
         }
     } );

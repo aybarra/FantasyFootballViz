@@ -1,4 +1,4 @@
-function generateLineChart(){
+function generateLineChart(data){
 
     var dataset = [];
     var selected_color = "cornflowerblue"
@@ -6,9 +6,11 @@ function generateLineChart(){
     var color = d3.scale.category10();
 
 
-    var margin = {top: 20, right: 20, bottom: 20, left: 20},
-        width = 350 - margin.left - margin.right,
-        height = 200 - margin.top - margin.bottom;
+    var margin = { top: 10, right: 30, bottom: 33, left: 45 }
+        , width = parseInt(d3.select('.small-chart').style('width'), 10)
+        , width = width - margin.left - margin.right
+        , height = parseInt(d3.select('.small-chart').style('height'), 10)
+        , height = height - margin.top - margin.bottom;
 
     var absyear = false;
 
@@ -32,7 +34,7 @@ function generateLineChart(){
                     return y(d.season_ff_pts);
                 });
 
-    var svg = d3.select("#line-chart-section").append("svg")
+    var svg = d3.select("#sm-sec-3").append("svg")
                 .attr("id","seasonal_line")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
@@ -61,8 +63,6 @@ function generateLineChart(){
 //  *****************************************************
 //  GET DATA AND MANIPULATE IT
 // ******************************************************
-    d3.json('http://localhost:8000/seasons_subset/', function(error,data){
-        if (error) throw error;
 
         var curid = []
         var startyear
@@ -75,7 +75,7 @@ function generateLineChart(){
         var season_dev = []
         var yeartuples = []
 
-        data.results.forEach(function(d) {
+        data.forEach(function(d) {
             d.guid = d.season_guid.split("_")[0]
                 if (d.guid.indexOf('.') != -1) {
                     d.guid = d.guid.replace('.','');
@@ -124,7 +124,6 @@ function generateLineChart(){
             avgcnt[numyears-1] += 1
             yearlist[numyears-1].push(d.season_ff_pts)
         }
-    });
 
     yeartuples.sort(function(a, b) {
         a = a[0];
