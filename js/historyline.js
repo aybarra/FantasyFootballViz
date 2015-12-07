@@ -81,7 +81,7 @@ function generateHistoryLine(data){
         var numyears
         var avgcnt = []
         var avgpoints = []
-        var avgjoe = {}
+        var groupavg = {}
         var yearlist = []
         var season_dev = []
         var yeartuples = []
@@ -209,17 +209,17 @@ function generateHistoryLine(data){
     var stddev = math.std(templist)
     season_dev2.push(stddev)
 
-    avgjoe.key = "AvgJoe"
-    avgjoe.values = []
+    groupavg.key = "groupavg"
+    groupavg.values = []
     for (var i = 0; i < yearcnts.length; i++) {
             season_pts = Math.round(yeartotals[i][1]/yearcnts[i])
             year = parseDate(yeartotals[i][0].toString())
-            avgjoe.values.push({"season_ff_pts":season_pts, "real_year":year})
+            groupavg.values.push({"season_ff_pts":season_pts, "real_year":year})
     }
 
-    var avgjoe2 = {}
-    avgjoe2.key = "AvgJoe2"
-    avgjoe2.values = []
+    var groupavg2 = {}
+    groupavg2.key = "groupavg2"
+    groupavg2.values = []
     prevyear = classtotals[0][0] - 1
     for (var i = 0; i < classtotals.length; i++) {
         year = classtotals[i][0]
@@ -229,10 +229,10 @@ function generateHistoryLine(data){
             year = prevyear + 1
             season_pts = 0
             date = parseDate(year.toString())
-            avgjoe2.values.push({"season_ff_pts":season_pts, "real_year":date})
+            groupavg2.values.push({"season_ff_pts":season_pts, "real_year":date})
         } else {
             date = parseDate(year.toString())
-            avgjoe2.values.push({"season_ff_pts":season_pts, "real_year":date})
+            groupavg2.values.push({"season_ff_pts":season_pts, "real_year":date})
             prevyear = year
         }
     }
@@ -245,9 +245,9 @@ function generateHistoryLine(data){
     eliteguy.values = []
     for (var i = 0; i < avgcnt.length; i++) {
         if (avgcnt[i] > 1){
-            season_pts = Math.round(avgjoe.values[i].season_ff_pts + season_dev[i])
+            season_pts = Math.round(groupavg.values[i].season_ff_pts + season_dev[i])
             goodguy.values.push({"season_ff_pts":season_pts, "year":i+1})
-            season_pts = Math.round(avgjoe.values[i].season_ff_pts + (2*season_dev[i]))
+            season_pts = Math.round(groupavg.values[i].season_ff_pts + (2*season_dev[i]))
             eliteguy.values.push({"season_ff_pts":season_pts, "year":i+1})
         }
     }
@@ -282,8 +282,8 @@ function generateHistoryLine(data){
                   .orient("left");
 
 //     x.domain(d3.extent(history_dataset, function(d) { return d.year; }));
-    y.domain(d3.extent(avgjoe.values, function(d) { return d.season_ff_pts; }));
-    xTime.domain(d3.extent(avgjoe.values, function(d) {return d.real_year;}))
+    y.domain(d3.extent(groupavg.values, function(d) { return d.season_ff_pts; }));
+    xTime.domain(d3.extent(groupavg.values, function(d) {return d.real_year;}))
 
 //     x.domain([1,d3.max(history_dataset, function(d) { return d.year; })]);
 //     y.domain([0,d3.max(history_dataset, function(d) { return d.season_ff_pts; })]);
@@ -380,7 +380,7 @@ function generateHistoryLine(data){
     var histavgline = svg.append("path")
                         .attr("class","distribution_lines")
                         .attr("id","historyline")
-                        .attr("d", area(avgjoe.values))
+                        .attr("d", area(groupavg.values))
                         .attr("fill","steelblue")
                         .style("stroke","black")
                         .text("Season")
@@ -400,7 +400,7 @@ function generateHistoryLine(data){
 
     svg.append("rect")
           .attr("class","history_button")
-          .attr("id","avgbut")
+          .attr("id","historyavgbut")
           .attr("x", relx(1))
           .attr("y", rely(98))
           .attr("rx",relx(1))
@@ -413,19 +413,19 @@ function generateHistoryLine(data){
               absyear = absyear ? false : true;
               var fillcol = absyear ? "black" : "white"
               if (absyear) {
-                y.domain(d3.extent(avgjoe2.values, function(d) { return d.season_ff_pts; }));
+                y.domain(d3.extent(groupavg2.values, function(d) { return d.season_ff_pts; }));
                 svg.selectAll("g .y.axis").call(yAxis);
-                xTime.domain(d3.extent(avgjoe2.values, function(d) {return d.real_year;}))
+                xTime.domain(d3.extent(groupavg2.values, function(d) {return d.real_year;}))
                 svg.selectAll("g .x.axis").call(xAxis);
-                d3.select("#historyline").attr("d",area(avgjoe2.values))
+                d3.select("#historyline").attr("d",area(groupavg2.values))
                 svg.select("#historytitle").text("Average Points / Class");
                 d3.select(this).attr("fill",fillcol)
               } else {
-                y.domain(d3.extent(avgjoe.values, function(d) { return d.season_ff_pts; }));
+                y.domain(d3.extent(groupavg.values, function(d) { return d.season_ff_pts; }));
                 svg.selectAll("g .y.axis").call(yAxis);
-                xTime.domain(d3.extent(avgjoe.values, function(d) {return d.real_year;}))
+                xTime.domain(d3.extent(groupavg.values, function(d) {return d.real_year;}))
                 svg.selectAll("g .x.axis").call(xAxis);
-                d3.select("#historyline").attr("d",area(avgjoe.values))
+                d3.select("#historyline").attr("d",area(groupavg.values))
                 svg.select("#historytitle").text("Average Points / Year")
                 d3.select(this).attr("fill",fillcol)
               }

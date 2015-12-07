@@ -254,6 +254,7 @@ function generateCDF_D3Chart(data){
 
     var yAxis = d3.svg.axis()
                   .scale(y)
+                  .tickFormat(d3.format("d"))
                   .orient("left");
 
     
@@ -287,59 +288,58 @@ function generateCDF_D3Chart(data){
 //  CIRCLES FOR DEATILS ON DEMANSD MOUSE HOVER
 // ******************************************************
     var focus = svg.append("g")
-                   .attr("class", "focus")
+                   .attr("class", "cdffocus")
                    .style("display", "none");
 
     focus.append("circle")
          .attr("r", 4.5);
 
     focus.append("text")
+         .attr("id","cdffocusname")
          .attr("x", 9)
-         .attr("dy", ".35em")
-         .style("font-size", "10px") 
+         .attr("dy", "-1.5em")
+         .style("font-size", "10px")
+
+    focus.append("text")
+         .attr("id","cdffocusyear")
+         .attr("x", 9)
+         .attr("dy", "-.5em")
+         .style("font-size", "10px")
+
+    focus.append("text")
+         .attr("id","cdffocuspoints")
+         .attr("x", 9)
+         .attr("dy", ".5em")
+         .style("font-size", "10px")
 
 
 //  *****************************************************
 //  PLACEHOLDERS FOR PLAYER SUMMARY STATISTICS
 // ******************************************************
 
-    var nameline = svg.append("g")
-                      .attr("class", "details")
+    var statgroup = svg.append("g")
+                       .attr("class", "stats")
+                       .attr("transform", "translate(" + relx(1) + "," + rely(90)+ ")")
 
-    var yearline = svg.append("g")
-                      .attr("class", "details")
-
-    var pointsline = svg.append("g")
-                        .attr("class", "details")
-
-    var averageline = svg.append("g")
-                         .attr("class", "details")
-
-    nameline.append("text")
+    statgroup.append("text")
             .attr("id","cdfnameline")
-            .attr("x", 50)
-            .attr("y", height+margin.bottom-20)
+//             .attr("x", 50)
+//             .attr("y", height+margin.bottom-20)
             .style("font-size", "10px") 
 
-    yearline.append("text")
+    statgroup.append("text")
             .attr("id","cdfyearline")
-            .attr("x", 35)
-            .attr("y", height+margin.bottom-10)
+            .attr("dx", 10)
+            .attr("dy", 10)
             .style("font-size", "10px") 
 
-    pointsline.append("text")
+    statgroup.append("text")
             .attr("id","cdfpointsline")
             .attr("x", 15)
               .attr("y", height+margin.bottom)
             .style("font-size", "10px") 
 
-    averageline.append("text")
-            .attr("id","cdfaverageline")
-            .attr("x", 9)
-               .attr("y", height+margin.bottom)
-              .style("font-size", "10px") 
-
-    svg.append("text")
+    statgroup.append("text")
         .attr("id","cdftitle")
         .attr("x", (width / 2))             
         .attr("y", 0 - (margin.top / 3) + 5)
@@ -357,41 +357,41 @@ function generateCDF_D3Chart(data){
                        .attr("id", "path_"+d.key)
                        .attr("d", line(d.values))
                        .attr("fill","none")
-                       .style('stroke-width', 3)
                        .style("stroke", "whitesmoke")
                        .on("click", function() {
                             color_attr = d3.select(this).style("stroke")
-                            console.log(color_attr)
                             rgb = color_attr.split("(")[1].split(")")[0].split(",")
-                            cfb= d3.rgb("whitesmoke")
-                            if (!(+rgb[0]==cfb.r && +rgb[1]==cfb.g && +rgb[2]==cfb.b)) {
-                                d3.select(this)
-                                .style('stroke', colorScale(PGUID_TO_NAME_MAP[d.key][1]))
-                            } else {
-                                d3.select(this).style("stroke","whitesmoke");
+                            colorcheck = CheckColor(color_attr)
+//                             console.log(colorcheck)
+                            var sel = d3.select(this);
+                            if (colorcheck == 'blue') {
+                                    sel.style("stroke", "cornflowerblue")
+                            }
+                            if (colorcheck == 'orange') {
+                                    sel.style("stroke", "sandybrown")
+                            }
+                            if (colorcheck == 'green') {
+                                    sel.style("stroke", "limegreen")
+                            }
+                            if (colorcheck == 'cornflowerblue' || 
+                                colorcheck == 'sandybrown' ||
+                                colorcheck == 'limegreen') {
+                                    sel.style("stroke", "whitesmoke")
                             }
                        })
                        .on("mouseover", function() {
-                            var line = d3.select(this);
-                            line.style('stroke', colorScale(PGUID_TO_NAME_MAP[d.key][1]))
-                            // line.style('stroke', d3.hsl('#33b9ff'));
-                            this.parentNode.parentNode.appendChild(this.parentNode);
-                            d3.select(this.nextSibling)
-                              .attr("opacity", "1")
-
                             focus.style("display", null);
-// //                             iline.style("stroke","steelblue")
+                            color_attr = d3.select(this).style("stroke")
+                            color = colorScale(PGUID_TO_NAME_MAP[d.key][1])
+//                             console.log(color)
                             var sel = d3.select(this);
                             sel.moveToFront();
-//                             color_attr = d3.select(this).style("stroke")
-//                             cfb= d3.rgb("cornflowerblue")
-//                             rgb = color_attr.split("(")[1].split(")")[0].split(",")
-//                             if (+rgb[0]==cfb.r && +rgb[1]==cfb.g && +rgb[2]==cfb.b) {
-//                                 iline.style("stroke","cornflowerblue");
-//                             } else {
-//                                 iline.style("stroke","steelblue");
-//                             }
-
+                            colorcheck = CheckColor(color_attr)
+                            if (!(colorcheck == 'cornflowerblue' || 
+                                colorcheck == 'sandybrown' ||
+                                colorcheck == 'limegreen')) {
+                                    sel.style('stroke', color)                                
+                            }
                         })
                       .on("mouseout", function() {
                             focus.style("display", "none");
@@ -400,13 +400,13 @@ function generateCDF_D3Chart(data){
                             color_attr = d3.select(this).style("stroke")
                             cfb= d3.rgb(selected_color)
                             rgb = color_attr.split("(")[1].split(")")[0].split(",")
-                            if (+rgb[0]==cfb.r && +rgb[1]==cfb.g && +rgb[2]==cfb.b) {
-                                cdfline.style("stroke", selected_color);
-                            } else {
-                                cdfline.style("stroke","whitesmoke");
-                                sel.moveToBack();
+                            colorcheck = CheckColor(color_attr)
+                            if (!(colorcheck == 'cornflowerblue' || 
+                                colorcheck == 'sandybrown' ||
+                                colorcheck == 'limegreen')) {
+                                    sel.style('stroke', "whitesmoke")
+                                    sel.moveToBack()
                             }
-
                         })
                       .on("mousemove", function(){
                             if (absyear == true) {
@@ -420,48 +420,27 @@ function generateCDF_D3Chart(data){
                                 var year = Math.round(rawX)
                                 var pts = d.values[year-1].season_ff_pts
                             }
-                            var totpts = 0
+                            var totpts = d.values[d.values.length - 1].season_ff_pts
                             var totyears = d.values.length
-                            var bestyr = -10000
-                            var worstyr = 10000
-                            for (var i = 0; i < totyears; i++) {
-                                totpts += d.values[i].season_ff_pts
-                                if (d.values[i].season_ff_pts > bestyr) {
-                                    bestyr = d.values[i].season_ff_pts
-                                }
-                                if (d.values[i].season_ff_pts < worstyr) {
-                                    worstyr = d.values[i].season_ff_pts
-                                }
-                            }
                             var avg = Math.round(totpts/totyears)
                             if (absyear == true) {
                                 focus.attr("transform", "translate(" + xTime(yr_date) + "," + y(pts) + ")")
                             } else {
                                 focus.attr("transform", "translate(" + x(year) + "," + y(pts) + ")")
                             }
-                            focus.select("text").text(d.key+"\n  Year: "+year+"\n  Pts:"+pts);
+                            fullname = PGUID_TO_NAME_MAP[d.key][0]
+                            focus.select("#cdffocusname").text(fullname);
+                            focus.select("#cdffocusyear").text("Yr: "+year);
+                            focus.select("#cdffocuspoints").text("Pts:"+pts);                            
                             focus.moveToFront();
-                            nameline.select("text").text("Name: " + d.key);
-                            yearline.select("text").text("Years: " + totyears + "......  Total Points: " + totpts);
-//                             pointsline.select("text").text("Total Points: " + totpts);
-                            averageline.select("text").text("Average/Season: " + avg + " (Best: "+bestyr+", Worst: " + worstyr+")");
+                            statgroup.select("#cdfnameline").text("Name: " + fullname);
+                            statgroup.select("#cdfyearline").text("Years: " + totyears + "......  Total Points: " + totpts);
+//                             cdfpointsline.select("text").text("Total Points: " + totpts);
+                            statgroup.select("#cdfavgline").text("Average/Season: " + avg );
                             d3.select("#cdfnameline").moveToFront()
                             d3.select("#cdfyearline").moveToFront()
                             d3.select("#cdfpointsline").moveToFront()
-                            d3.select("#cdfaverageline").moveToFront()
                         });
-//                 console.log(d)
-//                 iline.append("text")
-//                     .datum([d], function(dprime) {
-//                         console.log(dprime)
-//                       // console.log("TEST STRING PRIOR");
-//                       return {name: PGUID_TO_NAME_MAP[dprime.key], value:     dprime.values[dprime.values.length - 1]}; })
-//                     .attr("transform", function(d) { return "translate(" + x(dprime.value.x) + "," + y(dprime.value.y) + ")"; })
-//                     .attr("x", 3)
-//                     .attr("dy", ".35em")
-//                     .text(function(d) { return d.name + ' (' + d.value.y + ') ' ; })
-//                     .attr("opacity", "0");
-
 
     });
     dispatch.on("lasso_cdf", function(lassoed_items) {
@@ -696,6 +675,35 @@ function updateCDFData(cdf_data){
   d3.select("#lrg-sec-1 svg").remove();
 
   generateCDF_D3Chart(cdf_data);
+}
+
+function CheckColor(color_attr){
+        blue = d3.rgb("#1f77b4")
+        orange = d3.rgb("#ff7f0e")
+        green = d3.rgb("#2ca02c")
+        ltblue = d3.rgb("#6495ed")
+        brown = d3.rgb("#f4a460")
+        lime = d3.rgb("#32cd32")
+    rgb = color_attr.split("(")[1].split(")")[0].split(",")
+    if (+rgb[0]==blue.r && +rgb[1]==blue.g && rgb[2]==blue.b) {
+        return "blue"
+    }
+    if (+rgb[0]==orange.r && +rgb[1]==orange.g && rgb[2]==orange.b) {
+        return "orange"
+    }
+    if (+rgb[0]==green.r && +rgb[1]==green.g && rgb[2]==green.b) {
+        return "green"
+    }
+    if (+rgb[0]==ltblue.r && +rgb[1]==ltblue.g && rgb[2]==ltblue.b) {
+        return "cornflowerblue"
+    }
+    if (+rgb[0]==brown.r && +rgb[1]==brown.g && rgb[2]==brown.b) {
+        return "sandybrown"
+    }
+    if (+rgb[0]==lime.r && +rgb[1]==lime.g && rgb[2]==lime.b) {
+        return "limegreen"
+    }
+    return false
 }
 //   var absyear = false;
 //   var parseDate = d3.time.format("%Y").parse;

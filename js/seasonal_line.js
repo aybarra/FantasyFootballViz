@@ -199,6 +199,7 @@ function generateLineChart(data) {
 
     var yAxis = d3.svg.axis()
                   .scale(y)
+                  .tickFormat(d3.format("d"))
                   .orient("left");
 
 
