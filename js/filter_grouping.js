@@ -76,6 +76,9 @@ function drawSelectionFilter()
                 //Loop through the array and get all of the player pks
                 $.each( data, function ( index, player )
                 {
+                    //
+                    addPlayerToPguidMap( player );
+
                     filterObject.players.push( player );
                 } );
 
@@ -87,6 +90,10 @@ function drawSelectionFilter()
 
                 //Call the sliding drawer click function to close the drawer
                 menuTrigger.trigger( "click" );
+
+                //reload all of the chart data
+                reloadAllChartData();
+
             }
         } );
 
@@ -481,6 +488,9 @@ function deleteFilterObject( index )
 
         //redraw the table to give new i values to rows
         drawCurrentFilterTable();
+
+        //Reload all of the tables because a filter item was deleted.
+        reloadAllChartData();
     }
     else
     {

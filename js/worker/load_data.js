@@ -1,12 +1,8 @@
-/**
- * Call to make all the web requests to the server to get all the data for the pages.
- */
-function loadPageData()
+function first()
 {
-    $.ajax( {
+    return $.ajax( {
         url: defaultFilterObject.generateCareerUrl(),
         type: 'GET',
-        async: false,
         data: {
             format: 'json'
         },
@@ -28,11 +24,13 @@ function loadPageData()
 
         }
     } );
+}
 
-    $.ajax( {
+function second( data, textStatus, jqXHR )
+{
+    return $.ajax( {
         url: 'http://localhost:8000/seasons_subset/?players=' + filteredPlayersPguids().join(),
         type: 'GET',
-        async: false,
         data: {
             format: 'json'
         },
@@ -46,11 +44,13 @@ function loadPageData()
             season_subset_data = data[ 'results' ];
         }
     } );
+}
 
-    $.ajax( {
+function third( data, textStatus, jqXHR )
+{
+    return $.ajax( {
         url: 'http://localhost:8000/seasons/?players=' + filteredPlayersPguids().join(),
         type: 'GET',
-        async: false,
         data: {
             format: 'json'
         },
@@ -64,6 +64,35 @@ function loadPageData()
             season_data = data[ 'results' ];
         }
     } );
+}
 
-    //postMessage(0);
+function fourth( data, textStatus, jqXHR )
+{
+    loadScatterPlot(); //Loads from filters
+    generateCDF_D3Chart( season_subset_data );
+    generateHistogram( filteredPlayers(), season_subset_data );
+    createTable(); //Not a chart
+    drawPCChart( filteredPlayers(), season_data );
+    generateLineChart( season_subset_data );
+    generateHistoryLine( season_subset_data );
+}
+
+function fifth( data, textStatus, jqXHR )
+{
+    updateCDFData( season_subset_data );
+}
+
+function loadPageData()
+{
+    first().then( second ).then( third );
+}
+
+function loadPageWithAllChartData()
+{
+    first().then( second ).then( third ).then( fourth );
+}
+
+function reloadAllChartData()
+{
+    first().then( second ).then( third ).then( fifth );
 }
