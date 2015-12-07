@@ -6,7 +6,8 @@ function generateLineChart(data) {
     var color = d3.scale.category10();
 
 
-    var margin = { top: 10, right: 30, bottom: 50, left: 45 }
+    var margin = { top: 15, right: 35, bottom: 55, left: 45 }
+
         , width = parseInt(d3.select('.small-chart').style('width'), 10)
         , width = width - margin.left - margin.right
         , height = parseInt(d3.select('.small-chart').style('height'), 10)
@@ -251,7 +252,7 @@ function generateLineChart(data) {
                   .scale(y)
                   .orient("left");
 
-    
+
 
     x.domain(d3.extent(dataset, function(d) { return d.year; }));
 //     y.domain(d3.extent(dataset, function(d) { return d.season_ff_pts; }));
@@ -272,11 +273,20 @@ function generateLineChart(data) {
        .call(yAxis)
        .append("text")
        .attr("transform", "rotate(-90)")
-       .attr("y", -42)
-       .attr("x", -150)
+       .attr("y", -41)
+       .attr("x", -30)
        .attr("dy", ".71em")
        .style("text-anchor", "end")
        .text("Seasonal Fantasy Points");
+
+      //  svg.append("text")
+      //      .attr("id","title")
+      //      .attr("x", 150)
+      //      .attr("y", 0 - (margin.top / 3))
+      //      .attr("text-anchor", "middle")
+      //      .style("font-size", "16px")
+      //      .style("text-decoration", "underline")
+      //      .text("Per Season Fantasy Points");
 
 //  *****************************************************
 //  CIRCLES FOR DEATILS ON DEMANSD MOUSE HOVER
@@ -291,7 +301,7 @@ function generateLineChart(data) {
     focus.append("text")
          .attr("x", 9)
          .attr("dy", ".35em")
-         .style("font-size", "10px") 
+         .style("font-size", "10px")
 
 
 //  *****************************************************
@@ -314,33 +324,33 @@ function generateLineChart(data) {
             .attr("id","nameline")
             .attr("x", 50)
             .attr("y", height+margin.bottom-20)
-            .style("font-size", "10px") 
+            .style("font-size", "10px")
 
     yearline.append("text")
             .attr("id","yearline")
             .attr("x", 35)
             .attr("y", height+margin.bottom-10)
-            .style("font-size", "10px") 
+            .style("font-size", "10px")
 
     pointsline.append("text")
             .attr("id","pointsline")
             .attr("x", 15)
               .attr("y", height+margin.bottom)
-            .style("font-size", "10px") 
+            .style("font-size", "10px")
 
     averageline.append("text")
             .attr("id","averageline")
             .attr("x", 9)
                .attr("y", height+margin.bottom)
-              .style("font-size", "10px") 
+              .style("font-size", "10px")
 
     svg.append("text")
         .attr("id","seasonaltitle")
-        .attr("x", (width / 2))             
+        .attr("x", (width / 2))
         .attr("y", 0 - (margin.top / 3) + 5)
-        .attr("text-anchor", "middle")  
-        .style("font-size", "16px") 
-        .style("text-decoration", "underline")  
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("text-decoration", "underline")
         .text("Player Points / Season");
 
 //  *****************************************************
@@ -601,7 +611,7 @@ function generateLineChart(data) {
                         d3.select("#goodguyline").attr("d",line(goodguy2.values))
                         d3.select("#eliteguyline").attr("d",line(eliteguy2.values))
                         d3.select("#title").text("Average Points / Class");
-                        
+
 
                       } else {
                             relbutton.text("Years")

@@ -1,10 +1,10 @@
 
 function drawPCChart(careers, season_data){
 
-  var margin = { top: 10, right: 30, bottom: 33, left: 45 }
-      , width = parseInt(d3.select('.small-chart').style('width'), 10)
+  var margin = { top: 10, right: 30, bottom: 10, left: 45 }
+      , width = parseInt(d3.select('.parcoords').style('width'), 10)
       , width = width// - margin.left - margin.right
-      , height = parseInt(d3.select('.small-chart').style('height'), 10)
+      , height = parseInt(d3.select('.parcoords').style('height'), 10)
       , height = height// - margin.top - margin.bottom;
 
 var color_set = d3.scale.linear()
@@ -47,7 +47,7 @@ firstCell.forEach(function(d){
 
 
 // get parallel coordinates
-graph = d3.parcoords()('#sm-sec-4')
+graph = d3.parcoords()('#str-sec')
         //.margin({ top: 30, left: 3 * textLength, bottom: 40, right: 0 })
         .alpha(0.6)
         .height(height)

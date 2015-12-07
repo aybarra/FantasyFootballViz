@@ -92,6 +92,15 @@ function generateCDF_D3Chart(data){
         .style("text-anchor", "end")
         .text("Cumulative Fantasy Points");
 
+        cdf_svg.append("text")
+            .attr("id","title")
+            .attr("x", 150)
+            .attr("y", 0 - (cdf_margin.top / 3))
+            .attr("text-anchor", "middle")
+            .style("font-size", "16px")
+            .style("text-decoration", "underline")
+            .text("Cumulative Career Fantasy Points");
+
     var player = cdf_svg.selectAll(".player")
         .data(data_conv)
       .enter().append("g")
@@ -220,7 +229,7 @@ function updateCDFData(data){
   d3.select(".y axis").remove();
   d3.selectAll(".cdf_line").remove();
   d3.select("#lrg-sec-1 svg").remove();
-  
+
   generateCDF_D3Chart(data);
 }
 

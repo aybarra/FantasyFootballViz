@@ -143,6 +143,7 @@
                         <!--<div class="autocomplete-suggestion">...</div>-->
                     </div>
                 </div>
+                <hr>
                 <div class="row">
                     <h4>Player Data Table</h4>
                     <table class="table table-row-border table-hover" id="data_table" cellspacing="0" margin-top="750px"
@@ -166,14 +167,23 @@
                     <div class="col-sm-12 large-chart">
                       <div class="row">
                         <button type="button" id="cdf_year_swap" class="btn-primary btn-xs">CHANGE AXIS</button>
+                        <button type="button" id="scatter_btn" class="btn-primary btn-xs" onclick="transitionTo('scatter', '#lrg-sec-1', 'large-chart')">Scatter</button>
                       </div>
                         <div id="lrg-sec-1"></div>
                     </div>
                 </div>
-                <div class="row">
 
+                <hr>
+
+                <div class="row">
                     <div class="col-sm-12 large-chart">
                         <div id="lrg-sec-2"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="parcoords stretch-chart">
+                        <div id="str-sec"></div>
                     </div>
                 </div>
             </div>
@@ -185,11 +195,15 @@
                   </div>
                 </div>
 
+                <hr>
+
                 <div class="row">
                   <div class="col-sm-12 small-chart">
                     <div id="sm-sec-2"></div>
                   </div>
                 </div>
+
+                <hr>
 
                 <div class="row">
                   <div class="col-sm-12 small-chart">
@@ -197,11 +211,13 @@
                   </div>
                 </div>
 
-                <div class="row">
-                  <div class="parcoords col-sm-12  small-chart">
+                <hr>
+
+                <!-- <div class="row">
+                  <div class="parcoords col-sm-12 small-chart">
                     <div id="sm-sec-4"></div>
                   </div>
-                </div>
+                </div> -->
 
             </div>
         </div>
@@ -244,7 +260,7 @@
     // var scatter_height = 400 - scatter_margin.top - scatter_margin.bottom;
     // var scatter_padding = 100;
 
-    var scatter_margin = { top: 10, right: 30, bottom: 33, left: 45 }
+    var scatter_margin = { top: 20, right: 30, bottom: 33, left: 45 }
             , width = parseInt( d3.select( '.large-chart' ).style( 'width' ), 10 )
             , scatter_width = width - scatter_margin.left - scatter_margin.right
             , height = parseInt( d3.select( '.large-chart' ).style( 'height' ), 10 )
@@ -254,7 +270,7 @@
     // var cdf_width = 900 - cdf_margin.right - cdf_margin.left;
     // var cdf_height = 400 - cdf_margin.top - cdf_margin.bottom;
 
-    var cdf_margin = { top: 10, right: 30, bottom: 33, left: 45 }
+    var cdf_margin = { top: 20, right: 30, bottom: 33, left: 45 }
             , cdf_width = width - cdf_margin.right - cdf_margin.left
             , cdf_height = height - cdf_margin.top - cdf_margin.bottom;
 
@@ -598,6 +614,15 @@
                 .attr( "transform", "translate(" + 10 + "," + (scatter_height / 2) + ")rotate(-90)" )
                 .text( "Fantasy Points" );
 
+        svg_scatter.append("text")
+            .attr("id","title")
+            .attr("x", 150)
+            .attr("y", 0 - (scatter_margin.top / 3))
+            .attr("text-anchor", "middle")
+            .style("font-size", "16px")
+            .style("text-decoration", "underline")
+            .text("Fantasy Points / Win Percentage");
+
         // Init the lasso on the svg:g that contains the dots
         svg_scatter.call( lasso );
 
@@ -675,68 +700,21 @@
         data_table.draw();
     }
 
-    // function transitionTo( name )
-    // {
-    //     var x = document.getElementsByClassName( "career_chart" );
-    //     var y = document.getElementsByClassName( "seasonal_chart" );
-    //     // swap_sound.play();
-    //     if( name == "seasonal" )
-    //     {
-    //         // if ($("#cdf_chart").has("svg").length==0){
-    //         //   console.log("calling cdf chart");
-    //         //   generateCDF_D3Chart();
-    //         // }
-    //         // document.getElementById('scatter_chart').style.display = 'none';
-    //         // document.getElementById('cdf_chart').style.display = 'none';
-    //         // document.getElementById('seasonal_line').style.display = 'block';
-    //         for ( var i = 0; i < x.length; i++ )
-    //         {
-    //             x[ i ].style.display = "none";
-    //         }
-    //
-    //         for ( var i = 0; i < y.length; i++ )
-    //         {
-    //             y[ i ].style.display = "block";
-    //         }
-    //
-    //         document.getElementById( "pcplot" ).style.display = 'block';
-    //     }
-    //     ;
-    //
-    //     if( name == "career" )
-    //     {
-    //         // d3.select("#cdf_chart").select("svg").remove();
-    //
-    //         // document.getElementById('scatter_chart').style.display = 'block';
-    //         // document.getElementById('cdf_chart').style.display = 'block';
-    //         // document.getElementById('seasonal_line').style.display = 'none';
-    //
-    //         for ( i = 0; i < y.length; i++ )
-    //         {
-    //             y[ i ].style.display = "none";
-    //         }
-    //
-    //         for ( i = 0; i < x.length; i++ )
-    //         {
-    //             x[ i ].style.display = "block";
-    //         }
-    //     }
-    //
-    // }
-
-    function transitionTo(name, id, classification){
-      // switch (name) {
-      //   case 'cdf': d3.select(id).append("cdf_svg");
-      //
-      //     break;
-      //     case 'scatter':{
-      //       console.log("removing");
-      //       $(id).addID()
-      //       console.log("done");
-      //     }break;
-      //   default:
-      //
-      // }
+    function transitionTo( name, id, classification )
+    {
+          // switch (name) {
+          //   case 'scatter':{
+          //     d3.select(id).select('svg').remove();
+          //     d3.select(id).append(svg_scatter);
+          //     d3.select(id).select(function() {
+          //         return this.appendChild(document.getElementById("bar"));
+          //       });
+          //   }
+          //
+          //     break;
+          //   default:
+          //
+          // }
 
     }
 
@@ -766,12 +744,14 @@
 
     function addPlayerToPguidMap(player)
     {
+
         if( PGUID_TO_NAME_MAP[ player[ 'pguid' ] ] === undefined )
         {
             PGUID_TO_NAME_MAP[ player[ 'pguid' ] ] = new Array( 2 );
             PGUID_TO_NAME_MAP[ player[ 'pguid' ] ][ 0 ] = player[ 'player_name' ];
             PGUID_TO_NAME_MAP[ player[ 'pguid' ] ][ 1 ] = player[ 'pos_type' ];
         }
+
     }
 
 </script>
