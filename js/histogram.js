@@ -1,4 +1,4 @@
-function generateHistogram(){
+function generateHistogram(careers, season_subset_data){
 var numbins = 9
 var binning = [500,1000,1500,2000,2500,3000,3500,4000,4500]
 var binsize = 500
@@ -14,10 +14,7 @@ var avg_player
 var std_dev
 var yeartuples = []
 
-d3.json('http://localhost:8000/careers/', function(error,data){
-    if (error) throw error;
-
-    data.results.forEach(function(d,i) {
+    careers.forEach(function(d,i) {
         if (d.ff_pts != 0) {
          careerlist.push(d.ff_pts)
          tot_players += 1
@@ -25,8 +22,7 @@ d3.json('http://localhost:8000/careers/', function(error,data){
         }
     });
 
-    d3.json('http://localhost:8000/seasons_subset/', function(error,s_data){
-        s_data.results.forEach(function(d) {
+        season_subset_data.forEach(function(d) {
             if (d.year != 2015) {
                 d.guid = d.season_guid.split("_")[0]
                     if (d.guid.indexOf('.') != -1) {
@@ -166,9 +162,6 @@ d3.json('http://localhost:8000/careers/', function(error,data){
                 }
              }
         }
-
-    });
-});
 }
 //         This will calculate num elements in each bin
 function CalcBins(datalist, binnum) {

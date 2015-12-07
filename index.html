@@ -933,7 +933,7 @@
         loadPageData();
         loadScatterPlot(); //Loads from filters
         generateCDF_D3Chart( season_subset_data );
-        generateHistogram();
+        generateHistogram(filteredPlayers(), season_subset_data);
         createTable(); //Not a chart
         drawPCChart(filteredPlayers(), season_data);
         generateLineChart(season_subset_data);
