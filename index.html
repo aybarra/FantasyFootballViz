@@ -17,7 +17,6 @@
     <script src="js/helper/menu_helper.js"></script>
     <script src="js/model/FilterObject.js"></script>
     <script src="js/lasso.js"></script>
-    <script src="js/worker/load_data.js"></script>
     <script src="js/d3.parcoords.js"></script>
     <script src="js/pcplot.js"></script>
     <script src="js/histogram.js"></script>
@@ -56,12 +55,12 @@
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid ">
         <div id="navbar">
-            <!-- <img src="images/logo.jpg"></scr> -->
+
             <a class="navbar-brand" id="menu-trigger"
                style="cursor:pointer; -webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;">Filter</a>
 
-            <p class="navbar-brand nav navbar-nav navbar-right" id="title">Armchair Fantasy Football</p>
-
+            <p class="navbar-brand nav navbar-nav navbar-right" id="title"> Armchair Fantasy Football </p>
+            <img class="navbar-right"  src="images/logo.png"></scr>
         </div>
     </div>
 </nav>
@@ -126,232 +125,82 @@
     <div class="col-sm-12 main">
         <div class="row">
             <div class="col-sm-2">
-              <div class ="row" id="filter-section" style="height: 200px; overflow:auto">
-                <h4>Filter Section</h4>
-                <table id="filters_table" style="height:150px; overflow:auto">
-                </table>
-              </div>
-              <div class="row">
-                <h4>Add Player</h4>
-                <input type="text" name="add_player_input_field" id="add_player_input_field"/>
+                <div class="row" id="filter-section" style="height: 200px; overflow:auto">
+                    <h4>Filter Section</h4>
+                    <table id="filters_table" style="height:150px; overflow:auto">
+                    </table>
+                </div>
+                <div class="row">
+                    <h4>Add Player</h4>
+                    <input type="text" name="add_player_input_field" id="add_player_input_field"/>
 
-                <div class="autocomplete-suggestions" id="autocomplete_results_div">
-                    <div class="autocomplete-group" id="autocomplete_group" style="height:100px; overflow:auto"><strong>Added Players</strong></div>
-                    <!--<div class="autocomplete-suggestion autocomplete-selected">...</div>-->
-                    <!--<div class="autocomplete-suggestion">...</div>-->
-                    <!--<div class="autocomplete-suggestion">...</div>-->
+                    <div class="autocomplete-suggestions" id="autocomplete_results_div">
+                        <div class="autocomplete-group" id="autocomplete_group" style="height:100px; overflow:auto">
+                            <strong>Added Players</strong></div>
+                        <!--<div class="autocomplete-suggestion autocomplete-selected">...</div>-->
+                        <!--<div class="autocomplete-suggestion">...</div>-->
+                        <!--<div class="autocomplete-suggestion">...</div>-->
+                    </div>
+                </div>
+                <div class="row">
+                    <h4>Player Data Table</h4>
+                    <table class="table table-row-border table-hover" id="data_table" cellspacing="0" margin-top="750px"
+                           width="100%">
+                        <thead>
+                        <tr class="header">
+                            <th>Name</th>
+                            <th>Pos</th>
+                            <th>Pts</th>
+                            <th>Win %</th>
+                        </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
-            <div class="row">
-              <h4>Player Data Table</h4>
-              <table class="table table-row-border table-hover" id="data_table" cellspacing="0" margin-top="750px" width="100%">
-                  <thead>
-                  <tr class="header">
-                      <th>Name</th>
-                      <th>Pos</th>
-                      <th>Pts</th>
-                      <th>Win %</th>
-                  </tr>
-                  </thead>
-              </table>
-            </div>
-          </div>
-            <div class="col-sm-7">
-                <!-- <div class="row">
-                  <div class="btn-group" data-toggle="buttons-radio">
-                    <button type="button" id="career" class="btn active switch btn-primary btn-xs" onclick="transitionTo('career')">Career View</button>
-                    <button type="button" id="seasonal" class="btn switch btn-primary btn-xs" onclick="transitionTo('seasonal')">Player Comparison</button>
 
-                  </div>
-                </div> -->
+            <div class="col-sm-7">
 
                 <div class="row">
 
                     <div class="col-sm-12 large-chart">
                       <div class="row">
                         <button type="button" id="cdf_year_swap" class="btn-primary btn-xs">CHANGE AXIS</button>
-                        <div class="btn-group switch-btn">
-                          <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
-                            Section 1
-                            <span class="caret"></span>
-                          </a>
-                          <ul class="dropdown-menu dropdown-menu-right">
-                            <li><a tabindex="-1" onclick="transitionTo('cdf')">CDF Chart</a></li>
-                            <li><a tabindex="-1" onclick="transitionTo('scatter', '#lrg-sec-1','large-chart')">Scatterplot Chart</a></li>
-                            <li><a tabindex="-1" href="#">Histogram</a></li>
-                            <li><a tabindex="-1" href="#">History Line Chart</a></li>
-                            <li><a tabindex="-1" href="#">Player Line Chart</a></li>
-                            <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
-
-                          </ul>
-                        </div>
                       </div>
                         <div id="lrg-sec-1"></div>
                     </div>
+                </div>
+                <div class="row">
 
-                  </div>
-
-
-                  <div class="row">
-                    <div class="btn-group switch-btn">
-                      <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
-                        Section 2
-                        <span class="caret"></span>
-                      </a>
-                      <ul class="dropdown-menu dropdown-menu-right">
-                        <li><a tabindex="-1" onclick="transitionTo('cdf', '#lrg-sec-2','large-chart')">CDF Chart</a></li>
-                        <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
-                        <li><a tabindex="-1" href="#">Histogram</a></li>
-                        <li><a tabindex="-1" href="#">History Line Chart</a></li>
-                        <li><a tabindex="-1" href="#">Player Line Chart</a></li>
-                        <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
-
-                      </ul>
+                    <div class="col-sm-12 large-chart">
+                        <div id="lrg-sec-2"></div>
                     </div>
-                  </div>
-                  <div class="row">
-
-                    <div class="col-sm-10 parcoords large-chart" id="lrg-sec-2"></div>
-
-                  </div>
-                <!-- <div class="row">
-                  <div class="col-sm-12 parcoords career_chart chart" id="pcplot-section"></div>
-              </div> -->
-
-
-
-                <!-- <div class="row">
-                    <div class="col-sm-12 seasonal_chart chart" id="seasonal_line" style="display: none"></div>
-                </div> -->
-
-
-                <!-- <div class="row">
-                  <div class="col-sm-8 seasonal_chart chart" style="display: none">
-                    <div class="btn-group" data-toggle="buttons-radio">
-                      <button type="button" id="average" class="btn active switch btn-primary btn-xs">Average</button>
-                      <button type="button" id="good" class="btn switch btn-primary btn-xs" >Good</button>
-                      <button type="button" id="elite" class="btn switch btn-primary btn-xs" >Elite</button>
-                    </div>
-                    <div class="col-sm-4 seasonal_chart chart" style="display: none">
-                        <button type="button" id="year" class="btn-primary btn-xs">Year</button>
-                    </div>
-                </div> -->
-
-                <!-- <div class="row">
-                    <div id="pcplot" class="parcoords col-sm-12 seasonal_chart chart" style="display:none" ></div>
-                </div> -->
-
+                </div>
             </div>
 
-
             <div class="col-sm-2">
-              <div class="row">
-
-                <div class="btn-group switch-btn">
-                  <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
-                    1
-                    <span class="caret"></span>
-                  </a>
-                  <ul class="dropdown-menu  parcoods dropdown-menu-right">
-                    <li><a tabindex="-1" href="#">CDF Chart</a></li>
-                    <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
-                    <li><a tabindex="-1" href="#">Histogram</a></li>
-                    <li><a tabindex="-1" href="#">History Line Chart</a></li>
-                    <li><a tabindex="-1" href="#">Player Line Chart</a></li>
-                    <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
-
-                  </ul>
+                <div class="row">
+                  <div class="col-sm-12 small-chart">
+                    <div id="sm-sec-1"></div>
+                  </div>
                 </div>
-              </div>
 
                 <div class="row">
                   <div class="col-sm-12 small-chart">
-                      <div id="sm-sec-1"></div>
+                    <div id="sm-sec-2"></div>
                   </div>
                 </div>
-
-
-
-
-              <div class="row">
-
-                <div class="btn-group switch-btn">
-                  <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
-                    2
-                    <span class="caret"></span>
-                  </a>
-                  <ul class="dropdown-menu dropdown-menu-right">
-                    <li><a tabindex="-1" href="#">CDF Chart</a></li>
-                    <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
-                    <li><a tabindex="-1" href="#">Histogram</a></li>
-                    <li><a tabindex="-1" href="#">History Line Chart</a></li>
-                    <li><a tabindex="-1" href="#">Player Line Chart</a></li>
-                    <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
-
-                  </ul>
-                </div>
-              </div>
-
-              <div class="row">
-                  <div class="col-sm-10 parcoords small-chart">
-                      <div id="sm-sec-2"></div>
-                  </div>
-                </div>
-
-
-
-              <div class="row">
-
-
-                <div class="btn-group switch-btn">
-                  <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
-                    3
-                    <span class="caret"></span>
-                  </a>
-                  <ul class="dropdown-menu dropdown-menu-right">
-                    <li><a tabindex="-1" href="#">CDF Chart</a></li>
-                    <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
-                    <li><a tabindex="-1" href="#">Histogram</a></li>
-                    <li><a tabindex="-1" href="#">History Line Chart</a></li>
-                    <li><a tabindex="-1" href="#">Player Line Chart</a></li>
-                    <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
-
-                  </ul>
-                </div>
-              </div>
 
                 <div class="row">
-
-                  <div class="col-sm-10 parcoords small-chart">
-                      <div id="sm-sec-3"></div>
+                  <div class="col-sm-12 small-chart">
+                    <div id="sm-sec-3"></div>
                   </div>
                 </div>
 
-
-
-              <div class="row">
-
-                <div class="btn-group switch-btn">
-                  <a class="btn dropdown-toggle btn-primary btn-xs" data-toggle="dropdown" href="#">
-                    4
-                    <span class="caret"></span>
-                  </a>
-                  <ul class="dropdown-menu dropdown-menu-right">
-                    <li><a tabindex="-1" href="#">CDF Chart</a></li>
-                    <li><a tabindex="-1" href="#">Scatterplot Chart</a></li>
-                    <li><a tabindex="-1" href="#">Histogram</a></li>
-                    <li><a tabindex="-1" href="#">History Line Chart</a></li>
-                    <li><a tabindex="-1" href="#">Player Line Chart</a></li>
-                    <li><a tabindex="-1" href="#">Parallel Coordinates Chart</a></li>
-
-                  </ul>
-                </div>
-              </div>
-
                 <div class="row">
-                  <div class="col-sm-10 parcoords small-chart" id="sm-sec-4"></div>
+                  <div class="parcoords col-sm-12  small-chart">
+                    <div id="sm-sec-4"></div>
+                  </div>
                 </div>
-
 
             </div>
         </div>
@@ -370,7 +219,6 @@
     var filterObjects = [];
 
     var season_subset_data = [];
-    var season_data = [];
 
     //Global variable used to hold array of extra player objects used for filtering
     var selectedPlayers = [];
@@ -395,21 +243,20 @@
     // var scatter_padding = 100;
 
     var scatter_margin = { top: 10, right: 30, bottom: 33, left: 45 }
-        , width = parseInt(d3.select('.large-chart').style('width'), 10)
-        , scatter_width = width - scatter_margin.left - scatter_margin.right
-        , height = parseInt(d3.select('.large-chart').style('height'), 10)
-        , scatter_height = height - scatter_margin.top - scatter_margin.bottom;
+            , width = parseInt( d3.select( '.large-chart' ).style( 'width' ), 10 )
+            , scatter_width = width - scatter_margin.left - scatter_margin.right
+            , height = parseInt( d3.select( '.large-chart' ).style( 'height' ), 10 )
+            , scatter_height = height - scatter_margin.top - scatter_margin.bottom;
 
     // var cdf_margin = { top: 10, right: 30, bottom: 33, left: 45 };
     // var cdf_width = 900 - cdf_margin.right - cdf_margin.left;
     // var cdf_height = 400 - cdf_margin.top - cdf_margin.bottom;
 
     var cdf_margin = { top: 10, right: 30, bottom: 33, left: 45 }
-        , cdf_width = width - cdf_margin.right - cdf_margin.left
-        , cdf_height = height - cdf_margin.top - cdf_margin.bottom;
+            , cdf_width = width - cdf_margin.right - cdf_margin.left
+            , cdf_height = height - cdf_margin.top - cdf_margin.bottom;
 
     // var swap_sound = new Audio('sounds/whip_crack.mp3');
-
 
     var dot_init_size = 3;
     var dot_hover_size = 7;
@@ -678,7 +525,7 @@
                 } )
                 .attr( "stroke", "black" )
                 .attr( "stroke-width", 1 )
-                .attr("fill-opacity", 0.7)
+                .attr( "fill-opacity", 0.7 )
 
                 .on( "mouseover", function ( d )
                 {
@@ -689,8 +536,8 @@
                             .attr( "r", dot_hover_size )
                             .attr( "fill-opacity", 1 );
                     tooltip
-                            .style( "left", (d3.event.pageX + 5) + "px" )
-                            .style( "top", (d3.event.pageY - 5) + "px" )
+                            .style( "left", (d3.event.pageX + 10) + "px" )
+                            .style( "top", (d3.event.pageY - 75) + "px" )
                             .transition().duration( tooltip_trans_in )
                             .style( "opacity", 1 )
                             .style( "display", "block" )
@@ -823,33 +670,33 @@
         var image = new Image();
         image.onload = function ()
         {
-            $( "#tooltipImg" ).attr("src", 'player_pics/' + player.pguid + '.jpg');
+            $( "#tooltipImg" ).attr( "src", 'player_pics/' + player.pguid + '.jpg' );
 
         };
         image.onerror = function ()
         {
-            $( "#tooltipImg" ).attr("src", 'images/' + player.pos + '.jpg');
+            $( "#tooltipImg" ).attr( "src", 'images/' + player.pos + '.jpg' );
         };
         image.src = 'player_pics/' + player.pguid + '.jpg';
 
         //Get a reference to the tooltip data div
-        var dataDiv = $("#tooltip_data_div" );
+        var dataDiv = $( "#tooltip_data_div" );
 
         //Clear out all of the information in the data tooltip div
         dataDiv.empty();
 
         //Add all player data content to the tooltip
-        dataDiv.append('<div></div>').append('<span class="boldDetail"> Name: </span>' )
-                .append( '<span class="normalDetail">' + player['name'] + '</span>' );
+        dataDiv.append( '<div></div>' ).append( '<span class="boldDetail"> Name: </span>' )
+                .append( '<span class="normalDetail">' + player[ 'name' ] + '</span>' );
 
-        dataDiv.append('<div></div>').append('<span class="boldDetail"> Position: </span>' )
-                .append( '<span class="normalDetail">' + player['pos_long'] + '</span>' );
+        dataDiv.append( '<div></div>' ).append( '<span class="boldDetail"> Position: </span>' )
+                .append( '<span class="normalDetail">' + player[ 'pos_long' ] + '</span>' );
 
-        dataDiv.append('<div></div>').append('<span class="boldDetail"> Fantasy Pts: </span>' )
-                .append( '<span class="normalDetail">' + player['fantPt'] + '</span>' );
+        dataDiv.append( '<div></div>' ).append( '<span class="boldDetail"> Fantasy Pts: </span>' )
+                .append( '<span class="normalDetail">' + player[ 'fantPt' ] + '</span>' );
 
-        dataDiv.append('<div></div>').append('<span class="boldDetail"> Win %: </span>' )
-                .append( '<span class="normalDetail">' + player['winPct'] + '</span>' );
+        dataDiv.append( '<div></div>' ).append( '<span class="boldDetail"> Win %: </span>' )
+                .append( '<span class="normalDetail">' + player[ 'winPct' ] + '</span>' );
     }
 
     /**
@@ -861,7 +708,6 @@
         data_table.rows.add( alldata );
         data_table.draw();
     }
-
 
     // function transitionTo( name )
     // {
@@ -912,20 +758,59 @@
     //
     // }
 
-    function transitionTo(name, id, classification){
-      // switch (name) {
-      //   case 'cdf': d3.select(id).append("cdf_svg");
-      //
-      //     break;
-      //     case 'scatter':{
-      //       console.log("removing");
-      //       $(id).addID()
-      //       console.log("done");
-      //     }break;
-      //   default:
-      //
-      // }
+    /**
+     * Call to make all the web requests to the server to get all the data for the pages.
+     */
+    function loadPageData()
+    {
+        $.ajax( {
+            url: defaultFilterObject.generateCareerUrl(),
+            type: 'GET',
+            async: false,
+            data: {
+                format: 'json'
+            },
+            error: function ()
+            {
+                alert( "ERROR MAKING WEB REQUEST FOR PLAYER KEYS" )
+            },
+            success: function ( data )
+            {
+                //Get the result array
+                data = data[ 'results' ];
 
+                //Loop through the array and get all of the player pks
+                $.each( data, function ( index, player )
+                {
+                    if( PGUID_TO_NAME_MAP[ player[ 'pguid' ] ] === undefined )
+                    {
+                        PGUID_TO_NAME_MAP[ player[ 'pguid' ] ] = new Array( 2 );
+                        PGUID_TO_NAME_MAP[ player[ 'pguid' ] ][ 0 ] = player[ 'player_name' ];
+                        PGUID_TO_NAME_MAP[ player[ 'pguid' ] ][ 1 ] = player[ 'pos_type' ];
+                    }
+                    defaultFilterObject.players.push( player );
+                } );
+
+            }
+        } );
+
+        $.ajax( {
+            url: 'http://localhost:8000/seasons_subset/?players=' + filteredPlayersPguids().join(),
+            type: 'GET',
+            async: false,
+            data: {
+                format: 'json'
+            },
+            error: function ()
+            {
+                alert( "ERROR MAKING WEB REQUEST FOR PLAYER KEYS" )
+            },
+            success: function ( data )
+            {
+                //Get the result array
+                season_subset_data = data[ 'results' ];
+            }
+        } );
     }
 
     function loadPageWithAllChartData()
@@ -935,31 +820,16 @@
         generateCDF_D3Chart( season_subset_data );
         generateHistogram(filteredPlayers(), season_subset_data);
         createTable(); //Not a chart
-        drawPCChart(filteredPlayers(), season_data);
+        drawPCChart();
+        //TODO uncomment below after js errors are fixed.
         generateLineChart(season_subset_data);
         generateHistoryLine(season_subset_data);
     }
 
     function reloadAllChartData()
     {
-//        w = new Worker("load_data.js");
-//        w.onmessage = function(event)
-//        {
-//
-//        };
         loadPageData();
         updateCDFData( season_subset_data );
-
-    }
-
-    function addPlayerToPguidMap(player)
-    {
-        if( PGUID_TO_NAME_MAP[ player[ 'pguid' ] ] === undefined )
-        {
-            PGUID_TO_NAME_MAP[ player[ 'pguid' ] ] = new Array( 2 );
-            PGUID_TO_NAME_MAP[ player[ 'pguid' ] ][ 0 ] = player[ 'player_name' ];
-            PGUID_TO_NAME_MAP[ player[ 'pguid' ] ][ 1 ] = player[ 'pos_type' ];
-        }
     }
 
 </script>

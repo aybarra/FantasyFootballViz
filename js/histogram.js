@@ -61,7 +61,7 @@ var yeartuples = []
     // A formatter for counts.
         var formatCount = d3.format(",.0f");
 
-        var margin = { top: 10, right: 30, bottom: 33, left: 45 }
+        var margin = { top: 20, right: 30, bottom: 33, left: 45 }
             , width = parseInt(d3.select('.small-chart').style('width'), 10)
             , width = width - margin.left - margin.right
             , height = parseInt(d3.select('.small-chart').style('height'), 10)
