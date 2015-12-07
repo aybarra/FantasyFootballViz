@@ -309,16 +309,30 @@ function generateHistoryLine(data){
 //  CIRCLES FOR DEATILS ON DEMANSD MOUSE HOVER
 // ******************************************************
     var focus = svg.append("g")
-                   .attr("class", "focus")
+                   .attr("class", "historyfocus")
                    .style("display", "none");
 
     focus.append("circle")
-         .attr("r", 4.5);
+         .attr("r", 3)
+         .attr("stroke","black")
+         
+    focus.append("text")
+         .attr("id","historyfocusyear")
+         .attr("x", -5)
+         .attr("dy", "-2.5em")
+         .style("font-size", "10px")
 
     focus.append("text")
-         .attr("x", 9)
-         .attr("dy", ".35em");
+         .attr("id","historyfocusplayers")
+         .attr("x", -5)
+         .attr("dy", "-1.5em")
+         .style("font-size", "10px")
 
+    focus.append("text")
+         .attr("id","historyfocuspoints")
+         .attr("x", -5)
+         .attr("dy", "-.5em")
+         .style("font-size", "10px")
 
 //  *****************************************************
 //  PLACEHOLDERS FOR PLAYER SUMMARY STATISTICS
@@ -383,7 +397,47 @@ function generateHistoryLine(data){
                         .attr("d", area(groupavg.values))
                         .attr("fill","steelblue")
                         .style("stroke","black")
-                        .text("Season")
+                       .on("mouseover", function() {
+                            focus.style("display", null);
+                        })
+                      .on("mouseout", function() {
+                            focus.style("display", "none");
+                        })
+                      .on("mousemove", function(){
+                           focus.moveToFront();
+                            var rawX = xTime.invert(d3.mouse(this)[0])
+                            var year = rawX.getFullYear()
+                            var year_str = parseDate(year.toString())
+                            var pts
+                            var cnts
+                            if (absyear == false) {
+                                for (var i = 0; i < groupavg.values.length; i++ ) {
+                                    grp_year = groupavg.values[i].real_year.getFullYear()
+                                    if (grp_year == year) { break }
+                                }
+                                pts = groupavg.values[i].season_ff_pts
+                                cnts = yearcnts[i]
+                                y.domain(d3.extent(groupavg.values, function(d) { return d.season_ff_pts; }));
+
+                            } else {
+                                for (var j = 0; j < groupavg2.values.length; j++ ) {
+                                    grp_year = groupavg2.values[j].real_year.getFullYear()
+                                    if (grp_year == year) { break }
+                                }
+                                pts = groupavg2.values[j].season_ff_pts
+                                cnts = classcnts[year]
+                                y.domain(d3.extent(groupavg2.values, function(d) { return d.season_ff_pts; }));
+                            }
+                            focus.attr("transform", "translate(" + xTime(year_str) + "," + y(pts) + ")")
+
+//                             var pts = d.values[year-1].season_ff_pts
+                            var message
+                            message = absyear ? "Class of " : "Year: "
+                            focus.select("#historyfocusyear").text(message+year)
+                            focus.select("#historyfocusplayers").text("Plyrs: " + cnts)
+                            focus.select("#historyfocuspoints").text("Avg Pts:" + pts);
+                        })
+
 
 //  *****************************************************
 //  BUTTONS TO TOGGLE THE REFERENCE LINE
