@@ -93,7 +93,7 @@ d3.json('http://localhost:8000/careers/', function(error,data){
             .tickFormat(d3.format("d"))
             .orient("bottom");
 
-        var svg = d3.select("#histogram-section").append("svg")
+        var svg = d3.select("#sm-sec-1").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
