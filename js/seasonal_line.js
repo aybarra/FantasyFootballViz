@@ -26,8 +26,16 @@ function generateLineChart(data) {
     var x = d3.scale.linear()
               .range([0, width]);
 
+    var relx = d3.scale.linear()
+               .range([0, width+margin.left+margin.right])
+               .domain([0,100])
+               
     var y = d3.scale.linear()
               .range([height, 0]);
+
+    var rely = d3.scale.linear()
+              .range([height+margin.top+margin.bottom, 0])
+              .domain([0,100])
 
     var line = d3.svg.line()
                  .x(function(d) {
@@ -240,8 +248,21 @@ function generateLineChart(data) {
          .attr("r", 4.5);
 
     focus.append("text")
+         .attr("id","focusname")
          .attr("x", 9)
-         .attr("dy", ".35em")
+         .attr("dy", "-1.5em")
+         .style("font-size", "10px")
+
+    focus.append("text")
+         .attr("id","focusyear")
+         .attr("x", 9)
+         .attr("dy", "-.5em")
+         .style("font-size", "10px")
+
+    focus.append("text")
+         .attr("id","focuspoints")
+         .attr("x", 9)
+         .attr("dy", ".5em")
          .style("font-size", "10px")
 
 
@@ -263,36 +284,27 @@ function generateLineChart(data) {
 
     nameline.append("text")
             .attr("id","nameline")
-            .attr("x", 50)
-            .attr("y", height+margin.bottom-20)
+            .attr("x", relx(0))
+            .attr("y", rely(17))
             .style("font-size", "10px")
 
     yearline.append("text")
             .attr("id","yearline")
-            .attr("x", 35)
-            .attr("y", height+margin.bottom-10)
+            .attr("x", relx(0))
+            .attr("y", rely(12))
             .style("font-size", "10px")
 
     pointsline.append("text")
             .attr("id","pointsline")
-            .attr("x", 15)
+            .attr("x", relx(1))
               .attr("y", height+margin.bottom)
             .style("font-size", "10px")
 
     averageline.append("text")
             .attr("id","averageline")
-            .attr("x", 9)
-               .attr("y", height+margin.bottom)
+            .attr("x", relx(0))
+               .attr("y", rely(7))
               .style("font-size", "10px")
-
-    svg.append("text")
-        .attr("id","seasonaltitle")
-        .attr("x", (width / 2))
-        .attr("y", 0 - (margin.top / 3) + 5)
-        .attr("text-anchor", "middle")
-        .style("font-size", "16px")
-        .style("text-decoration", "underline")
-        .text("Player Points / Season");
 
 //  *****************************************************
 //  BUILD THE LINE CHART
@@ -308,27 +320,37 @@ function generateLineChart(data) {
                        .on("click", function() {
                             color_attr = d3.select(this).style("stroke")
                             rgb = color_attr.split("(")[1].split(")")[0].split(",")
-                            cfb= d3.rgb("cornflowerblue")
-                            if (+rgb[0]==cfb.r && +rgb[1]==cfb.g && +rgb[2]==cfb.b) {
-                                iline.style("stroke","whitesmoke");
-                            } else {
-                                iline.style("stroke","cornflowerblue");
+                            colorcheck = CheckColor(color_attr)
+//                             console.log(colorcheck)
+                            var sel = d3.select(this);
+                            if (colorcheck == 'blue') {
+                                    sel.style("stroke", "cornflowerblue")
+                            }
+                            if (colorcheck == 'orange') {
+                                    sel.style("stroke", "sandybrown")
+                            }
+                            if (colorcheck == 'green') {
+                                    sel.style("stroke", "limegreen")
+                            }
+                            if (colorcheck == 'cornflowerblue' || 
+                                colorcheck == 'sandybrown' ||
+                                colorcheck == 'limegreen') {
+                                    sel.style("stroke", "whitesmoke")
                             }
                        })
                        .on("mouseover", function() {
                             focus.style("display", null);
-//                             iline.style("stroke","steelblue")
+                            color_attr = d3.select(this).style("stroke")
+                            color = colorScale(PGUID_TO_NAME_MAP[d.key][1])
+//                             console.log(color)
                             var sel = d3.select(this);
                             sel.moveToFront();
-                            color_attr = d3.select(this).style("stroke")
-                            cfb= d3.rgb("cornflowerblue")
-                            rgb = color_attr.split("(")[1].split(")")[0].split(",")
-                            if (+rgb[0]==cfb.r && +rgb[1]==cfb.g && +rgb[2]==cfb.b) {
-                                iline.style("stroke","cornflowerblue");
-                            } else {
-                                iline.style("stroke","steelblue");
+                            colorcheck = CheckColor(color_attr)
+                            if (!(colorcheck == 'cornflowerblue' || 
+                                colorcheck == 'sandybrown' ||
+                                colorcheck == 'limegreen')) {
+                                    sel.style('stroke', color)                                
                             }
-
                         })
                       .on("mouseout", function() {
                             focus.style("display", "none");
@@ -337,13 +359,13 @@ function generateLineChart(data) {
                             color_attr = d3.select(this).style("stroke")
                             cfb= d3.rgb(selected_color)
                             rgb = color_attr.split("(")[1].split(")")[0].split(",")
-                            if (+rgb[0]==cfb.r && +rgb[1]==cfb.g && +rgb[2]==cfb.b) {
-                                iline.style("stroke", selected_color);
-                            } else {
-                                iline.style("stroke","whitesmoke");
-                                sel.moveToBack();
+                            colorcheck = CheckColor(color_attr)
+                            if (!(colorcheck == 'cornflowerblue' || 
+                                colorcheck == 'sandybrown' ||
+                                colorcheck == 'limegreen')) {
+                                    sel.style('stroke', "whitesmoke")
+                                    sel.moveToBack()
                             }
-
                         })
                       .on("mousemove", function(){
                             if (absyear == true) {
@@ -376,9 +398,12 @@ function generateLineChart(data) {
                             } else {
                                 focus.attr("transform", "translate(" + x(year) + "," + y(pts) + ")")
                             }
-                            focus.select("text").text(d.key+"\n  Year: "+year+"\n  Pts:"+pts);
+                            fullname = PGUID_TO_NAME_MAP[d.key][0]
+                            focus.select("#focusname").text(fullname);
+                            focus.select("#focusyear").text("Yr: "+year);
+                            focus.select("#focuspoints").text("Pts:"+pts);                            
                             focus.moveToFront();
-                            nameline.select("text").text("Name: " + PGUID_TO_NAME_MAP[d.key][0]);
+                            nameline.select("text").text("Name: " + fullname);
                             yearline.select("text").text("Years: " + totyears + "......  Total Points: " + totpts);
 //                             pointsline.select("text").text("Total Points: " + totpts);
                             averageline.select("text").text("Average/Season: " + avg + " (Best: "+bestyr+", Worst: " + worstyr+")");
@@ -472,77 +497,106 @@ function generateLineChart(data) {
 // ******************************************************
     b_height = height+margin.bottom+margin.top;
 
-        svg.append("rect")
-                  .attr("class","button")
+        var butgp = svg.append("g").attr("class","buttongroup")
+                       .attr("transform", "translate("+relx(45)+"," + rely(19.5) + ")");
+
+        butgp.append("rect")
+                  .attr("class","season_button")
                   .attr("id","avgbut")
-                  .attr("x", width-margin.right)
-                  .attr("y", height+10)
-                  .attr("rx",width/30)
-                  .attr("ry",height/30)
-                  .attr("width", width/10)
-                  .attr("height", height/15)
+                  .attr("rx",relx(1))
+                  .attr("ry",rely(1))
+                  .attr("width", relx(5))
+                  .attr("height", rely(96.5))
                   .attr("stroke","black")
-                  .attr("fill","firebrick")
+                  .attr("fill","white")
                   .on("click",function(){
                         var active = avgjoeline.active ? false : true;
                         var opacity = active ? 0 : 1;
+                        var fillcol = active ? "white" : "firebrick"
                         d3.select("#avgjoeline").style("opacity", opacity);
+                        d3.select("#avgbut").attr("fill",fillcol)
                         avgjoeline.active = active;
                      });
+            
+        butgp.append("text")
+             .attr("dx", relx(6))
+             .attr("dy", rely(98))
+             .style("font-size", "10px")
+             .text("Average")
 
-        svg.append("rect")
-                  .attr("class","button")
+        butgp.append("rect")
+                  .attr("class","season_button")
                   .attr("id","goodbut")
-                  .attr("x", width-margin.right)
-                  .attr("y", height+20)
-                  .attr("rx",width/30)
-                  .attr("ry",height/30)
-                  .attr("width", width/10)
-                  .attr("height", height/15)
+                  .attr("y", rely(95.5))
+                  .attr("rx",relx(1))
+                  .attr("ry",rely(1))
+                  .attr("width", relx(5))
+                  .attr("height", rely(96.5))
                   .attr("stroke","black")
-                  .attr("fill","seagreen")
+                  .attr("fill","white")
                      .on("click",function(){
                             var active = goodguyline.active ? false : true;
                             var opacity = active ? 0 : 1;
+                            var fillcol = active ? "white" : "seagreen"
                             d3.select("#goodguyline").style("opacity", opacity);
+                            d3.select("#goodbut").attr("fill",fillcol)
                             goodguyline.active = active;
                      });
+              
+        butgp.append("text")
+             .attr("dx", relx(6))
+             .attr("dy", rely(93))
+             .style("font-size", "10px")
+             .text("Good")
 
-        svg.append("rect")
-                  .attr("class","button")
+        butgp.append("rect")
+                  .attr("class","season_button")
                   .attr("id","elitebut")
-                  .attr("x", width-margin.right)
-                  .attr("y", height+30)
-                  .attr("rx",width/30)
-                  .attr("ry",height/30)
-                  .attr("width", width/10)
-                  .attr("height", height/15)
+                  .attr("y", rely(91))
+                  .attr("rx",relx(1))
+                  .attr("ry",rely(1))
+                  .attr("width", relx(5))
+                  .attr("height", rely(96.5))
                   .attr("stroke","black")
-                  .attr("fill","salmon")
+                  .attr("fill","white")
                      .on("click",function(){
                             var active = eliteguyline.active ? false : true;
                             var opacity = active ? 0 : 1;
+                            var fillcol = active ? "white" : "salmon"
                             d3.select("#eliteguyline").style("opacity", opacity);
+                            d3.select("#elitebut").attr("fill",fillcol)
                             eliteguyline.active = active;
                      });
 
+        butgp.append("text")
+             .attr("dx", relx(6))
+             .attr("dy", rely(87.9))
+             .style("font-size", "10px")
+             .text("Elite")
+
+        var reltext = svg.append("text")
+                        .attr("x", relx(1))
+                        .attr("y", rely(100))
+                         .style("font-size", "10px")
+                        .text("Toggle Year")
+            
         var relbutton = svg.append("rect")
-                  .attr("class","button")
+                  .attr("class","season_button")
                   .attr("id","relabs")
-                  .attr("x", width - margin.right)
-                  .attr("y", 10)
-                  .attr("rx",width/30)
-                  .attr("ry",height/30)
-                  .attr("width", width/10)
-                  .attr("height", height/15)
+                  .attr("x", relx(1))
+                  .attr("y", rely(98))
+                  .attr("rx",relx(1))
+                  .attr("ry",rely(1))
+                  .attr("width", relx(5))
+                  .attr("height", rely(96.5))
                   .attr("stroke","black")
-                  .attr("fill","yellow")
+                  .attr("fill","white")
                   .on("click",function(){
                       absyear = absyear ? false : true;
                       if (absyear) {
-                        relbutton.text("Relative")
-//                         xAxis.tickFormat(null)
-                        xAxis.scale(xTime)
+                        relbutton.attr("fill","black")
+                            reltext.text("Toggle Season")
+                            xAxis.scale(xTime)
                             .ticks(d3.time.year)
 
                         svg.selectAll("g .x.axis")
@@ -557,12 +611,12 @@ function generateLineChart(data) {
                         d3.select("#avgjoeline").attr("d",line(avgjoe2.values))
                         d3.select("#goodguyline").attr("d",line(goodguy2.values))
                         d3.select("#eliteguyline").attr("d",line(eliteguy2.values))
-                        d3.select("#title").text("Average Points / Class");
+                        d3.select("#seasonaltitle").text("Points / Year");
 
 
                       } else {
-                            relbutton.text("Years")
-//                             xAxis.tickFormat(formatxAxis)
+                            relbutton.attr("fill","white")
+                            reltext.text("Toggle Year")
                             xAxis.scale(x)
                                 .ticks(range)
                             svg.selectAll("g .x.axis")
@@ -577,12 +631,23 @@ function generateLineChart(data) {
                             d3.select("#avgjoeline").attr("d",line(avgjoe.values))
                             d3.select("#goodguyline").attr("d",line(goodguy.values))
                             d3.select("#eliteguyline").attr("d",line(eliteguy.values))
-                            d3.select("#title").text("Average Points / Season");
+                            d3.select("#seasonaltitle").text("Points / Season");
 
                       }
                   });
+
+    svg.append("text")
+        .attr("id","seasonaltitle")
+        .attr("x", width/2)
+        .attr("y", rely(100))
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("text-decoration", "underline")
+        .text("Points / Season");
+
 ;  //not sure what this is about
 } // Close function generateLineChart
+
 
 function Handleseasonal_data(seasonal_data) {
 //  *****************************************************
@@ -646,4 +711,33 @@ function Handleseasonal_data(seasonal_data) {
         }
     }); //end seasonal_data loading
     return [season_seasonal_dataset, yeartuples, avgcnt, avgpoints, yearlist]
+}
+
+function CheckColor(color_attr){
+        blue = d3.rgb("#1f77b4")
+        orange = d3.rgb("#ff7f0e")
+        green = d3.rgb("#2ca02c")
+        ltblue = d3.rgb("#6495ed")
+        brown = d3.rgb("#f4a460")
+        lime = d3.rgb("#32cd32")
+    rgb = color_attr.split("(")[1].split(")")[0].split(",")
+    if (+rgb[0]==blue.r && +rgb[1]==blue.g && rgb[2]==blue.b) {
+        return "blue"
+    }
+    if (+rgb[0]==orange.r && +rgb[1]==orange.g && rgb[2]==orange.b) {
+        return "orange"
+    }
+    if (+rgb[0]==green.r && +rgb[1]==green.g && rgb[2]==green.b) {
+        return "green"
+    }
+    if (+rgb[0]==ltblue.r && +rgb[1]==ltblue.g && rgb[2]==ltblue.b) {
+        return "cornflowerblue"
+    }
+    if (+rgb[0]==brown.r && +rgb[1]==brown.g && rgb[2]==brown.b) {
+        return "sandybrown"
+    }
+    if (+rgb[0]==lime.r && +rgb[1]==lime.g && rgb[2]==lime.b) {
+        return "limegreen"
+    }
+    return false
 }
