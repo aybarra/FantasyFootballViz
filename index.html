@@ -607,19 +607,18 @@
 
     function createTable()
     {
-
         $( document ).ready( function ()
         {
 
             data_table = $( "#data_table" ).DataTable( {
                 select: true,
                 bLengthChange: false,
-                data: lassoed_items,
+                data: filteredPlayers(),
                 columns: [
-                    { data: "name" },
-                    { data: "pos_long" },
-                    { data: "fantPt" },
-                    { data: "winPct" }
+                    { data: "player_name" },
+                    { data: "pos_type" },
+                    { data: "ff_pts" },
+                    { data: "win_pct" }
                 ]//,
                 // dom:  'Bfrtip',
                 // buttons: [
@@ -706,6 +705,10 @@
      */
     function refreshPlayerDataTable( alldata )
     {
+        if( alldata.length <= 0)
+        {
+            alldata = filteredPlayers();
+        }
         data_table.clear();
         data_table.rows.add( alldata );
         data_table.draw();
