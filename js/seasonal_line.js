@@ -163,7 +163,8 @@ function generateLineChart(data) {
     var curyear = yeartuples[0][0]
     for (var i = 0; i < yeartuples.length; i++) {
         if (curyear != yeartuples[i][0]){
-//             var stddev = math.std(templist)
+             if (templist.length < 1) {templist.push(0);}
+            var stddev = math.std(templist)
             season_dev2.push(stddev)
             templist = []
             curyear = yeartuples[i][0]
@@ -171,7 +172,8 @@ function generateLineChart(data) {
             templist.push(yeartuples[i][1])
         }
     }
-//     var stddev = math.std(templist)
+    if (templist.length < 1) {templist.push(0);}
+    var stddev = math.std(templist)
     season_dev2.push(stddev)
 
     avgjoe.key = "AvgJoe"
@@ -551,6 +553,7 @@ function generateLineChart(data) {
                         d3.select("#avgjoeline").attr("d",line(avgjoe2.values))
                         d3.select("#goodguyline").attr("d",line(goodguy2.values))
                         d3.select("#eliteguyline").attr("d",line(eliteguy2.values))
+                        d3.select("#title").text("Average Points / Class");
                       } else {
                             yrtog.text("Years")
                             xAxis.scale(x);
@@ -565,6 +568,7 @@ function generateLineChart(data) {
                             d3.select("#avgjoeline").attr("d",line(avgjoe.values))
                             d3.select("#goodguyline").attr("d",line(goodguy.values))
                             d3.select("#eliteguyline").attr("d",line(eliteguy.values))
+                            d3.select("#title").text("Average Points / Season");
 
                       }
                   });
