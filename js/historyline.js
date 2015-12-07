@@ -363,7 +363,7 @@ function generateHistoryLine(data){
                         return y(d.season_ff_pts);
                     });
     svg.append("text")
-        .attr("id","title")
+        .attr("id","historytitle")
         .attr("x", (width / 2))
         .attr("y", 0 - (margin.top / 3))
         .attr("text-anchor", "middle")
@@ -371,7 +371,7 @@ function generateHistoryLine(data){
         .style("text-decoration", "underline")
         .text("Average Points / Season");
 
-    var avgjoeline = svg.append("path")
+    var histavgline = svg.append("path")
                         .attr("class","distribution_lines")
                         .attr("id","historyline")
                         .attr("d", area(avgjoe.values))
@@ -410,9 +410,9 @@ function generateHistoryLine(data){
                                .call(yAxis);
                             d3.select
 //                         svg.select("g.y.axis").call(yAxis)
-                        d3.select("#avgjoeline").attr("d",area(avgjoe2.values))
-//                         d3.select("#goodguyline").attr("d",line(goodguy2.values))
-                        svg.select("#title").text("Average Points / Class");
+                        d3.select("#histavgline").attr("d",area(avgjoe2.values))
+//                         d3.select("#histgoodlineline").attr("d",line(goodguy2.values))
+                        svg.select("#historytitle").text("Average Points / Class");
                       } else {
                             yrtog.text("Years")
                             y.domain(d3.extent(avgjoe.values, function(d) { return d.season_ff_pts; }));
@@ -421,8 +421,8 @@ function generateHistoryLine(data){
                             svg.selectAll("g .y.axis")
                                .call(yAxis);
                             d3.select("#historyline").attr("d",area(avgjoe.values))
-                        svg.select("#title").text("Average Points / Year");
-//                             d3.select("#goodguyline").attr("d",line(goodguy.values))
+                        svg.select("#historytitle").text("Average Points / Year");
+//                             d3.select("#histgoodline").attr("d",line(goodguy.values))
                       }
                   });
 
@@ -443,8 +443,8 @@ function generateHistoryLine(data){
                             d3.select
 //                         svg.select("g.y.axis").call(yAxis)
                         d3.select("#historyline").attr("d",area(avgjoe2.values))
-//                         d3.select("#goodguyline").attr("d",line(goodguy2.values))
-                        svg.select("#title").text("Average Points / Class");
+//                         d3.select("#histgoodline").attr("d",line(goodguy2.values))
+                        svg.select("#historytitle").text("Average Points / Class");
                       } else {
                             yrtog.text("Years")
                             y.domain(d3.extent(avgjoe.values, function(d) { return d.season_ff_pts; }));
@@ -453,8 +453,8 @@ function generateHistoryLine(data){
                             svg.selectAll("g .y.axis")
                                .call(yAxis);
                             d3.select("#historyline").attr("d",area(avgjoe.values))
-                        svg.select("#title").text("Average Class Points / Year");
-//                             d3.select("#goodguyline").attr("d",line(goodguy.values))
+                        svg.select("#historytitle").text("Average Class Points / Year");
+//                             d3.select("#histgoodline").attr("d",line(goodguy.values))
 
 
                       }
