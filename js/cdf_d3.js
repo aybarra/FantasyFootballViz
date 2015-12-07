@@ -43,12 +43,12 @@ function generateCDF_D3Chart(data){
       .append("g")
       .attr("transform", "translate(" + cdf_margin.left + "," + cdf_margin.top + ")");
 
-  var selected_players = filteredPlayers();
-  // console.log(selected_players);
-  var filter_string = '?players=';
-  selected_players.forEach(function (d){
-    filter_string += (','+d.pguid);
-  });
+  // var selected_players = filteredPlayers();
+  // // console.log(selected_players);
+  // var filter_string = '?players=';
+  // selected_players.forEach(function (d){
+  //   filter_string += (','+d.pguid);
+  // });
   // console.log(filter_string);
 
   var data_conv;
@@ -219,7 +219,7 @@ function updateCDFData(data){
   d3.select(".x axis").remove();
   d3.select(".y axis").remove();
   d3.selectAll(".cdf_line").remove();
-  d3.select("#cdf_chart svg").remove();
+  d3.select("#lrg-sec-1 svg").remove();
   
   generateCDF_D3Chart(data);
 }
@@ -237,12 +237,12 @@ function convertData(data){
 
   if(data !== undefined && data.length > 0){
     var nameDict = {};
-    for(var item in data.results){
-      var pguid = data.results[item].season_guid.split("_")[0];
+    for(var item in data){
+      var pguid = data[item].season_guid.split("_")[0];
       var player_name;
       // console.log(player_name);
-      var season_year = data.results[item].season_guid.split("_")[1];
-      var ff_pts = data.results[item].season_ff_pts;
+      var season_year = data[item].season_guid.split("_")[1];
+      var ff_pts = data[item].season_ff_pts;
       if(!(pguid in lines)){
         lines[pguid] = {'values': [{x: 0, y: 0, year: NaN}]};
         // lines[pguid] = {'values': [{x: 1, y: ff_pts, year: season_year}]};
