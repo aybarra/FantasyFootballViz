@@ -1,5 +1,15 @@
+
 var color_set = d3.scale.linear()
 	.range(["#3182bd", "#f33"]);
+
+function drawPCChart(careers, season_data){
+
+  var margin = { top: 10, right: 30, bottom: 10, left: 45 }
+      , width = parseInt(d3.select('.parcoords').style('width'), 10)
+      , width = width// - margin.left - margin.right
+      , height = parseInt(d3.select('.parcoords').style('height'), 10)
+      , height = height// - margin.top - margin.bottom;
+
 
 	function drawPCChart(careers, season_data){
 
@@ -90,16 +100,17 @@ var color_set = d3.scale.linear()
 					if (d.length > textLength) textLength = d.length;
 					});
 
-			// get parallel coordinates
-			graph = d3.parcoords()('#sm-sec-4')
-				//.margin({ top: 30, left: 3 * textLength, bottom: 40, right: 0 })
-				.alpha(0.6)
-				.height(height)
-				.width(width)
-				.mode("queue")
-				.rate(2)
-				//        .bundlingStrength(0.2)
-				.composite("darken");
+
+// get parallel coordinates
+graph = d3.parcoords()('#str-sec')
+        //.margin({ top: 30, left: 3 * textLength, bottom: 40, right: 0 })
+        .alpha(0.6)
+        .height(height)
+        .width(width)
+        .mode("queue")
+        .rate(10)
+        //.bundlingStrength(0.2)
+        .composite("darken");
 
 
 			//var dim = ['pguid', 'pass_tds', 'pass_yards', 'ints_thrown', 'rec_yds', 'rush_tds', 'rush_yards'];
@@ -128,7 +139,7 @@ var color_set = d3.scale.linear()
 
 
 			//add hover event
-			d3.select("#pcplot svg")
+			d3.select("#str-sec svg")
 				.on("mousemove", function() {
 						var mousePosition = d3.mouse(this);
 						highlightLineOnClick(mousePosition, true); //true will also add tooltip
