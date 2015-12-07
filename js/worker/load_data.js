@@ -84,6 +84,9 @@ function getSeasonAndSeasonSubsetWebRequests()
     return ajaxRequests;
 }
 
+/**
+ * Called after all data is retrieved for the initial page load.
+ */
 function finalize_load()
 {
     $.when.apply( null, getSeasonAndSeasonSubsetWebRequests() ).done( function ()
@@ -98,6 +101,9 @@ function finalize_load()
     } );
 }
 
+/**
+ * Called after all data is retrieved for an update.
+ */
 function finalize_update()
 {
     $.when.apply( null, getSeasonAndSeasonSubsetWebRequests() ).done( function ()
@@ -107,11 +113,17 @@ function finalize_update()
     } );
 }
 
+/**
+ * Call this to perform the initial page load
+ */
 function loadPageWithAllChartData()
 {
     getCareerDataWebRequest().then( finalize_load );
 }
 
+/**
+ * Call this when any filters are added or removed and we need to update the charts.
+ */
 function reloadAllChartData()
 {
     getCareerDataWebRequest().then( finalize_update );
