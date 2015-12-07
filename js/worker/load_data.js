@@ -1,11 +1,19 @@
-function first()
+//Setup default ajax request details. All ajax requests will have the attributes unless changed.
+$.ajaxSetup( {
+    type: 'GET',
+    data: {
+        format: 'json'
+    }
+} );
+
+/**
+ * Call to get the career data.
+ * @returns {*}
+ */
+function getCareerDataWebRequest()
 {
     return $.ajax( {
         url: defaultFilterObject.generateCareerUrl(),
-        type: 'GET',
-        data: {
-            format: 'json'
-        },
         error: function ()
         {
             alert( "ERROR MAKING WEB REQUEST FOR PLAYER KEYS" )
@@ -26,74 +34,85 @@ function first()
     } );
 }
 
-function second( data, textStatus, jqXHR )
+/**
+ * Call to return an array of ajax requests for seasons and season subsets
+ * @returns {Array}
+ */
+function getSeasonAndSeasonSubsetWebRequests()
 {
-    return $.ajax( {
-        url: 'http://localhost:8000/seasons_subset/?players=' + filteredPlayersPguids().join(),
-        type: 'GET',
-        data: {
-            format: 'json'
-        },
-        error: function ()
-        {
-            alert( "ERROR MAKING WEB REQUEST FOR PLAYER KEYS" )
-        },
-        success: function ( data )
-        {
-            //Get the result array
-            season_subset_data = data[ 'results' ];
-        }
-    } );
+    var ajaxRequests = [], payloadSize = 100;
+    var players = filteredPlayersPguids();
+
+    //Should always have something.
+    while ( players.length > 0 )
+    {
+        ajaxRequests.push( $.ajax( {
+                url: 'http://localhost:8000/seasons_subset/?players=' + players.splice( 0, payloadSize ).join(),
+                error: function ()
+                {
+                    alert( "ERROR MAKING WEB REQUEST FOR PLAYER KEYS" )
+                }
+                ,
+                success: function ( data )
+                {
+                    //Get the result array
+                    season_subset_data = data[ 'results' ];
+                }
+            }
+        ) );
+    }
+
+    players = filteredPlayersPguids();
+    //Should always have something.
+    while ( players.length > 0 )
+    {
+        ajaxRequests.push( $.ajax( {
+                url: 'http://localhost:8000/seasons/?players=' + players.splice( 0, payloadSize ).join(),
+                error: function ()
+                {
+                    alert( "ERROR MAKING WEB REQUEST FOR PLAYER KEYS" )
+                },
+                success: function ( data )
+                {
+                    //Get the result array
+                    season_data = data[ 'results' ];
+                }
+            }
+        ) );
+    }
+
+    return ajaxRequests;
 }
 
-function third( data, textStatus, jqXHR )
+function finalize_load()
 {
-    return $.ajax( {
-        url: 'http://localhost:8000/seasons/?players=' + filteredPlayersPguids().join(),
-        type: 'GET',
-        data: {
-            format: 'json'
-        },
-        error: function ()
-        {
-            alert( "ERROR MAKING WEB REQUEST FOR PLAYER KEYS" )
-        },
-        success: function ( data )
-        {
-            //Get the result array
-            season_data = data[ 'results' ];
-        }
-    } );
-}
-
-function fourth( data, textStatus, jqXHR )
-{
-    loadScatterPlot( filteredPlayers() ); //Loads from filters
-    generateCDF_D3Chart( season_subset_data );
-    generateHistogram( filteredPlayers(), season_subset_data );
-    createTable(); //Not a chart
+    $.when.apply( null, getSeasonAndSeasonSubsetWebRequests() ).done( function ()
+    {
+        loadScatterPlot( filteredPlayers() ); //Loads from filters
+        generateCDF_D3Chart( season_subset_data );
+        generateHistogram( filteredPlayers(), season_subset_data );
+        createTable(); //Not a chart
 //     drawPCChart( filteredPlayers(), season_data );
-    generateLineChart( season_subset_data );
-    generateHistoryLine( season_subset_data );
+        generateLineChart( season_subset_data );
+        generateHistoryLine( season_subset_data );
+    } );
 }
 
-function fifth( data, textStatus, jqXHR )
+function finalize_update()
 {
-    updateCDFData( season_subset_data );
-    loadScatterPlot( filteredPlayers() );
-}
-
-function loadPageData()
-{
-    first().then( second ).then( third );
+    $.when.apply( null, getSeasonAndSeasonSubsetWebRequests() ).done( function ()
+    {
+        updateCDFData( season_subset_data );
+        loadScatterPlot( filteredPlayers() );
+    } );
 }
 
 function loadPageWithAllChartData()
 {
-    first().then( second ).then( third ).then( fourth );
+    getCareerDataWebRequest().then( finalize_load );
 }
 
 function reloadAllChartData()
 {
-    first().then( second ).then( third ).then( fifth );
+    getCareerDataWebRequest().then( finalize_update );
 }
