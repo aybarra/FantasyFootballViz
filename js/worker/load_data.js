@@ -22,12 +22,7 @@ function loadPageData()
             //Loop through the array and get all of the player pks
             $.each( data, function ( index, player )
             {
-                if( PGUID_TO_NAME_MAP[ player[ 'pguid' ] ] === undefined )
-                {
-                    PGUID_TO_NAME_MAP[ player[ 'pguid' ] ] = new Array( 2 );
-                    PGUID_TO_NAME_MAP[ player[ 'pguid' ] ][ 0 ] = player[ 'player_name' ];
-                    PGUID_TO_NAME_MAP[ player[ 'pguid' ] ][ 1 ] = player[ 'pos_type' ];
-                }
+                addPlayerToPguidMap( player );
                 defaultFilterObject.players.push( player );
             } );
 

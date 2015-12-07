@@ -904,20 +904,30 @@
         generateHistogram();
         createTable(); //Not a chart
         drawPCChart();
-        //TODO uncomment below after js errors are fixed.
         generateLineChart(season_subset_data);               
         generateHistoryLine(season_subset_data);
     }
 
     function reloadAllChartData()
     {
-        w = new Worker("load_data.js");
-        w.onmessage = function(event)
-        {
-            updateCDFData( season_subset_data );
-        };
-        //loadPageData();
+//        w = new Worker("load_data.js");
+//        w.onmessage = function(event)
+//        {
+//
+//        };
+        loadPageData();
+        updateCDFData( season_subset_data );
 
+    }
+
+    function addPlayerToPguidMap(player)
+    {
+        if( PGUID_TO_NAME_MAP[ player[ 'pguid' ] ] === undefined )
+        {
+            PGUID_TO_NAME_MAP[ player[ 'pguid' ] ] = new Array( 2 );
+            PGUID_TO_NAME_MAP[ player[ 'pguid' ] ][ 0 ] = player[ 'player_name' ];
+            PGUID_TO_NAME_MAP[ player[ 'pguid' ] ][ 1 ] = player[ 'pos_type' ];
+        }
     }
 
 </script>
