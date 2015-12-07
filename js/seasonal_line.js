@@ -132,7 +132,7 @@ function generateLineChart(data) {
             avgcnt[numyears-1] += 1
             yearlist[numyears-1].push(d.season_ff_pts)
         }
-    });
+    }); //end data loading
 
     yeartuples.sort(function(a, b) {
         a = a[0];
@@ -163,7 +163,7 @@ function generateLineChart(data) {
     var curyear = yeartuples[0][0]
     for (var i = 0; i < yeartuples.length; i++) {
         if (curyear != yeartuples[i][0]){
-            var stddev = math.std(templist)
+//             var stddev = math.std(templist)
             season_dev2.push(stddev)
             templist = []
             curyear = yeartuples[i][0]
@@ -171,7 +171,7 @@ function generateLineChart(data) {
             templist.push(yeartuples[i][1])
         }
     }
-    var stddev = math.std(templist)
+//     var stddev = math.std(templist)
     season_dev2.push(stddev)
 
     avgjoe.key = "AvgJoe"
