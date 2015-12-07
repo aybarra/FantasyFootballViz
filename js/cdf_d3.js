@@ -648,9 +648,19 @@ function generateCDF_D3Chart(data){
 
                       }
                   });
-;  //not sure what this is about
+  //not sure what this is about
 } // Close function generateLineChart
 
+
+function updateCDFData(cdf_data){
+
+  d3.select(".x axis").remove();
+  d3.select(".y axis").remove();
+  d3.selectAll(".cdf_line").remove();
+  d3.select("#lrg-sec-1 svg").remove();
+
+  generateCDF_D3Chart(cdf_data);
+}
 //   var absyear = false;
 //   var parseDate = d3.time.format("%Y").parse;
 // 

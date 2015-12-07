@@ -25,17 +25,6 @@
     <script src="lib/AutoComplete/dist/jquery.autocomplete.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/mathjs/2.4.2/math.min.js"></script>
 
-
-    <!-- <link href="nvd3/build/nv.d3.min.css" rel="stylesheet">
-    <script src="nvd3/build/nv.d3.min.js"></script>
-    <script src="nvd3/src/tooltip.js"></script>
-    <script src="nvd3/src/utils.js"></script>
-    <script src="nvd3/src/models/legend.js"></script>
-    <script src="nvd3/src/models/axis.js"></script>
-    <script src="nvd3/src/models/distribution.js"></script>
-    <script src="nvd3/src/models/scatter.js"></script>
-    <script src="nvd3/src/models/scatterChart.js"></script>
-    <link href="nvd3/build/nv.d3.min.css" rel="stylesheet"> -->
     <script src="js/cdf_d3.js"></script>
     <script src="js/seasonal_line.js"></script>
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
@@ -440,10 +429,11 @@
         //TODO clear out old charts and graphs.
 //         var playerArray = filteredPlayers();
 
-        d3.select("#lrg-sec-2").selectAll(".dot").remove()
-        d3.select("#lrg-sec-2").select(".x axis").remove()
-        d3.select("#lrg-sec-2").select(".y axis").remove()        
-        
+        d3.select("#lrg-sec-2").selectAll(".dot").remove();
+        var temp_svg = d3.select("#lrg-sec-2 svg");
+        temp_svg.select("#scatter_x_axis").remove();
+        temp_svg.select("#scatter_y_axis").remove();        
+
         playerArray.forEach( function ( x )
         {
             x.short_year = x.start_year;
@@ -602,6 +592,7 @@
         // Add the X Axis
         svg_scatter.append( "g" )
                 .attr( "class", "x axis" )
+                .attr( "id", "scatter_x_axis")
                 .attr( "transform", "translate(0," + scatter_height + ")" )
                 .call( xAxis )
                 .append( "text" )
@@ -612,6 +603,7 @@
         // Add the Y Axis
         svg_scatter.append( "g" )
                 .attr( "class", "y axis" )
+                .attr( "id", "scatter_y_axis")
                 .call( yAxis )
                 .append( "text" )
                 .attr( "text-anchor", "middle" )

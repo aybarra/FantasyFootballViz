@@ -1,17 +1,17 @@
 
 var color_set = d3.scale.linear()
-	.range(["#3182bd", "#f33"]);
+.range(["#3182bd", "#f33"]);
+
+
+// function drawPCChart(careers, season_data){
+//   var margin = { top: 10, right: 30, bottom: 10, left: 45 }
+//   , width = parseInt(d3.select('.parcoords').style('width'), 10)
+//       , width = width// - margin.left - margin.right
+//       , height = parseInt(d3.select('.parcoords').style('height'), 10)
+//       , height = height// - margin.top - margin.bottom;
+// Some shit happened here when someone merged.... ^
 
 function drawPCChart(careers, season_data){
-
-  var margin = { top: 10, right: 30, bottom: 10, left: 45 }
-      , width = parseInt(d3.select('.parcoords').style('width'), 10)
-      , width = width// - margin.left - margin.right
-      , height = parseInt(d3.select('.parcoords').style('height'), 10)
-      , height = height// - margin.top - margin.bottom;
-
-
-	function drawPCChart(careers, season_data){
 
 		//console.log(careers.length,careers[99]);
 		//console.log(season_data.length, season_data[321]);
@@ -22,9 +22,9 @@ function drawPCChart(careers, season_data){
 			, height = parseInt(d3.select('.small-chart').style('height'), 10)
 			, height = height// - margin.top - margin.bottom;
 
-		var players = {};
-		var values = {};
-		var career_totals = [];
+          var players = {};
+          var values = {};
+          var career_totals = [];
 
 		//Storing player name for later use : pctooltip
 		for (var i = 0; i < careers.length; ++i)
@@ -97,8 +97,8 @@ function drawPCChart(careers, season_data){
 			// find the longest text size in the first row to adjust left margin
 			var textLength = 0;
 			firstCell.forEach(function(d){
-					if (d.length > textLength) textLength = d.length;
-					});
+             if (d.length > textLength) textLength = d.length;
+         });
 
 
 // get parallel coordinates
@@ -118,8 +118,8 @@ graph = d3.parcoords()('#str-sec')
 
 			graph.data(career_totals)
 				//        .dimensions(dim)  //Specifying dimensions doesn't seem to work. :-(
-				.render()
-				.ticks(1)
+                    .render()
+                    .ticks(1)
 				.brushMode("1D-axes")  // enable brushing
 				.reorderable() // I removed this for now as it can mess up with pctooltips
 				.interactive();
@@ -133,21 +133,21 @@ graph = d3.parcoords()('#str-sec')
 
 			// click label to activate coloring
 			graph.svg.selectAll(".dimensions")
-				.on("click", update_colors)
-				.selectAll(".label")
+            .on("click", update_colors)
+            .selectAll(".label")
 				.style("font-size", "6px"); // change font sizes of selected lable
 
 
 			//add hover event
 			d3.select("#str-sec svg")
-				.on("mousemove", function() {
-						var mousePosition = d3.mouse(this);
+            .on("mousemove", function() {
+              var mousePosition = d3.mouse(this);
 						highlightLineOnClick(mousePosition, true); //true will also add tooltip
-						})
-			.on("mouseout", function(){
-					cleanTooltip();
-					graph.unhighlight();
-					});
+                  })
+            .on("mouseout", function(){
+             cleanTooltip();
+             graph.unhighlight();
+         });
 
 
 
@@ -163,9 +163,9 @@ graph = d3.parcoords()('#str-sec')
 function update_colors(dimension) {
 	// change the fonts to bold
 	graph.svg.selectAll(".dimension")
-		.style("font-weight", "normal")
-		.filter(function(d) { return d == dimension; })
-		.style("font-weight", "bold");
+  .style("font-weight", "normal")
+  .filter(function(d) { return d == dimension; })
+  .style("font-weight", "bold");
 
 	// change color of lines
 	// set domain of color scale
@@ -174,7 +174,7 @@ function update_colors(dimension) {
 
 	// change colors for each line
 	graph.color(function(d){return color_set([d[dimension]])}).render();
-};
+}
 
 
 // Add highlight for every line on click
@@ -188,15 +188,15 @@ function getCentroids(data){
 
 	data.forEach(function(d){
 
-			var initCenPts = graph.compute_centroids(d).filter(function(d, i){return i%2==0;});
+       var initCenPts = graph.compute_centroids(d).filter(function(d, i){return i%2==0;});
 
 			// move points based on margins
 			var cenPts = initCenPts.map(function(d){
-					return [d[0] + margins["left"], d[1]+ margins["top"]];
-					});
+             return [d[0] + margins["left"], d[1]+ margins["top"]];
+         });
 
 			graphCentPts.push(cenPts);
-			});
+       });
 
 	return graphCentPts;
 }
@@ -242,10 +242,10 @@ function findAxes(testPt, cenPts){
 function cleanTooltip(){
 	// removes any object under #pctooltip is
 	graph.svg.selectAll("#pctooltip")
-		.remove();
+  .remove();
 
-	graph.svg.selectAll("#tooltip")
-		.remove();
+  graph.svg.selectAll("#tooltip")
+  .remove();
 
 
 }
@@ -276,29 +276,29 @@ function addTooltip(clicked, clickedCenPts){
 	var tooltip_offset = 20;
 
 	graph.svg.selectAll("rect[id='tooltip']")
-		.data(clickedDataSet).enter()
-		.append("rect")
-		.attr("x", function(d) { return d[0] - d[2].length * 5;})
-		.attr("y", function(d) { return d[1] + tooltip_offset - rectHeight + 2 * padding; })
-		.attr("rx", "2")
-		.attr("ry", "2")
-		.attr("id", "tooltip")
-		.attr("fill", "grey")
-		.attr("opacity", 0.9)
-		.attr("width", function(d){return d[2].length * 10;})
-		.attr("height", rectHeight);
+  .data(clickedDataSet).enter()
+  .append("rect")
+  .attr("x", function(d) { return d[0] - d[2].length * 5;})
+  .attr("y", function(d) { return d[1] + tooltip_offset - rectHeight + 2 * padding; })
+  .attr("rx", "2")
+  .attr("ry", "2")
+  .attr("id", "tooltip")
+  .attr("fill", "grey")
+  .attr("opacity", 0.9)
+  .attr("width", function(d){return d[2].length * 10;})
+  .attr("height", rectHeight);
 
 	// add text on top of rectangle
 	graph.svg.selectAll("text[id='tooltip']")
-		.data(clickedDataSet).enter()
-		.append("text")
-		.attr("x", function(d) { return d[0];})
-		.attr("y", function(d) { return d[1] + tooltip_offset; })
-		.attr("id", "tooltip")
-		.attr("fill", "Black")
-		.attr("text-anchor", "middle")
-		.attr("font-size", fontSize)
-		.text( function (d){ return d[2];})
+  .data(clickedDataSet).enter()
+  .append("text")
+  .attr("x", function(d) { return d[0];})
+  .attr("y", function(d) { return d[1] + tooltip_offset; })
+  .attr("id", "tooltip")
+  .attr("fill", "Black")
+  .attr("text-anchor", "middle")
+  .attr("font-size", fontSize)
+  .text( function (d){ return d[2];})
 }
 
 function getClickedLines(mouseClick){
@@ -318,11 +318,11 @@ function getClickedLines(mouseClick){
 	if (!axeNum) return false;
 
 	graphCentPts.forEach(function(d, i){
-			if (isOnLine(d[axeNum-1], d[axeNum], mouseClick, 5)){
-			clicked.push(activeData[i]);
+       if (isOnLine(d[axeNum-1], d[axeNum], mouseClick, 5)){
+           clicked.push(activeData[i]);
 			clickedCenPts.push(graphCentPts[i]); // for tooltip
-			}
-			});
+       }
+   });
 
 	return [clicked, clickedCenPts]
 }
@@ -351,18 +351,16 @@ function highlightLineOnClick(mouseClick, drawTooltip){
 		}
 
 	}
-};
+}
 
 function deletePCChart(graph)
 {
 	if(typeof graph !== "undefined")
 	{
 		setTimeout(function() {
-				d3.select('#sm-sec-4')
-				.remove();
-				}, 6000 );
+			d3.select('#sm-sec-4')
+			.remove();
+		}, 6000 );
 	}
-
-
 
 }
