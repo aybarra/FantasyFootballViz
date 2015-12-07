@@ -160,7 +160,7 @@
                 </div>
             </div>
 
-            <div class="col-sm-7">
+            <div class="col-sm-6">
 
                 <div class="row">
 
@@ -260,7 +260,7 @@
     // var scatter_height = 400 - scatter_margin.top - scatter_margin.bottom;
     // var scatter_padding = 100;
 
-    var scatter_margin = { top: 20, right: 30, bottom: 33, left: 45 }
+    var scatter_margin = { top: 40, right: 30, bottom: 33, left: 45 }
             , width = parseInt( d3.select( '.large-chart' ).style( 'width' ), 10 )
             , scatter_width = width - scatter_margin.left - scatter_margin.right
             , height = parseInt( d3.select( '.large-chart' ).style( 'height' ), 10 )
@@ -270,7 +270,7 @@
     // var cdf_width = 900 - cdf_margin.right - cdf_margin.left;
     // var cdf_height = 400 - cdf_margin.top - cdf_margin.bottom;
 
-    var cdf_margin = { top: 20, right: 30, bottom: 33, left: 45 }
+    var cdf_margin = { top: 40, right: 30, bottom: 33, left: 45 }
             , cdf_width = width - cdf_margin.right - cdf_margin.left
             , cdf_height = height - cdf_margin.top - cdf_margin.bottom;
 
@@ -418,7 +418,7 @@
     // svg_scatter.call( lasso );
 
     //Add Default Filter
-    var defaultFilterObject = new FilterObject( 2003, 2006, 100, 10000, null, [ 2 ] );
+    var defaultFilterObject = new FilterObject( 2000, 2004, 100, 10000, null, [ 2 ] );
     filterObjects.push( defaultFilterObject );
 
     //Draw the current filter table with the default filter applied.
