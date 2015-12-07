@@ -14,12 +14,17 @@ body {
 
 .large-chart{
   width: 700px;
-  height: 400px;
+  height: 350px;
 }
 
 .small-chart{
-  width: 300px;
-  height: 175px;
+  width: 350px;
+  height: 225px;
+}
+
+.stretch-chart{
+  width: 700px;
+  height: 150px;
 }
 
 /*.switch-btn{

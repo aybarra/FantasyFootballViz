@@ -126,19 +126,28 @@ d3.json('http://localhost:8000/careers/', function(error,data){
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis);
 
-        var dropDown = d3.select("#histogram")
-                         .append("select")
-                         .attr("name","years");
+            svg.append("text")
+                .attr("id","title")
+                .attr("x", 150)
+                .attr("y", 0 - (margin.top / 3))
+                .attr("text-anchor", "middle")
+                .style("font-size", "16px")
+                .style("text-decoration", "underline")
+                .text("Cumulative Points Distribution");
 
-        var options = dropDown.selectAll("option")
-                              .data(years)
-                              .enter()
-                              .append("option");
+        // var dropDown = d3.select("#sm-sec-1")
+        //                  .append("select")
+        //                  .attr("name","years");
+        //
+        // var options = dropDown.selectAll("option")
+        //                       .data(years)
+        //                       .enter()
+        //                       .append("option");
 
-        options.text(function (d, i) { return d; })
-               .attr("value", function (d, i) { return d; })
-
-        dropDown.on("change",menuChanged);
+        // options.text(function (d, i) { return d; })
+        //        .attr("value", function (d, i) { return d; })
+        //
+        // dropDown.on("change",menuChanged);
 
         function menuChanged(){
 //             console.log(d3.event.target.value)

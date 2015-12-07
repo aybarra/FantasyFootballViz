@@ -6,7 +6,7 @@ function generateLineChart(data) {
     var color = d3.scale.category10();
 
 
-    var margin = { top: 10, right: 30, bottom: 33, left: 45 }
+    var margin = { top: 25, right: 35, bottom: 25, left: 45 }
         , width = parseInt(d3.select('.small-chart').style('width'), 10)
         , width = width - margin.left - margin.right
         , height = parseInt(d3.select('.small-chart').style('height'), 10)
@@ -265,11 +265,20 @@ function generateLineChart(data) {
        .call(yAxis)
        .append("text")
        .attr("transform", "rotate(-90)")
-       .attr("y", -42)
-       .attr("x", -150)
+       .attr("y", -41)
+       .attr("x", -30)
        .attr("dy", ".71em")
        .style("text-anchor", "end")
        .text("Seasonal Fantasy Points");
+
+       svg.append("text")
+           .attr("id","title")
+           .attr("x", 150)
+           .attr("y", 0 - (margin.top / 3))
+           .attr("text-anchor", "middle")
+           .style("font-size", "16px")
+           .style("text-decoration", "underline")
+           .text("Per Season Fantasy Points");
 
 //  *****************************************************
 //  CIRCLES FOR DEATILS ON DEMANSD MOUSE HOVER
