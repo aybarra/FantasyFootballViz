@@ -80,24 +80,22 @@ function deletePlayerObject( playerGuidToDelete )
             selectedPlayers.splice( index, 1 );
 
             //If the player is in the filter set. Just remove row here because the data does not change.
+            //If player is not in filter set, we need to remove his data and redraw.
             if( !isPlayerPguidInFilterSet( playerGuidToDelete ) )
             {
-                //TODO remove below function call.
-                //Remove player from careers, season, season_subset, redraw.
-                //Reload all of the tables because a filter item was added
-                reloadAllChartData();
+                //Remove player from season, season_subset, redraw.
+                season_data = season_data.filter( function ( item )
+                {
+                    return item[ 'pguid' ] !== playerGuidToDelete;
+                } );
 
-                //season_data = season_data.filter( function ( item )
-                //{
-                //    return item[ 'pguid' ] === playerGuidToDelete;
-                //} );
-                //
-                //season_subset_data = season_subset_data.filter( function ( item )
-                //{
-                //    return item[ 'season_guid' ].indexOf( playerGuidToDelete ) > -1;
-                //} );
-                //showLoading();
-                //redrawAllCharts();
+                season_subset_data = season_subset_data.filter( function ( item )
+                {
+                    return item[ 'season_guid' ].indexOf( playerGuidToDelete ) === -1;
+                } );
+                showLoading();
+                redrawAllCharts();
+                //reloadAllChartData(); was inplace of all code above. Current implementation should be quicker.
             }
 
             //return false to break out of the each loop

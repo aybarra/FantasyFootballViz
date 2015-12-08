@@ -1056,20 +1056,20 @@ var rely = d3.scale.linear()
     d3.selectAll(".cdf_line").style("opacity","0");
     animateLines();
 
-    dispatch.on("lasso_cdf", function(lassoed_items) {
-      // console.log(lassoed_items);
-      if(lassoed_items.length > 0){
-        lassoed_items.forEach(function (d){
-          // console.log("Pguid is: " + d.pguid);
-          d3.select('#path_' + d.pguid)
-          .style('stroke-width','3.5px');
-        });
-      } else {
-        // var paths = d3.selectAll("*[id^='path']");
-        var paths = d3.selectAll(".cdf_line");
-        paths.style('stroke-width', '1.75px');
-      }
-    });
+    // dispatch.on("lasso_cdf", function(lassoed_items) {
+    //   // console.log(lassoed_items);
+    //   if(lassoed_items.length > 0){
+    //     lassoed_items.forEach(function (d){
+    //       // console.log("Pguid is: " + d.pguid);
+    //       d3.select('#path_' + d.pguid)
+    //       .style('stroke-width','3.5px');
+    //     });
+    //   } else {
+    //     // var paths = d3.selectAll("*[id^='path']");
+    //     var paths = d3.selectAll(".cdf_line");
+    //     paths.style('stroke-width', '1.75px');
+    //   }
+    // });
 
     player.append("text")
         .datum(function(d_sub) {

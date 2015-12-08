@@ -161,7 +161,7 @@ function generateHistogram( careers, season_subset_data )
  
     path.append("circle")
         .attr("r",10)
-        .attr("strike","black")
+        .attr("stroke","black")
     path
       .data(pie(totals))
       .enter()
