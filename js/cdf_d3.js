@@ -145,6 +145,10 @@ function generateCDF_D3Chart(data){
             }
             avgpoints[numyears-1] += d.season_ff_pts
             avgcnt[numyears-1] += 1
+            if(  yearlist == null || yearlist === undefined || (numyears - 1 >= yearlist.length ) )
+            {
+                console.log( d.guid );
+            }
             yearlist[numyears-1].push(d.season_ff_pts)
         }
     }); //end cdf_data loading
@@ -406,8 +410,8 @@ function generateCDF_D3Chart(data){
                        .on("mouseover", function() {
                             focus.style("display", null);
                             color_attr = d3.select(this).style("stroke")
-                            color = colorScale(PGUID_TO_NAME_MAP[d.key][1])
-//                             console.log(color_attr)
+                            color = colorScale( getPlayerInformationFromPguidMap(d.key)[1] )
+//                             console.log(color)
                             var sel = d3.select(this);
                             sel.moveToFront();
                             sel.transition().duration(100)
@@ -459,7 +463,7 @@ function generateCDF_D3Chart(data){
                             } else {
                                 focus.attr("transform", "translate(" + x(year) + "," + y(pts) + ")")
                             }
-                            fullname = PGUID_TO_NAME_MAP[d.key][0]
+                            fullname = getPlayerInformationFromPguidMap(d.key)[0];
                             focus.select("#cdffocusname").text(fullname);
                             focus.select("#cdffocusyear").text("Yr: "+year);
                             focus.select("#cdffocuspoints").text("Pts:"+pts);
