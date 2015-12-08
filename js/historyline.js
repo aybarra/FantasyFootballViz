@@ -452,3 +452,12 @@ function generateHistoryLine(data){
 
 ;  //not sure what this is about
 } // Close function generateLineChart
+
+
+function updateHistoryLine( updatedData ){
+  d3.select(".distribution_lines").remove();
+  d3.select("#sm-sec-2 svg").remove();
+
+  generateHistoryLine( updatedData );
+
+}

@@ -162,6 +162,7 @@ function redrawAllCharts()
 {
     updateCDFData( season_subset_data );
     loadScatterPlot( filteredPlayers() );
+    updateHistoryLine( season_subset_data );
     // updateSeasonalData( season_subset_data );
     hideLoading();
 }

@@ -932,9 +932,6 @@ var rely = d3.scale.linear()
                   // console.log(selected_pguids);
                 }
 
-                // Notifies everyone else to highlight/unhighlight
-                dispatch.project_click();
-
                 color_attr = d3.select(this).style("stroke")
                 rgb = color_attr.split("(")[1].split(")")[0].split(",")
                 colorcheck = CheckColor(color_attr)
@@ -958,23 +955,27 @@ var rely = d3.scale.linear()
                     colorcheck == 'firebrick') {
                         sel.style("stroke", "whitesmoke")
                 }
+
+                // Notifies everyone else to highlight/unhighlight
+                dispatch.project_click();
            })        
         .on('mouseover', function(d) {
             var line = d3.select(this);
 //             line.style('stroke', colorScale(PGUID_TO_NAME_MAP[d.key][1]))
 //             // line.style('stroke', d3.hsl('#33b9ff'));
-            // this.parentNode.parentNode.appendChild(this.parentNode);
+            this.parentNode.parentNode.appendChild(this.parentNode);
 //             d3.select(this.nextSibling)
 //               .attr("opacity", "1")
 //         })
             // line.attr("opacity", 1);
-            console.log("COLOR INSIDE MOUSEOVER IS: " + line.style("stroke"));
             focus.style("display", null);
             color_attr = d3.select(this).style("stroke")
             color = colorScale(PGUID_TO_NAME_MAP[d.key][1])
             // console.log(color)
             var sel = d3.select(this);
-            sel.moveToFront();
+            // sel.moveToFront();
+            // console.log(line.parentNode);
+            // sel.parentNode.parentNode.appendChild(sel.parentNode);
             sel.transition().duration(100)
                 .ease("bounce")
                 .style("stroke-width", "9px")
@@ -1184,8 +1185,20 @@ var rely = d3.scale.linear()
         selected_pguids.forEach(function (d){
           // TODO Do something about the name's T.J, etc...
           var key_updated = getUpdatedKey(d.toString());
+          d3.select("#path_" + key_updated);
+          var position = PGUID_TO_NAME_MAP[d][1];
+          var correct_color;
+          if ( position == 'qb') {
+            correct_color = "cornflowerblue";
+          } else if ( position == 'wr') {
+            correct_color = "sandybrown";
+          } else if ( position == 'te') {
+            correct_color = "limegreen";
+          } else if ( position == 'rb') {
+            correct_color = "firebrick";
+          }
           d3.select('#path_' + key_updated)
-            .style("stroke", colorScale(PGUID_TO_NAME_MAP[d][1]))
+            .style("stroke", correct_color);
         });
       } else {
         var paths = d3.selectAll(".cdf_line");
@@ -1210,7 +1223,7 @@ var rely = d3.scale.linear()
 
     var statline = cdf_svg.append("g")
                       .attr("class", "stats")
-                      .attr("transform", "translate(30,30")
+                      .attr("transform", "translate(30,30)")
 
     statline.append("text")
             .attr("id","nameline")
@@ -1355,10 +1368,10 @@ function CheckColor(color_attr){
     blue = d3.rgb("#1f77b4")
     orange = d3.rgb("#ff7f0e")
     green = d3.rgb("#2ca02c")
-    ltblue = d3.rgb("#6495ed")
-    brown = d3.rgb("#f4a460")
-    lime = d3.rgb("#32cd32")
     red = d3.rgb("#d62728")
+    ltblue = d3.rgb("#6495ed")
+    lime = d3.rgb("#32cd32")
+    brown = d3.rgb("#f4a460")
     fire = d3.rgb("#b22222")
     rgb = color_attr.split("(")[1].split(")")[0].split(",")
     
