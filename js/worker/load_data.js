@@ -104,7 +104,7 @@ function getSingularPlayerSeasonAndSeasonSubsetWebRequests( pguid )
             success: function ( data )
             {
                 //Get the result array
-                season_subset_data.push( data[ 'results' ][ 0 ] );
+                $.merge( season_subset_data, data[ 'results' ] );
             }
         }
     ) );
@@ -118,7 +118,7 @@ function getSingularPlayerSeasonAndSeasonSubsetWebRequests( pguid )
             success: function ( data )
             {
                 //Get the result array
-                season_data.push( data[ 'results' ][ 0 ] );
+                $.merge( season_data, data[ 'results' ] );
             }
         }
     ) );
