@@ -50,7 +50,7 @@
                style="cursor:pointer; -webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;">Filter</a>
 
             <p class="navbar-brand nav navbar-nav navbar-right" id="title"> Armchair Fantasy Football </p>
-            <img class="navbar-right"  src="images/logo.png"></scr>
+            <img class="navbar-right" src="images/logo.png"></scr>
         </div>
     </div>
 </nav>
@@ -154,15 +154,40 @@
                 <div class="row">
 
                     <div class="col-sm-12 large-chart">
-                      <div class="row">
-                        <button type="button" id="cdf_year_swap" class="btn-primary btn-xs">CHANGE AXIS</button>
-                        <button type="button" id="scatter_btn" class="btn-primary btn-xs" onclick="transitionTo('scatter', '#lrg-sec-1', 'large-chart')">Scatter</button>
-                      </div>
+                        <div class="row">
+                            <div class="dropdown">
+                              <button class="btn btn-primary dropdown-toggle btn-xs" type="button" id="dropdown-lrg-1" data-toggle="dropdown">Large Section 1
+                              <span class="caret"></span></button>
+                              <ul class="dropdown-menu">
+                                <li><a onclick="#">CDF</a></li>
+                                <li><a onclick="#">Scatterplot</a></li>
+                                <li><a onclick="#">Histogram</a></li>
+                                <li><a onclick="#">Average Points</a></li>
+                                <li><a onclick="#">Points</a></li>
+                                <li><a onclick="#">Parallel Coordinates</a></li>
+                              </ul>
+                            </div>
+                        </div>
                         <div id="lrg-sec-1"></div>
                     </div>
                 </div>
 
                 <hr>
+
+                <div class="row">
+                    <div class="dropdown">
+                      <button class="btn btn-primary dropdown-toggle btn-xs" id="dropdown-lrg-2" type="button" data-toggle="dropdown">Large Section 2
+                      <span class="caret"></span></button>
+                      <ul class="dropdown-menu">
+                        <li><a onclick="#">CDF</a></li>
+                        <li><a onclick="#">Scatterplot</a></li>
+                        <li><a onclick="#">Histogram</a></li>
+                        <li><a onclick="#">Average Points</a></li>
+                        <li><a onclick="#">Points</a></li>
+                        <li><a onclick="#">Parallel Coordinates</a></li>
+                      </ul>
+                    </div>
+                </div>
 
                 <div class="row">
                     <div class="col-sm-12 large-chart">
@@ -178,26 +203,72 @@
             </div>
 
             <div class="col-sm-2">
-                <div class="row">
-                  <div class="col-sm-12 small-chart">
-                    <div id="sm-sec-1"></div>
+
+              <div class="row">
+                  <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle btn-xs" id="dropdown-sm-1" type="button" data-toggle="dropdown">Small Section 1
+                    <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                      <li><a onclick="#">CDF</a></li>
+                      <li><a onclick="#">Scatterplot</a></li>
+                      <li><a onclick="#">Histogram</a></li>
+                      <li><a onclick="#">Average Points</a></li>
+                      <li><a onclick="#">Points</a></li>
+                      <li><a onclick="#">Parallel Coordinates</a></li>
+                    </ul>
                   </div>
+              </div>
+
+                <div class="row">
+                    <div class="col-sm-12 small-chart">
+                        <div id="sm-sec-1"></div>
+                    </div>
                 </div>
 
                 <hr>
 
                 <div class="row">
-                  <div class="col-sm-12 small-chart">
-                    <div id="sm-sec-2"></div>
-                  </div>
+                    <div class="dropdown">
+                      <button class="btn btn-primary dropdown-toggle btn-xs" id="dropdown-sm-2" type="button" data-toggle="dropdown">Small Section 2
+                      <span class="caret"></span></button>
+                      <ul class="dropdown-menu">
+                        <li><a onclick="#">CDF</a></li>
+                        <li><a onclick="#">Scatterplot</a></li>
+                        <li><a onclick="#">Histogram</a></li>
+                        <li><a onclick="#">Average Points</a></li>
+                        <li><a onclick="#">Points</a></li>
+                        <li><a onclick="#">Parallel Coordinates</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12 small-chart">
+                        <div id="sm-sec-2"></div>
+                    </div>
                 </div>
 
                 <hr>
 
                 <div class="row">
-                  <div class="col-sm-12 small-chart">
-                    <div id="sm-sec-3"></div>
-                  </div>
+                    <div class="dropdown">
+                      <button class="btn btn-primary dropdown-toggle btn-xs" id="dropdown-sm-3" type="button" data-toggle="dropdown">Small Section 3
+                      <span class="caret"></span></button>
+                      <ul class="dropdown-menu">
+                        <li><a onclick="#">CDF</a></li>
+                        <li><a onclick="#">Scatterplot</a></li>
+                        <li><a onclick="#">Histogram</a></li>
+                        <li><a onclick="#">Average Points</a></li>
+                        <li><a onclick="#">Points</a></li>
+                        <li><a onclick="#">Parallel Coordinates</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12 small-chart">
+                        <div id="sm-sec-3"></div>
+                    </div>
                 </div>
 
                 <hr>
@@ -464,7 +535,7 @@
         d3.select("#lrg-sec-2").selectAll(".dot").remove();
         var temp_svg = d3.select("#lrg-sec-2 svg");
         temp_svg.select("#scatter_x_axis").remove();
-        temp_svg.select("#scatter_y_axis").remove();        
+        temp_svg.select("#scatter_y_axis").remove();
 
         playerArray.forEach( function ( x )
         {
@@ -642,14 +713,14 @@
                 .attr( "transform", "translate(" + 10 + "," + (scatter_height / 2) + ")rotate(-90)" )
                 .text( "Fantasy Points" );
 
-        svg_scatter.append("text")
-            .attr("id","title")
-            .attr("x", 150)
-            .attr("y", 0 - (scatter_margin.top / 3))
-            .attr("text-anchor", "middle")
-            .style("font-size", "16px")
-            .style("text-decoration", "underline")
-            .text("Fantasy Points / Win Percentage");
+        svg_scatter.append( "text" )
+                .attr( "id", "title" )
+                .attr( "x", 150 )
+                .attr( "y", 0 - (scatter_margin.top / 3) )
+                .attr( "text-anchor", "middle" )
+                .style( "font-size", "16px" )
+                .style( "text-decoration", "underline" )
+                .text( "Fantasy Points / Win Percentage" );
 
         // Init the lasso on the svg:g that contains the dots
         svg_scatter.call( lasso );
@@ -752,7 +823,7 @@
      */
     function refreshPlayerDataTable( alldata )
     {
-        if( alldata.length <= 0)
+        if( alldata.length <= 0 )
         {
             alldata = filteredPlayers();
         }
@@ -763,32 +834,30 @@
 
     function transitionTo( name, id, classification )
     {
-          // switch (name) {
-          //   case 'scatter':{
-          //     d3.select(id).select('svg').remove();
-          //     d3.select(id).append(svg_scatter);
-          //     d3.select(id).select(function() {
-          //         return this.appendChild(document.getElementById("bar"));
-          //       });
-          //   }
-          //
-          //     break;
-          //   default:
-          //
-          // }
+        // switch (name) {
+        //   case 'scatter':{
+        //     d3.select(id).select('svg').remove();
+        //     d3.select(id).append(svg_scatter);
+        //     d3.select(id).select(function() {
+        //         return this.appendChild(document.getElementById("bar"));
+        //       });
+        //   }
+        //
+        //     break;
+        //   default:
+        //
+        // }
 
     }
 
-    function addPlayerToPguidMap(player)
+    function addPlayerToPguidMap( player )
     {
-
         if( PGUID_TO_NAME_MAP[ player[ 'pguid' ] ] === undefined )
         {
             PGUID_TO_NAME_MAP[ player[ 'pguid' ] ] = new Array( 2 );
             PGUID_TO_NAME_MAP[ player[ 'pguid' ] ][ 0 ] = player[ 'player_name' ];
             PGUID_TO_NAME_MAP[ player[ 'pguid' ] ][ 1 ] = player[ 'pos_type' ];
         }
-
     }
 
 </script>

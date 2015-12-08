@@ -156,6 +156,15 @@ function generateHistogram( careers, season_subset_data )
             return height - y( d );
         } )
         .attr( "stroke", "black" )
+        .attr( "fill", "lightgray")
+        .on("mouseover", function (d) {
+            d3.select(this).style("stroke","red").style("stroke-width","3px")
+            d3.select(this.nextSibling).attr("stroke","red")
+        })
+        .on("mouseout", function (d) {
+            d3.select(this).style("stroke","black").style("stroke-width","1px")
+        })
+
 
     bar.append( "text" )
         .attr( "dy", ".06em" )
