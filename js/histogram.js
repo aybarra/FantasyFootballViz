@@ -153,24 +153,6 @@ function generateHistogram( careers, season_subset_data )
       .value(function(d) { return d; })
       .sort(null);
 
-    var path = svg.selectAll('path')
-        .append("g")
-        .attr("width", width)
-        .attr("height",height)
-        .attr("transform","translate(-20,20)")
- 
-    path.append("circle")
-        .attr("r",10)
-        .attr("stroke","black")
-    path
-      .data(pie(totals))
-      .enter()
-      .append('path')
-      .attr('d', arc)
-      .attr('fill', function(d, i) { 
-        return piecolor(i);
-      });
-
     var bar = svg.selectAll( ".bar" )
         .data( playerbins )
         .enter().append( "g" )
@@ -195,7 +177,7 @@ function generateHistogram( careers, season_subset_data )
         .on("click", function(d, i) {
             var active = d.active ? false : true
             var pguidList = []
-            console.log(active, d.active)
+            console.log(active, [i])
             for (var i = 0; i < d.length; i++){
                 var temp = d[i][1].pguid.replace('.','')
                 pguidList.push( temp)
@@ -317,6 +299,15 @@ function generateHistogram( careers, season_subset_data )
         
     console.log(svg.select("#mainpie"))
 
+    var path = svg.selectAll('path')
+        .append("g")
+      .data(pie(totals))
+      .enter()
+      .append('path')
+      .attr('d', arc)
+      .attr('fill', function(d, i) { 
+        return piecolor(i);
+      });
       
     path.attr("translate","transform (-20,10)")
 
