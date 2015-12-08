@@ -783,7 +783,7 @@ function generateCDF_D3Chart(data){
         if (absyear == false){
           return x(d.x);
         }
-          return xTime(d.year)
+        return xTime(d.year)
       })
       .y(function(d) {
             return y(d.y);
@@ -798,18 +798,8 @@ function generateCDF_D3Chart(data){
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  // var selected_players = filteredPlayers();
-  // // console.log(selected_players);
-  // var filter_string = '?players=';
-  // selected_players.forEach(function (d){
-  //   filter_string += (','+d.pguid);
-  // });
-  // console.log(filter_string);
-
   var cdf_data_conv;
 
-  // d3.json('http://localhost:8000/seasons_subset/'+filter_string, function(error,cdf_data){
-  //   if (error) throw error;
 
     cdf_data_conv = convertData(data);
 
@@ -951,6 +941,7 @@ function generateCDF_D3Chart(data){
 //             d3.select(this.nextSibling)
 //               .attr("opacity", "1")
 //         })
+            // line.attr("opacity", 1);
             focus.style("display", null);
             color_attr = d3.select(this).style("stroke")
             color = colorScale(PGUID_TO_NAME_MAP[d.key][1])
@@ -1041,9 +1032,9 @@ function generateCDF_D3Chart(data){
 //     });
 
 
-        // Set them to not show at first
-        d3.selectAll(".cdf_line").style("opacity","0");
-        animateLines();
+    // Set them to not show at first
+    d3.selectAll(".cdf_line").style("opacity","0");
+    animateLines();
 
     dispatch.on("lasso_cdf", function(lassoed_items) {
       // console.log(lassoed_items);
@@ -1130,7 +1121,7 @@ function generateCDF_D3Chart(data){
                             }
                         });
 
-      dispatch.on("lasso.cdf", function() {
+    dispatch.on("lasso.cdf", function() {
       if(selected_pguids.length > 0){
         selected_pguids.forEach(function (d){
           // console.log("Pguid is: " + d.pguid);
@@ -1149,6 +1140,7 @@ function generateCDF_D3Chart(data){
       if(selected_pguids.length > 0){
         selected_pguids.forEach(function (d){
           // TODO Do something about the name's T.J, etc...
+          console.log(d);
           d3.select('#path_' + d)
             .style("stroke", colorScale(PGUID_TO_NAME_MAP[d][1]))
         });

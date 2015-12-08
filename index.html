@@ -528,11 +528,7 @@
      */
     function loadScatterPlot( playerArray )
     {
-        //TODO call this after adding more filters
-        //TODO call this when deleting filters
-        //TODO clear out old charts and graphs.
-//         var playerArray = filteredPlayers();
-
+  
         d3.select( "#lrg-sec-2" ).selectAll( ".dot" ).remove();
         var temp_svg = d3.select( "#lrg-sec-2 svg" );
         temp_svg.select( "#scatter_x_axis" ).remove();
@@ -743,6 +739,7 @@
                 bFilter: false,
                 bPaginate: false,
                 scrollY: '40vh',
+                scrollX: '40vh',
                 bAutoWidth: true,
                 bScrollCollapse: true,
                 data: filteredPlayers(),
@@ -761,8 +758,6 @@
     function updateSelectedScatterCircles(){
 
         // Clear them all first to make them small
-        // 
-        // console.log(lasso.items());
         d3.selectAll( ".dot" )
                 .transition().duration( dot_trans )
                 .attr( "stroke", "black" )
@@ -781,21 +776,6 @@
 
 
         console.log(lasso.items());
-
-        // .classed( { "selected": false } )
-        // .transition().duration( dot_trans )
-        // .attr( "stroke", "black" )
-        // .attr( "stroke-width", 1 )
-        // .attr( "r", function ( d ) {
-        //     if( d.selected == false ) {
-        //         return dot_init_size;
-        //     } else {
-        //         return dot_hover_size;
-        //     }
-        // })
-        // .attr( "fill-opacity", function ( d ) {
-        //     return .7;
-        // });
 
         if(selected_pguids.length > 0){
             selected_pguids.forEach(function(d){
