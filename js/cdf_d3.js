@@ -974,7 +974,34 @@ function generateCDF_D3Chart(data){
                               });
                             }
                         });
-    // });
+
+      dispatch.on("lasso.cdf", function() {
+      if(selected_pguids.length > 0){
+        selected_pguids.forEach(function (d){
+          // console.log("Pguid is: " + d.pguid);
+          d3.select('#path_' + d)
+          .style('stroke-width','10px');
+        });
+      } else {
+        // var paths = d3.selectAll("*[id^='path']");
+        var paths = d3.selectAll(".cdf_line");
+        paths.style('stroke', "whitesmoke");
+
+      }
+    });
+
+    dispatch.on("project_click.cdf", function(){
+      if(selected_pguids.length > 0){
+        selected_pguids.forEach(function (d){
+          // TODO Do something about the name's T.J, etc...
+          d3.select('#path_' + d)
+            .style("stroke", colorScale(PGUID_TO_NAME_MAP[d][1]))
+        });
+      } else {
+        var paths = d3.selectAll(".cdf_line");
+        paths.style('stroke', "whitesmoke");
+      }
+    });
 }
 
 function animateLines()
