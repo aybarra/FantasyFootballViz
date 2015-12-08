@@ -3,7 +3,7 @@ $( document ).ready( function ()
 {
 
     //Get a reference to the added players div
-    var addedPlayersDiv = $("#autocomplete_results_div" );
+    var addedPlayersDiv = $( "#autocomplete_results_div" );
 
     //Default hide the added players div
     addedPlayersDiv.hide();
@@ -45,7 +45,7 @@ $( document ).ready( function ()
                 $( "#autocomplete_results_div" ).show();
 
                 //Add the selected player to the additional player div
-                $( '#autocomplete_group' ).append( '<div class="autocomplete-suggestion"><input type="image" src="images/delete_icon_2.png" width="16" height="16" style="vertical-align: middle; margin-right: 8px;" onclick=deletePlayerObject("' + data.data['pguid'] + '"); id="deletePlayerRow"></input>' + data.value + '</div>' );
+                $( '#autocomplete_group' ).append( '<div class="autocomplete-suggestion"><input type="image" src="images/delete_icon_2.png" width="16" height="16" style="vertical-align: middle; margin-right: 8px;" onclick=deletePlayerObject("' + data.data[ 'pguid' ] + '"); id="deletePlayerRow"></input>' + data.value + '</div>' );
 
                 //Add player to selected player global array
                 selectedPlayers.push( data.data );
@@ -55,7 +55,7 @@ $( document ).ready( function ()
 
                 //Reload all of the tables because a filter item was added
                 //reloadAllChartData();
-                loadPlayerDataAndRefresh( data.data );
+                loadPlayerDataAndRefresh( data.data[ 'pguid' ] );
             }
             else
             {
@@ -69,18 +69,36 @@ $( document ).ready( function ()
  * Remove the player with the pguid of the provided player from the players list.
  * @param player
  */
-function deletePlayerObject(playerGuidToDelete)
+function deletePlayerObject( playerGuidToDelete )
 {
     $.each( selectedPlayers, function ( index, player )
     {
         //If they have the same pguid, they are the same person. Delete from array and stop execution. There should never be duplicates.
-        if( playerGuidToDelete === player['pguid'] )
+        if( playerGuidToDelete === player[ 'pguid' ] )
         {
             //Remove the player from the global array
             selectedPlayers.splice( index, 1 );
 
-            //Reload all of the tables because a filter item was added
-            reloadAllChartData();
+            //If the player is in the filter set. Just remove row here because the data does not change.
+            if( !isPlayerPguidInFilterSet( playerGuidToDelete ) )
+            {
+                //TODO remove below function call.
+                //Remove player from careers, season, season_subset, redraw.
+                //Reload all of the tables because a filter item was added
+                reloadAllChartData();
+
+                //season_data = season_data.filter( function ( item )
+                //{
+                //    return item[ 'pguid' ] === playerGuidToDelete;
+                //} );
+                //
+                //season_subset_data = season_subset_data.filter( function ( item )
+                //{
+                //    return item[ 'season_guid' ].indexOf( playerGuidToDelete ) > -1;
+                //} );
+                //showLoading();
+                //redrawAllCharts();
+            }
 
             //return false to break out of the each loop
             return false;
@@ -88,8 +106,8 @@ function deletePlayerObject(playerGuidToDelete)
     } );
 
     //If there are no more additional players, hide the div.
-    if( selectedPlayers.length == 0)
+    if( selectedPlayers.length == 0 )
     {
-        $("#autocomplete_results_div" ).hide();
+        $( "#autocomplete_results_div" ).hide();
     }
 }

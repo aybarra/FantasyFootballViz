@@ -104,7 +104,7 @@ function getSingularPlayerSeasonAndSeasonSubsetWebRequests( pguid )
             success: function ( data )
             {
                 //Get the result array
-                season_subset_data.push( data[ 'results' ][ 0 ] );
+                $.merge( season_subset_data, data[ 'results' ] );
             }
         }
     ) );
@@ -118,7 +118,7 @@ function getSingularPlayerSeasonAndSeasonSubsetWebRequests( pguid )
             success: function ( data )
             {
                 //Get the result array
-                season_data.push( data[ 'results' ][ 0 ] );
+                $.merge( season_data, data[ 'results' ] );
             }
         }
     ) );
@@ -151,12 +151,13 @@ function finalize_update()
 {
     $.when.apply( null, getSeasonAndSeasonSubsetWebRequests() ).done( function ()
     {
-        //updateCDFData( season_subset_data );
-        //loadScatterPlot( filteredPlayers() );
         redrawAllCharts();
     } );
 }
 
+/**
+ * Actually redraws the charts.
+ */
 function redrawAllCharts()
 {
     updateCDFData( season_subset_data );
@@ -190,5 +191,6 @@ function loadPlayerDataAndRefresh( pguid )
 function reloadAllChartData()
 {
     showLoading();
-    getCareerDataWebRequest().then( finalize_update );
+    finalize_update();
+    //getCareerDataWebRequest().then( finalize_update );
 }

@@ -27,6 +27,28 @@ function isPlayerInFilterSet( stringifiedPlayer )
     return isPlayerFound;
 }
 
+function isPlayerPguidInFilterSet( pguid )
+{
+    //Boolean value for isPlayerFound in the current set of players
+    var isPlayerFound = false;
+
+    //Get all of the currently filtered down players.
+    var jsonFilteredPlayersPguids = filteredPlayersPguids();
+
+    //Loop through all of the players to see if the one we are passing in is already contained in the set.
+    $.each( jsonFilteredPlayersPguids, function ( index, playerPguid )
+    {
+        //If the player matches, set the return value and break out of the for loop.
+        if( pguid === playerPguid)
+        {
+            isPlayerFound = true;
+            return false; //return false breaks out of the each loop.
+        }
+    } );
+
+    return isPlayerFound;
+}
+
 /**
  * Returns an array with all of the unique player guids that are currently selected from the filtered objects.
  */
