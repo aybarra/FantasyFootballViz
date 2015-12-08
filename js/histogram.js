@@ -25,6 +25,25 @@ function generateHistogram( careers, season_subset_data )
     var std_dev
     var yeartuples = []
 
+//  *****************************************************
+//  MOVE SVG ITEM TO FRONT AND BACK
+// ******************************************************
+    d3.selection.prototype.moveToFront = function() {
+        return this.each(function(){
+            this.parentNode.appendChild(this);
+        });
+    }
+
+    d3.selection.prototype.moveToBack = function() {
+        return this.each(function() {
+            var firstChild = this.parentNode.firstChild;
+                if (firstChild) {
+                    this.parentNode.insertBefore(this, firstChild);
+                }
+        });
+    };
+
+
     hgram_careers.forEach( function ( d, i )
     {
         players.push([d.ff_pts,d])
@@ -164,17 +183,17 @@ function generateHistogram( careers, season_subset_data )
         .style("text-decoration", "underline")
         .text("Cumulative Points Distribution");
 
-    var radius = Math.min(40, 20) / 2;
+    var radius = Math.min(70, 70) / 2;
     var piecolor = d3.scale.ordinal()
                .range(['#1f77b4', '#d62728', '#ff7f0e', '#2ca02c']); 
-
+    
     var arc = d3.svg.arc()
       .outerRadius(radius);
 
     var pie = d3.layout.pie()
       .value(function(d) { return d; })
       .sort(null);
-  
+
     var bar = svg.selectAll( ".bar" )
         .data( playerbins )
         .enter().append( "g" )
@@ -229,18 +248,87 @@ function generateHistogram( careers, season_subset_data )
         {
             return formatCount( d.length );
         } );
+        
+    for (var i = 0; i < piestuff.length; i++){
+        if (d3.sum(piestuff[i]) > 0) {
+            var pieslice = new d3pie("#bar_"+i, {
+                size: {
+                        canvasHeight: 75,
+                        canvasWidth: 75,
+                        pieInnerRadius: 0,
+                        pieOuterRadius: null
+                    },
+                labels: {
+                    outer: {
+                        format: "label",
+                        hideWhenLessThanPercentage: null,
+                        pieDistance: -6
+                    },
+                    inner: {
+                        format: "percentage",
+                        hideWhenLessThanPercentage: null
+                    },
+                    mainLabel: {
+                        color: "#333333",
+                        font: "arial",
+                        fontSize: 4
+                    },
+                    percentage: {
+                        color: "white",
+                        font: "arial",
+                        fontSize: 4,
+                        decimalPlaces: 0
+                    },
+                    value: {
+                        color: "#cccc44",
+                        font: "arial",
+                        fontSize: 10
+                    },
+                    lines: {
+                        enabled: false,
+                        style: "curved",
+                        color: "segment" // "segment" or a hex color
+                    }
+                },
+                data: {
+                    content: [
+                        { label: "QB", value: piestuff[i][0], color: "#1f77b4" },
+                        { label: "RB", value: piestuff[i][1], color: "#d62728" },
+                        { label: "WR", value: piestuff[i][2], color: "#ff7f0e"},
+                        { label: "TE", value: piestuff[i][3], color: "#2ca02c"}
+                        ]
+                },
+                misc: {
+                    canvasPadding: {
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 0
+                    },
+                    pieCenterOffset: {
+                        x: -14,
+                        y: -15
+                    }
+                }
+            });
+        }
+    }
 
-    console.log(piestuff)
-    test = [1,2,3,4]
-    var piebar = bar.selectAll(".bar")
-        .data(pie(test))
-        .enter()
-        .append("path")
-        .attr('d', arc)
-        .attr('fill',function(d,i){
-            return piecolor(i);
-          })
-//     console.log(pie(piestuff))
+        
+    console.log(svg.select("#mainpie"))
+
+    var path = svg.selectAll('path')
+        .append("g")
+        .attr("translate","transform (50,70)")
+      .data(pie(totals))
+      .enter()
+      .append('path')
+      .attr('d', arc)
+      .attr('fill', function(d, i) { 
+        return piecolor(i);
+      });
+
+
     svg.append( "g" )
         .attr( "class", "x axis" )
         .attr( "transform", "translate(0," + height + ")" )
