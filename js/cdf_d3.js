@@ -776,7 +776,17 @@ function generateCDF_D3Chart(data){
 
   var yAxis = d3.svg.axis()
       .scale(y)
+      .tickFormat(d3.format("d"))
       .orient("left");
+
+var relx = d3.scale.linear()
+           .range([0, width+margin.left+margin.right])
+           .domain([0,100])
+
+var rely = d3.scale.linear()
+          .range([height+margin.top+margin.bottom, 0])
+          .domain([0,100])
+
 
   var line = d3.svg.line()
       .interpolate("basis")
@@ -843,10 +853,12 @@ function generateCDF_D3Chart(data){
         .call(yAxis)
       .append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .text("Cumulative Fantasy Points");
+      .attr("y", 0 - margin.left)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+       .text("Career Fantasy Points");
+
 
 //  *****************************************************
 //  CIRCLES FOR DETAILS ON DEMAND MOUSE HOVER
@@ -856,24 +868,24 @@ function generateCDF_D3Chart(data){
                    .style("display", "none");
 
     focus.append("circle")
-         .attr("r", 4.5);
+         .attr("r", 3)
 
     focus.append("text")
          .attr("id","focusname")
-         .attr("x", 9)
-         .attr("dy", "-1.5em")
+         .attr("x", -6)
+         .attr("dy", "-3.5em")
          .style("font-size", "10px")
 
     focus.append("text")
          .attr("id","focusyear")
-         .attr("x", 9)
-         .attr("dy", "-.5em")
+         .attr("x", -6)
+         .attr("dy", "-2.5em")
          .style("font-size", "10px")
 
     focus.append("text")
          .attr("id","focuspoints")
-         .attr("x", 9)
-         .attr("dy", ".5em")
+         .attr("x", -6)
+         .attr("dy", "-1.5em")
          .style("font-size", "10px")
 
 //  *****************************************************
@@ -1013,29 +1025,43 @@ function generateCDF_D3Chart(data){
 
         }
     })
-//       .on("mousemove", function(d, i){
-//             console.log(d)
-//             var rawX = Math.round(x.invert(d3.mouse(this)[0]))
-// 
-//             var rawY = Math.round(y(d3.mouse(this)[0]))
-//             console.log(rawX, rawY)
-//             var pts = d.values[i].y
-//             var totpts = 0
-//             var totyears = d.values.length
-//             fullname = PGUID_TO_NAME_MAP[d.key][0]
-//             focus.select("#focusname").text(fullname);
-//             focus.select("#focusyear").text("Yr: "+year);
-//             focus.select("#focuspoints").text("Pts:"+pts);
-//             focus.moveToFront();
-//             nameline.select("text").text("Name: " + fullname);
-//             yearline.select("text").text("Years: " + totyears + "......  Total Points: " + totpts);
-//     //                             pointsline.select("text").text("Total Points: " + totpts);
+      .on("mousemove", function(d, i){
+
+            var year = Math.round(x.invert(d3.mouse(this)[0]))
+            var points
+            for (var i = 0; i < d.values.length; i++) {
+                if (absyear == true && year == d.values[i].year) {
+                    points = d.values[i].y
+                    break
+                }
+                else {
+                    if (absyear == false && year == d.values[i].x) {
+                        points = d.values[i].y
+                        break
+                    }
+                }
+            }
+//             var total = d3.sum(d.values, function (e){ return e.y})
+//             var avg = Math.round(total / d.values.length)
+            firstyear = d.values[0].x
+            lastyear = d.values[ d.values.length - 1].x
+            totyears = lastyear - firstyear
+            totpoints = d.values [d.values.length - 1].y
+            fullname = PGUID_TO_NAME_MAP[d.key][0]
+            focus.attr("transform", "translate(" + x(year) + "," + y(points) + ")")
+            focus.select("#focusname").text(fullname);
+            focus.select("#focusyear").text("Yr: "+year);
+            focus.select("#focuspoints").text("Pts:"+points);
+            focus.moveToFront(); 
+            statline.select("#nameline").text("Name: " + fullname);
+            statline.select("#yearline").text("Years: " + totyears)
+            statline.select("#pointsline").text("Total Points: " + totpoints);
 //             averageline.select("text").text("Average/Season: " + avg + " (Best: "+bestyr+", Worst: " + worstyr+")");
 //             d3.select("#nameline").moveToFront()
 //             d3.select("#yearline").moveToFront()
 //             d3.select("#pointsline").moveToFront()
 //             d3.select("#averageline").moveToFront()
-//         });
+        });
 
 //     });
 
@@ -1071,22 +1097,32 @@ function generateCDF_D3Chart(data){
         .attr("opacity", "0");
         
 
+        var reltext = cdf_svg.append("text")
+                        .attr("x", relx(1))
+                        .attr("y", rely(100))
+                         .style("font-size", "10px")
+                        .text("Toggle Year")
+
+
         var cdfyrtog = cdf_svg.append("rect")
                           .attr("class","button")
                           .attr("id","elitebut")
-                          .attr("x", 30)
-                          .attr("y", 10)
-                          .attr("rx",width/30)
-                          .attr("ry",height/30)
-                          .attr("width", width/10)
-                          .attr("height", height/15)
+                          .attr("x", relx(1))
+                          .attr("y", rely(98))
+                          .attr("rx",relx(1))
+                          .attr("ry",rely(1))
+                          .attr("width", relx(5))
+                          .attr("height", rely(96.5))
                           .attr("stroke","black")
-                          .attr("fill","yellow")
+                          .attr("fill","white")
                           .on("click",function(){
                             absyear = !absyear;
                             // absyear = absyear ? false : true;
                             
                             if (absyear == true) {
+                              cdfyrtog.attr("fill","black")
+                                d3.select("#cdftitle").text("Cumulative Career Points / Year");
+
                               x.domain([min,max])
                               xAxis.scale(x);
                               cdf_svg.select("g .x.axis")
@@ -1113,7 +1149,9 @@ function generateCDF_D3Chart(data){
                                    .attr("d", line(d.values));
                               });
                             } else {
-                              cdfyrtog.text("Years")
+                                d3.select("#cdftitle").text("Cumulative Career Points / Season");
+
+                              cdfyrtog.attr("fill","white")
                         x.domain([0, d3.max(cdf_data_conv, function(d) { return d.values.length; })]);
 
                               xAxis.scale(x);
@@ -1142,6 +1180,54 @@ function generateCDF_D3Chart(data){
                             }
                         });
     // });
+    
+        cdf_svg.append("text")
+        .attr("id","cdftitle")
+        .attr("x", width/2)
+        // .attr("y", rely(100))
+        .attr("y", 0 - (margin.top / 2) - 10)
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("text-decoration", "underline")
+        .text("Cumulative Career Points / Season");
+        
+//  *****************************************************
+//  PLACEHOLDERS FOR PLAYER SUMMARY STATISTICS
+// ******************************************************
+
+    var statline = cdf_svg.append("g")
+                      .attr("class", "stats")
+                      .attr("transform", "translate(30,30")
+
+    statline.append("text")
+            .attr("id","nameline")
+            .attr("dx", relx(1))
+//             .attr("y", rely(17))
+            .attr("dy", rely(85))
+            .style("font-size", "10px")
+
+    statline.append("text")
+            .attr("id","yearline")
+            .attr("dx", relx(1))
+            // .attr("y", rely(12))
+            .attr("dy", rely(81))
+            .style("font-size", "10px")
+
+    statline.append("text")
+            .attr("id","pointsline")
+            .attr("dx", relx(1))
+              // .attr("y", height+margin.bottom)
+            .attr("dy", rely(77))
+            .style("font-size", "10px")
+
+    statline.append("text")
+            .attr("id","averageline")
+            .attr("dx", relx(0))
+              //  .attr("y", rely(7))
+            .attr("dy", rely(20))
+              .style("font-size", "10px")
+
+
 }
 
 function animateLines()
