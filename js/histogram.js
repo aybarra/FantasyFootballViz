@@ -220,6 +220,7 @@ function generateHistogram( careers, season_subset_data )
             var next = d3.select(this).node().nextSibling
             d3.select(next).style("stroke","red")
             d3.select(next).style("font-size","28px")
+            d3.select(this).moveToFront()
 //             if (d3.sum(piestuff[i]) > 0) {
 //                 sel = d3.select(this)
 //                         .data(piestuff[i])
@@ -236,6 +237,7 @@ function generateHistogram( careers, season_subset_data )
             var next = d3.select(this).node().nextSibling
             d3.select(next).style("stroke","black")
             d3.select(next).style("font-size","16px")
+            d3.select(this).moveToBack()
         })
 
     bar.append( "text" )
@@ -253,8 +255,8 @@ function generateHistogram( careers, season_subset_data )
         if (d3.sum(piestuff[i]) > 0) {
             var pieslice = new d3pie("#bar_"+i, {
                 size: {
-                        canvasHeight: 75,
-                        canvasWidth: 75,
+                        canvasHeight: 60,
+                        canvasWidth:60,
                         pieInnerRadius: 0,
                         pieOuterRadius: null
                     },
@@ -306,8 +308,8 @@ function generateHistogram( careers, season_subset_data )
                         left: 0
                     },
                     pieCenterOffset: {
-                        x: -14,
-                        y: -15
+                        x: -7,
+                        y: -8
                     }
                 }
             });

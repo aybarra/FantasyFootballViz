@@ -95,13 +95,14 @@ function generateCDF_D3Chart(data){
     var avgjoe = {}
     var yearlist = []
     var season_dev = []
-    var yeartuples = []
+    var cdfyeartuples = []
 
     cdf_data.forEach(function(d) {
         d.guid = d.season_guid.split("_")[0]
             if (d.guid.indexOf('.') != -1) {
                 d.guid = d.guid.replace('.','');
             }
+        if (d.guid == "StPBr20"){ console.log(d)}
         d.year = +d.season_guid.split("_")[1]
         curyear = d.year
         d.real_year = d.year
@@ -110,7 +111,7 @@ function generateCDF_D3Chart(data){
 //             console.log(d)
         d.season_ff_pts = +d.season_ff_pts;
         if (d.year != 2015) {
-            yeartuples.push([d.year, d.season_ff_pts]);
+            cdfyeartuples.push([d.year, d.season_ff_pts]);
         }
         if (curid != d.guid){
             curid = d.guid
@@ -149,11 +150,12 @@ function generateCDF_D3Chart(data){
             {
                 console.log( d.guid );
             }
+//             console.log(d)
             yearlist[numyears-1].push(d.season_ff_pts)
         }
     }); //end cdf_data loading
 
-    yeartuples.sort(function(a, b) {
+    cdfyeartuples.sort(function(a, b) {
         a = a[0];
         b = b[0];
         return a < b ? -1 : (a > b ? 1 : 0);
@@ -161,14 +163,14 @@ function generateCDF_D3Chart(data){
     var curyear = 0
     var yeartotals = []
     var yearcnts = []
-    for (var i = 0; i < yeartuples.length; i++) {
-        if (curyear != yeartuples[i][0]) {
-            curyear = yeartuples[i][0]
+    for (var i = 0; i < cdfyeartuples.length; i++) {
+        if (curyear != cdfyeartuples[i][0]) {
+            curyear = cdfyeartuples[i][0]
             yeartotals.push([curyear,0])
             yearcnts.push(0)
         }
         index = yeartotals.length - 1
-        runningsum = yeartotals[index][1] + yeartuples[i][1]
+        runningsum = yeartotals[index][1] + cdfyeartuples[i][1]
         yeartotals[index] = [curyear, runningsum]
         yearcnts[index] += 1
     }
@@ -176,19 +178,20 @@ function generateCDF_D3Chart(data){
         var stddev = math.std(yearlist[i])
         season_dev.push(stddev)
     }
-//     console.log(yeartuples)
+
     var season_dev2 = []
     var templist = []
-    var curyear = yeartuples[0][0]
-    for (var i = 0; i < yeartuples.length; i++) {
-        if (curyear != yeartuples[i][0]){
+//     console.log(cdfyeartuples)
+    var curyear = 0
+    for (var i = 0; i < cdfyeartuples.length; i++) {
+        if (curyear != cdfyeartuples[i][0]){
              if (templist.length < 1) {templist.push(0);}
             var stddev = math.std(templist)
             season_dev2.push(stddev)
             templist = []
-            curyear = yeartuples[i][0]
+            curyear = cdfyeartuples[i][0]
         } else {
-            templist.push(yeartuples[i][1])
+            templist.push(cdfyeartuples[i][1])
         }
     }
     if (templist.length < 1) {templist.push(0);}

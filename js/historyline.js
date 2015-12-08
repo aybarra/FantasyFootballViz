@@ -188,26 +188,6 @@ function generateHistoryLine(data){
     }
     //console.log(classtotals)
     //console.log(classcnts)
-    for (var i = 0; i < yearlist.length; i++) {
-        var stddev = math.std(yearlist[i])
-        season_dev.push(stddev)
-    }
-
-    var season_dev2 = []
-    var templist = []
-    var curyear = yeartuples[0][0]
-    for (var i = 0; i < yeartuples.length; i++) {
-        if (curyear != yeartuples[i][0]){
-            var stddev = math.std(templist)
-            season_dev2.push(stddev)
-            templist = []
-            curyear = yeartuples[i][0]
-        } else {
-            templist.push(yeartuples[i][1])
-        }
-    }
-    var stddev = math.std(templist)
-    season_dev2.push(stddev)
 
     groupavg.key = "groupavg"
     groupavg.values = []
@@ -249,22 +229,6 @@ function generateHistoryLine(data){
             goodguy.values.push({"season_ff_pts":season_pts, "year":i+1})
             season_pts = Math.round(groupavg.values[i].season_ff_pts + (2*season_dev[i]))
             eliteguy.values.push({"season_ff_pts":season_pts, "year":i+1})
-        }
-    }
-
-    var goodguy2 = {}
-    var eliteguy2 = {}
-    goodguy2.key="GoodGuy2"
-    eliteguy2.key="Elite2"
-    goodguy2.values = []
-    eliteguy2.values = []
-    for (var i = 0; i < yearcnts.length; i++) {
-        if (yearcnts[i] > 1){
-            season_pts = Math.round(yeartotals[i][1]/yearcnts[i] + season_dev2[i])
-            year = parseDate(yeartotals[i][0].toString())
-            goodguy2.values.push({"season_ff_pts":season_pts, "real_year":year})
-            season_pts = Math.round(yeartotals[i][1]/yearcnts[i] + 2*season_dev2[i])
-            eliteguy2.values.push({"season_ff_pts":season_pts, "real_year":year})
         }
     }
 

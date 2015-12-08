@@ -110,7 +110,7 @@ function generateLineChart(data) {
 //     console.log(yeartuples)
     var season_dev2 = []
     var templist = []
-    var curyear = yeartuples[0][0]
+    var curyear = 0
     for (var i = 0; i < yeartuples.length; i++) {
         if (curyear != yeartuples[i][0]){
              if (templist.length < 1) {templist.push(0);}
