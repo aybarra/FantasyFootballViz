@@ -824,7 +824,79 @@ var rely = d3.scale.linear()
     cdf_data_conv = datalist[0]
     var min = datalist[1]
     var max = datalist[2]
-    var keys = d3.keys(cdf_data_conv);
+   
+    var seasonlist = {}
+    var yearlist = {}
+    var seasoncnt = {}
+    var yearcnt = {}
+
+    for (var i = 0; i < data.length; i++){
+        player = data[i]
+        year = +player["season_guid"].split("_")[1].replace('.','')
+        if (!(year in yearlist)) {
+            yearlist[year] = 0
+            yearcnt[year] = 0
+        }
+        yearlist[year] += player.season_ff_pts
+        yearcnt[year]++
+    }
+//     first = true
+//     $.each(yearlist, function(key, value){
+//         if (first == true) {
+//             first == false
+//             prevkey = key
+//         } else {
+//             yearlist[key] += yearlist[prevkey]
+//             prevkey = key
+//         console.log(yearlist)
+// 
+//         }
+//     })
+//         console.log(yearlist)
+    for (var i = 0; i < cdf_data_conv.length; i++){
+        var player = cdf_data_conv[i]
+        for (var j=0; j < player.values.length; j++) {
+            if (!(player.values[j].x in seasonlist)) {
+                seasonlist[player.values[j].x] = 0
+                seasoncnt[player.values[j].x] = 0
+            }
+            if (j != 0){
+                seasonlist[player.values[j].x] += player.values[j].y
+                seasoncnt[player.values[j].x]++
+            }
+        }
+    }
+    console.log(yearlist, yearcnt, seasonlist, seasoncnt)
+    cdfavgjoe = {}
+    cdfavgjoe.key = "cdfavg"
+    cdfavgjoe.values = []
+    first = true
+    prev_pts = 0
+    $.each(yearlist, function(key, value){
+        if (first == true) {
+            cdfavgjoe.values.push({"x":0, "y":0,"year" :+key})
+            first = false
+        }
+        year = key
+        year_pts = Math.round(yearlist[key]/yearcnt[key]) + prev_pts
+        prev_pts = year_pts
+        cdfavgjoe.values.push({"x":0, "y":year_pts, "year":+year+1})
+    })
+    
+    var cdfavgjoe2 = {}
+    cdfavgjoe2.key = "cdfavg2"
+    cdfavgjoe2.values = []
+    cdfavgjoe2.values.push({"x":0, "y":0,"year" :0})
+    $.each(seasonlist, function(key, value){
+        year = key
+        if (seasoncnt[key] != 0) {
+            season_pts = Math.round(seasonlist[key]/seasoncnt[key])
+            cdfavgjoe2.values.push({"x":+year, "y":season_pts,"year" :0})
+        }
+    })
+   
+   
+   var keys = d3.keys(cdf_data_conv);
     color.domain(d3.keys(cdf_data_conv));
 
     x.domain([
@@ -973,6 +1045,7 @@ var rely = d3.scale.linear()
                     colorcheck == 'firebrick') {
                         sel.style("stroke", "whitesmoke")
                 }
+//                 d3.select("cdfavgjoeline").attr("d",function(d) { return line(d.values);
            })        
         .on('mouseover', function(d) {
             var line = d3.select(this);
@@ -1022,6 +1095,7 @@ var rely = d3.scale.linear()
                 sel.style('stroke', "whitesmoke")
                 sel.moveToBack()
 //             this.childNode.childNode.appendParent(this.childNode);
+//             d3.select("#cdfavgjoeline").attr("d",function(d) { return line(d.values);
 
         }
     })
@@ -1127,6 +1201,7 @@ var rely = d3.scale.linear()
                               xAxis.scale(x);
                               cdf_svg.select("g .x.axis")
                                  .call(xAxis);
+                              d3.select("#cdfavgjoeline").attr("d",line(cdfavgjoe.values))
                               var sel = d3.select("body").transition();
 //                               console.log(cdf_data_conv)
                               cdf_data_conv.forEach(function(d){
@@ -1142,7 +1217,7 @@ var rely = d3.scale.linear()
                                 // console.log(d.values);
                                 // var temp = sel.select("#path_"+key_updated);
                                 // console.log(temp);
-                                console.log(sel.select("#path_"+key_updated))
+//                                 console.log(sel.select("#path_"+key_updated))
 //                                 console.log(d.values)
                                 sel.select("#path_"+key_updated)
                                     .transition().duration(1000).ease("quad")
@@ -1150,14 +1225,14 @@ var rely = d3.scale.linear()
                               });
                             } else {
                                 d3.select("#cdftitle").text("Cumulative Career Points / Season");
-
+                              
                               cdfyrtog.attr("fill","white")
                         x.domain([0, d3.max(cdf_data_conv, function(d) { return d.values.length; })]);
 
                               xAxis.scale(x);
                               cdf_svg.select("g .x.axis")
                                  .call(xAxis);
-
+                            d3.select("#cdfavgjoeline").attr("d",line(cdfavgjoe2.values))
                               var sel = d3.select("body").transition();
                               cdf_data_conv.forEach(function(d){
 
@@ -1190,14 +1265,71 @@ var rely = d3.scale.linear()
         .style("font-size", "16px")
         .style("text-decoration", "underline")
         .text("Cumulative Career Points / Season");
-        
+
+//  *****************************************************
+//  BUILD THE REFERENCE LINES
+// ******************************************************
+    var cdfavgjoeline = cdf_svg.append("path")
+                        .attr("class","cdfdistribution_lines")
+                        .attr("id","cdfavgjoeline")
+                        .attr("d",line(cdfavgjoe2.values))
+                        .attr("fill","none")
+                        .style("opacity",0)
+                        .style("stroke-width",2)
+                        .style("stroke","black")
+                        .on("mouseover", function() {
+                                focus.style("display", null);
+                                cdfavgjoeline.style("stroke","grey")
+                                var sel = d3.select(this)
+                                sel.moveToFront();
+                        })
+                        .on("mouseout", function() {
+                                focus.style("display", "none");
+                                cdfavgjoeline.style("stroke","black");
+                        });
+    console.log(cdfavgjoeline)
+    console.log(cdfavgjoe2)
+    console.log(cdfavgjoe)
+
+//  *****************************************************
+//  BUTTONS TO TOGGLE THE REFERENCE LINE
+// ******************************************************
+    b_height = height+margin.bottom+margin.top;
+
+        var butgp = cdf_svg.append("g").attr("class","cdfbuttongroup")
+                       .attr("transform", "translate("+relx(1)+"," + rely(90) + ")");
+
+        butgp.append("rect")
+                  .attr("class","cdfseason_button")
+                  .attr("id","cdfavgbut")
+                  .attr("rx",relx(1))
+                  .attr("ry",rely(1))
+                  .attr("width", relx(5))
+                  .attr("height", rely(96.5))
+                  .attr("stroke","black")
+                  .attr("fill","white")
+                  .on("click",function(){
+                        var active = cdfavgjoeline.active ? false : true;
+                        var opacity = active ? 1 : 0;
+                        var fillcol = active ? "black" : "white"
+                        d3.select("#cdfavgjoeline").style("opacity", opacity);
+                        d3.select("#cdfavgbut").attr("fill",fillcol)
+                        cdfavgjoeline.active = active;
+                     });
+
+        butgp.append("text")
+             .attr("dx", relx(6))
+             .attr("dy", rely(98))
+             .style("font-size", "10px")
+             .text("Average")
+
 //  *****************************************************
 //  PLACEHOLDERS FOR PLAYER SUMMARY STATISTICS
 // ******************************************************
 
     var statline = cdf_svg.append("g")
                       .attr("class", "stats")
-                      .attr("transform", "translate(30,30")
+                      .attr("transform", "translate(30,30)")
 
     statline.append("text")
             .attr("id","nameline")
