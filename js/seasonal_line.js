@@ -324,6 +324,9 @@ function generateLineChart(data) {
                             colorcheck = CheckColor(color_attr)
 //                             console.log(colorcheck)
                             var sel = d3.select(this);
+                            if (colorcheck == 'red') {
+                                    sel.style("stroke", "firebrick")
+                            }
                             if (colorcheck == 'blue') {
                                     sel.style("stroke", "cornflowerblue")
                             }
@@ -335,7 +338,8 @@ function generateLineChart(data) {
                             }
                             if (colorcheck == 'cornflowerblue' || 
                                 colorcheck == 'sandybrown' ||
-                                colorcheck == 'limegreen') {
+                                colorcheck == 'limegreen' ||
+                                colorcheck == 'firebrick') {
                                     sel.style("stroke", "whitesmoke")
                             }
                        })
@@ -346,10 +350,14 @@ function generateLineChart(data) {
 //                             console.log(color)
                             var sel = d3.select(this);
                             sel.moveToFront();
+                            sel.transition().duration(100)
+                                .ease("bounce")
+                                .style("stroke-width", "9px")
                             colorcheck = CheckColor(color_attr)
                             if (!(colorcheck == 'cornflowerblue' || 
                                 colorcheck == 'sandybrown' ||
-                                colorcheck == 'limegreen')) {
+                                colorcheck == 'limegreen' ||
+                                colorcheck == 'firebrick')) {
                                     sel.style('stroke', color)                                
                             }
                         })
@@ -357,13 +365,16 @@ function generateLineChart(data) {
                             focus.style("display", "none");
 //                             iline.style("stroke","whitesmoke");
                             var sel = d3.select(this);
+                            sel.transition().duration(100)
+                                .ease("bounce").style("stroke-width", "2px")
                             color_attr = d3.select(this).style("stroke")
                             cfb= d3.rgb(selected_color)
                             rgb = color_attr.split("(")[1].split(")")[0].split(",")
                             colorcheck = CheckColor(color_attr)
                             if (!(colorcheck == 'cornflowerblue' || 
                                 colorcheck == 'sandybrown' ||
-                                colorcheck == 'limegreen')) {
+                                colorcheck == 'limegreen' ||
+                                colorcheck == 'firebrick')) {
                                     sel.style('stroke', "whitesmoke")
                                     sel.moveToBack()
                             }
@@ -715,30 +726,23 @@ function Handleseasonal_data(seasonal_data) {
 }
 
 function CheckColor(color_attr){
-        blue = d3.rgb("#1f77b4")
-        orange = d3.rgb("#ff7f0e")
-        green = d3.rgb("#2ca02c")
-        ltblue = d3.rgb("#6495ed")
-        brown = d3.rgb("#f4a460")
-        lime = d3.rgb("#32cd32")
+    blue = d3.rgb("#1f77b4")
+    orange = d3.rgb("#ff7f0e")
+    green = d3.rgb("#2ca02c")
+    ltblue = d3.rgb("#6495ed")
+    brown = d3.rgb("#f4a460")
+    lime = d3.rgb("#32cd32")
+    red = d3.rgb("#d62728")
+    fire = d3.rgb("#b22222")
     rgb = color_attr.split("(")[1].split(")")[0].split(",")
-    if (+rgb[0]==blue.r && +rgb[1]==blue.g && rgb[2]==blue.b) {
-        return "blue"
-    }
-    if (+rgb[0]==orange.r && +rgb[1]==orange.g && rgb[2]==orange.b) {
-        return "orange"
-    }
-    if (+rgb[0]==green.r && +rgb[1]==green.g && rgb[2]==green.b) {
-        return "green"
-    }
-    if (+rgb[0]==ltblue.r && +rgb[1]==ltblue.g && rgb[2]==ltblue.b) {
-        return "cornflowerblue"
-    }
-    if (+rgb[0]==brown.r && +rgb[1]==brown.g && rgb[2]==brown.b) {
-        return "sandybrown"
-    }
-    if (+rgb[0]==lime.r && +rgb[1]==lime.g && rgb[2]==lime.b) {
-        return "limegreen"
-    }
+    
+    if (+rgb[0]==red.r && +rgb[1]==red.g && rgb[2]==red.b) { return "red"}
+    if (+rgb[0]==blue.r && +rgb[1]==blue.g && rgb[2]==blue.b) { return "blue" }
+    if (+rgb[0]==orange.r && +rgb[1]==orange.g && rgb[2]==orange.b) { return "orange" }
+    if (+rgb[0]==green.r && +rgb[1]==green.g && rgb[2]==green.b) { return "green" }
+    if (+rgb[0]==ltblue.r && +rgb[1]==ltblue.g && rgb[2]==ltblue.b) { return "cornflowerblue" }
+    if (+rgb[0]==brown.r && +rgb[1]==brown.g && rgb[2]==brown.b) { return "sandybrown" }
+    if (+rgb[0]==lime.r && +rgb[1]==lime.g && rgb[2]==lime.b) { return "limegreen" }
+    if (+rgb[0]==fire.r && +rgb[1]==fire.g && rgb[2]==fire.b) { return "firebrick" }
     return false
 }

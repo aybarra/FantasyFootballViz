@@ -395,7 +395,7 @@ function generateHistoryLine(data){
                         .attr("class","distribution_lines")
                         .attr("id","historyline")
                         .attr("d", area(groupavg.values))
-                        .attr("fill","steelblue")
+                        .attr("fill","lightblue")
                         .style("stroke","black")
                        .on("mouseover", function() {
                             focus.style("display", null);
