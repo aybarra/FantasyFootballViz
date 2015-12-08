@@ -1,4 +1,7 @@
 function generateLineChart(data) {
+
+    var default_line_color = d3.hsl('#dddddd');
+
     var temp_data = jQuery.extend(true, {}, data);
     var seasonal_data = []
     for (var key in temp_data) {
@@ -344,9 +347,6 @@ function generateLineChart(data) {
                               // console.log(selected_pguids);
                             }
 
-                            // Notifies everyone else to highlight/unhighlight
-                            dispatch.project_click();
-
                             color_attr = d3.select(this).style("stroke")
                             rgb = color_attr.split("(")[1].split(")")[0].split(",")
                             colorcheck = CheckColor(color_attr)
@@ -370,6 +370,9 @@ function generateLineChart(data) {
                                 colorcheck == 'firebrick') {
                                     sel.style("stroke", "whitesmoke")
                             }
+
+                            // Notifies everyone else to highlight/unhighlight
+                            dispatch.project_click();
                        })
                        .on("mouseover", function() {
                             focus.style("display", null);
@@ -463,28 +466,78 @@ function generateLineChart(data) {
 
 
     dispatch.on("lasso.seasonal", function() {
+        // if(selected_pguids.length > 0){
+        //     selected_pguids.forEach(function(d){
+        //         var item = d3.select('path#'+d);
+        //         item.style("stroke", selected_color);
+        //         item.moveToFront();
+        //     });
+        // } else {
+        //         d3.selectAll('path.playerlines')
+        //           .style("stroke", "whitesmoke");
+        // }
         if(selected_pguids.length > 0){
-            selected_pguids.forEach(function(d){
-                var item = d3.select('path#'+d);
-                item.style("stroke", selected_color);
-                item.moveToFront();
-            });
-        } else {
-                d3.selectAll('path.playerlines')
-                  .style("stroke", "whitesmoke");
-        }
+          selected_pguids.forEach(function (d){
+            // TODO Do something about the name's T.J, etc...
+            var key_updated = getUpdatedKey(d.toString());
+            d3.select("#" + key_updated);
+            var position = PGUID_TO_NAME_MAP[d][1];
+            var correct_color;
+            if ( position == 'qb') {
+              correct_color = "cornflowerblue";
+            } else if ( position == 'wr') {
+              correct_color = "sandybrown";
+            } else if ( position == 'te') {
+              correct_color = "limegreen";
+            } else if ( position == 'rb') {
+              correct_color = "firebrick";
+            }
+            var sel = d3.select('#' + key_updated)
+              .style("stroke", correct_color);
+            sel.moveToFront();
+          });
+      } else {
+        var paths = d3.selectAll("path.playerlines");
+        paths.style('stroke', default_line_color);
+      }
     });
 
     dispatch.on("project_click.seasonal", function() {
+        // if(selected_pguids.length > 0){
+        //     selected_pguids.forEach(function(d){
+        //         var item = d3.select('path#'+d);
+        //         item.style("stroke", colorScale(PGUID_TO_NAME_MAP[d][1]));
+        //         item.moveToFront();
+        //     });
+        // } else {
+        //         d3.selectAll('path.playerlines')
+        //           .style("stroke", "whitesmoke");
+        // }
+
         if(selected_pguids.length > 0){
-            selected_pguids.forEach(function(d){
-                var item = d3.select('path#'+d);
-                item.style("stroke", colorScale(PGUID_TO_NAME_MAP[d][1]));
-                item.moveToFront();
-            });
+          selected_pguids.forEach(function (d){
+            // TODO Do something about the name's T.J, etc...
+            var key_updated = getUpdatedKey(d.toString());
+            d3.select("#" + key_updated);
+            var position = PGUID_TO_NAME_MAP[d][1];
+            var correct_color;
+            if ( position == 'qb') {
+              correct_color = "cornflowerblue";
+            } else if ( position == 'wr') {
+              correct_color = "sandybrown";
+            } else if ( position == 'te') {
+              correct_color = "limegreen";
+            } else if ( position == 'rb') {
+              correct_color = "firebrick";
+            }
+            var sel = d3.select('path#' + key_updated)
+              .style("stroke", correct_color);
+            sel.moveToFront();
+          });
         } else {
-                d3.selectAll('path.playerlines')
-                  .style("stroke", "whitesmoke");
+          var paths = d3.selectAll("path.playerlines");
+          // console.log("PATHS ARE: " + paths);
+          paths.style('stroke', default_line_color);
         }
     });
 //  *****************************************************

@@ -142,16 +142,16 @@ function generateHistogram( careers, season_subset_data )
         .style("text-decoration", "underline")
         .text("Cumulative Points Distribution");
 
-    var radius = Math.min(70, 70) / 2;
-    var piecolor = d3.scale.ordinal()
-               .range(['#1f77b4', '#d62728', '#ff7f0e', '#2ca02c']); 
+    // var radius = Math.min(70, 70) / 2;
+    // var piecolor = d3.scale.ordinal()
+    //            .range(['#1f77b4', '#d62728', '#ff7f0e', '#2ca02c']); 
     
-    var arc = d3.svg.arc()
-      .outerRadius(radius);
+    // var arc = d3.svg.arc()
+    //   .outerRadius(radius);
 
-    var pie = d3.layout.pie()
-      .value(function(d) { return d; })
-      .sort(null);
+    // var pie = d3.layout.pie()
+    //   .value(function(d) { return d; })
+    //   .sort(null);
 
     var bar = svg.selectAll( ".bar" )
         .data( playerbins )
@@ -179,8 +179,8 @@ function generateHistogram( careers, season_subset_data )
             var pguidList = []
             console.log(active, [i])
             for (var i = 0; i < d.length; i++){
-                var temp = d[i][1].pguid.replace('.','')
-                pguidList.push( temp)
+                // var temp = d[i][1].pguid.replace('.','')
+                pguidList.push( d[i][1].pguid );
             }
             if (active == true) {
                 d3.select(this).style("stroke","yellow").style("stroke-width","3px")    
@@ -196,28 +196,29 @@ function generateHistogram( careers, season_subset_data )
             console.log(active, d.active)
         })
         .on("mouseover", function (d, i) {
-            d3.select(this).style("stroke","red").style("stroke-width","3px")
-            var next = d3.select(this).node().nextSibling
-            d3.select(next).style("stroke","red")
-            d3.select(next).style("font-size","28px")
-            d3.select(this).moveToFront()
-//             if (d3.sum(piestuff[i]) > 0) {
-//                 sel = d3.select(this)
-//                         .data(piestuff[i])
-//                         .enter()
-//                         .append("path")
-//                         .attr('d', arc)
-//                         .attr('fill',function(d,i){
-//                             return piecolor(i);
-//                           })
-//             }
+//             d3.select(this).style("stroke","red").style("stroke-width","3px")
+//             var next = d3.select(this).node().nextSibling
+//             // d3.select(next).style("stroke","red")
+//             d3.select(next).style("font-size","28px")
+//             d3.select(this).moveToFront()
+// //             if (d3.sum(piestuff[i]) > 0) {
+// //                 sel = d3.select(this)
+// //                         .data(piestuff[i])
+// //                         .enter()
+// //                         .append("path")
+// //                         .attr('d', arc)
+// //                         .attr('fill',function(d,i){
+// //                             return piecolor(i);
+// //                           })
+// //             }
         })
         .on("mouseout", function (d) {
-            d3.select(this).style("stroke","black").style("stroke-width","1px")
-            var next = d3.select(this).node().nextSibling
-            d3.select(next).style("stroke","black")
-            d3.select(next).style("font-size","16px")
-            d3.select(this).moveToBack()
+            // console.log("Value of d is: " + d);
+            // d3.select(this).style("stroke","black").style("stroke-width","1px")
+            // var next = d3.select(this).node().nextSibling
+            // d3.select(next).style("stroke","black")
+            // d3.select(next).style("font-size","16px")
+            // d3.select(this).moveToBack()
         })
 
     bar.append( "text" )
@@ -231,85 +232,84 @@ function generateHistogram( careers, season_subset_data )
             return formatCount( d.length );
         } );
         
-    for (var i = 0; i < piestuff.length; i++){
-        if (d3.sum(piestuff[i]) > 0) {
-            var pieslice = new d3pie("#bar_"+i, {
-                size: {
-                        canvasHeight: 60,
-                        canvasWidth:60,
-                        pieInnerRadius: 0,
-                        pieOuterRadius: null
-                    },
-                labels: {
-                    outer: {
-                        format: "label",
-                        hideWhenLessThanPercentage: null,
-                        pieDistance: -6
-                    },
-                    inner: {
-                        format: "percentage",
-                        hideWhenLessThanPercentage: null
-                    },
-                    mainLabel: {
-                        color: "#333333",
-                        font: "arial",
-                        fontSize: 4
-                    },
-                    percentage: {
-                        color: "white",
-                        font: "arial",
-                        fontSize: 4,
-                        decimalPlaces: 0
-                    },
-                    value: {
-                        color: "#cccc44",
-                        font: "arial",
-                        fontSize: 10
-                    },
-                    lines: {
-                        enabled: false,
-                        style: "curved",
-                        color: "segment" // "segment" or a hex color
-                    }
-                },
-                data: {
-                    content: [
-                        { label: "QB", value: piestuff[i][0], color: "#1f77b4" },
-                        { label: "RB", value: piestuff[i][1], color: "#d62728" },
-                        { label: "WR", value: piestuff[i][2], color: "#ff7f0e"},
-                        { label: "TE", value: piestuff[i][3], color: "#2ca02c"}
-                        ]
-                },
-                misc: {
-                    canvasPadding: {
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
-                        left: 0
-                    },
-                    pieCenterOffset: {
-                        x: -7,
-                        y: -8
-                    }
-                }
-            });
-        }
-    }
+    // for (var i = 0; i < piestuff.length; i++){
+    //     if (d3.sum(piestuff[i]) > 0) {
+    //         var pieslice = new d3pie("#bar_"+i, {
+    //             size: {
+    //                     canvasHeight: 60,
+    //                     canvasWidth:60,
+    //                     pieInnerRadius: 0,
+    //                     pieOuterRadius: null
+    //                 },
+    //             labels: {
+    //                 outer: {
+    //                     format: "label",
+    //                     hideWhenLessThanPercentage: null,
+    //                     pieDistance: -6
+    //                 },
+    //                 inner: {
+    //                     format: "percentage",
+    //                     hideWhenLessThanPercentage: null
+    //                 },
+    //                 mainLabel: {
+    //                     color: "#333333",
+    //                     font: "arial",
+    //                     fontSize: 4
+    //                 },
+    //                 percentage: {
+    //                     color: "white",
+    //                     font: "arial",
+    //                     fontSize: 4,
+    //                     decimalPlaces: 0
+    //                 },
+    //                 value: {
+    //                     color: "#cccc44",
+    //                     font: "arial",
+    //                     fontSize: 10
+    //                 },
+    //                 lines: {
+    //                     enabled: false,
+    //                     style: "curved",
+    //                     color: "segment" // "segment" or a hex color
+    //                 }
+    //             },
+    //             data: {
+    //                 content: [
+    //                     { label: "QB", value: piestuff[i][0], color: "#1f77b4" },
+    //                     { label: "RB", value: piestuff[i][1], color: "#d62728" },
+    //                     { label: "WR", value: piestuff[i][2], color: "#ff7f0e"},
+    //                     { label: "TE", value: piestuff[i][3], color: "#2ca02c"}
+    //                     ]
+    //             },
+    //             misc: {
+    //                 canvasPadding: {
+    //                     top: 0,
+    //                     right: 0,
+    //                     bottom: 0,
+    //                     left: 0
+    //                 },
+    //                 pieCenterOffset: {
+    //                     x: -7,
+    //                     y: -8
+    //                 }
+    //             }
+    //         });
+    //     }
+    // }
 
-        
-    console.log(svg.select("#mainpie"))
+    // console.log(svg.select("#mainpie"))
 
-    var path = svg.selectAll('path')
-        .append("g")
-      .data(pie(totals))
-      .enter()
-      .append('path')
-      .attr('d', arc)
-      .attr('fill', function(d, i) { 
-        return piecolor(i);
-      });
+    // var path = svg.selectAll('path')
+    //     .append("g")
+    //   .data(pie(totals))
+    //   .enter()
+    //   .append('path')
+    //   .attr('d', arc)
+    //   .attr('fill', function(d, i) { 
+    //     return piecolor(i);
+    //   });
       
-    path.attr("translate","transform (-20,10)")
+    // path.attr("translate","transform (-20,10)")
 
 
     svg.append( "g" )
