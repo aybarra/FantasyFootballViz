@@ -123,8 +123,12 @@ div.tooltip p {
   fill:#EC888C;
 }
 
-.dataTables tbody tr {
-    height: 100px;
+.dataTables tbody{
+    height: 80px;
+}
+
+.dataTables tr{
+    height: 20px;
 }
 
 #events {
