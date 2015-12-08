@@ -79,8 +79,15 @@ function deletePlayerObject(playerGuidToDelete)
             //Remove the player from the global array
             selectedPlayers.splice( index, 1 );
 
-            //Reload all of the tables because a filter item was added
-            reloadAllChartData();
+
+            //If the player is in the filter set. Just remove row here because the data does not change.
+            if( !isPlayerInFilterSet( stringifiedPlayer ) )
+            {
+                //TODO remove below function call.
+                //Remove player from careers, season, season_subset, redraw.
+                //Reload all of the tables because a filter item was added
+                reloadAllChartData();
+            }
 
             //return false to break out of the each loop
             return false;

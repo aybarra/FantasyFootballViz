@@ -191,5 +191,6 @@ function loadPlayerDataAndRefresh( pguid )
 function reloadAllChartData()
 {
     showLoading();
-    getCareerDataWebRequest().then( finalize_update );
+    finalize_update();
+    //getCareerDataWebRequest().then( finalize_update );
 }
