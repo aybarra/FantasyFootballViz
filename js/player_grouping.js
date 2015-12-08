@@ -80,6 +80,7 @@ function deletePlayerObject( playerGuidToDelete )
             selectedPlayers.splice( index, 1 );
 
             //If the player is in the filter set. Just remove row here because the data does not change.
+            //If player is not in filter set, we need to remove his data and redraw.
             if( !isPlayerPguidInFilterSet( playerGuidToDelete ) )
             {
                 //Remove player from season, season_subset, redraw.
