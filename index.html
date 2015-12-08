@@ -135,8 +135,7 @@
                 <hr>
                 <div class="row">
                     <h4>Player Data Table</h4>
-                    <table class="table table-row-border table-hover" id="data_table" cellspacing="0" margin-top="750px"
-                           width="100%">
+                    <table class="table table-row-border table-hover" id="data_table" cellspacing="0" cellpadding = "0" margin-top="750px"                        width="100%">
                         <thead>
                         <tr class="header">
                             <th>Name</th>
@@ -195,11 +194,11 @@
                     </div>
                 </div>
 
-                <div class="row">
+                <!-- <div class="row">
                     <div class="parcoords stretch-chart">
                         <div id="str-sec"></div>
                     </div>
-                </div>
+                </div> -->
             </div>
 
             <div class="col-sm-2">
@@ -271,8 +270,6 @@
                     </div>
                 </div>
 
-                <hr>
-
                 <!-- <div class="row">
                   <div class="parcoords col-sm-12 small-chart">
                     <div id="sm-sec-4"></div>
@@ -317,15 +314,11 @@
     var selected_pguids = new Array();
 
     //CONSTANTS
-    var scatter_margin = { top: 40, right: 30, bottom: 33, left: 45 }
+    var scatter_margin = { top: 50, right: 30, bottom: 33, left: 45 }
             , width = parseInt( d3.select( '.large-chart' ).style( 'width' ), 10 )
             , scatter_width = width - scatter_margin.left - scatter_margin.right
             , height = parseInt( d3.select( '.large-chart' ).style( 'height' ), 10 )
             , scatter_height = height - scatter_margin.top - scatter_margin.bottom;
-
-    var cdf_margin = { top: 40, right: 30, bottom: 33, left: 45 }
-            , cdf_width = width - cdf_margin.right - cdf_margin.left
-            , cdf_height = height - cdf_margin.top - cdf_margin.bottom;
 
     var dot_init_size = 3;
     var dot_hover_size = 7;
@@ -333,9 +326,10 @@
     var tooltip_trans_in = 200;
     var tooltip_trans_out = 400;
 
-    var colorScale = //d3.scale.ordinal().domain( [ "QB", "RB", "WR", "TE" ] )
-        //.range( [ "red", "green", "blue", "gray" ] );
-            d3.scale.category10();
+    var colorScale = d3.scale.ordinal()
+        .domain( [ "qb", "rb", "wr", "te" ] )
+        .range( [ "blue", "orange", "green", "red" ] );
+            // d3.scale.category10();
 
     // Adds the svg canvas
     var svg_scatter = d3.select( "#lrg-sec-2" )
@@ -452,7 +446,7 @@
             // If the scatterplot clicks away empty out the selected pguids
             selected_pguids = new Array();
         }
-        
+
         // Notify anyone listening that the lassoed items have changed
         dispatch.lasso();
         refreshPlayerDataTable( lassoed_items );
@@ -704,15 +698,18 @@
                 .attr( "id", "scatter_y_axis")
                 .call( yAxis )
                 .append( "text" )
-                .attr( "text-anchor", "middle" )
-                .attr( "transform", "translate(" + 10 + "," + (scatter_height / 2) + ")rotate(-90)" )
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - scatter_margin.left)
+                .attr("x",0 - (scatter_height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
                 .text( "Fantasy Points" );
 
         svg_scatter.append( "text" )
                 .attr( "id", "title" )
-                .attr( "x", 150 )
-                .attr( "y", 0 - (scatter_margin.top / 3) )
-                .attr( "text-anchor", "middle" )
+                .attr("x", (scatter_width / 2))
+                .attr("y", 0 - (scatter_margin.top / 2))
+                .attr("text-anchor", "middle")
                 .style( "font-size", "16px" )
                 .style( "text-decoration", "underline" )
                 .text( "Fantasy Points / Win Percentage" );
@@ -733,8 +730,9 @@
                 bLengthChange: false,
                 bFilter: false,
                 bPaginate: false,
-                scrollY: '50vh',
-                scrollCollapse: true,
+                scrollY: '40vh',
+                bAutoWidth: true,
+                bScrollCollapse: true,
                 data: filteredPlayers(),
                 columns: [
                     { data: "player_name" },
@@ -801,7 +799,7 @@
                 })
                 .attr( "fill-opacity", 1 );
             });
-        } 
+        }
     }
 
     function updateDetails( player )

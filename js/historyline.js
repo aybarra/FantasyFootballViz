@@ -10,7 +10,7 @@ function generateHistoryLine(data){
     var parseDate = d3.time.format("%Y").parse;
     var color = d3.scale.category10();
 
-    var margin = { top: 20, right: 30, bottom: 33, left: 45 }
+    var margin = { top: 40, right: 30, bottom: 33, left: 45 }
 
         , width = parseInt(d3.select('.small-chart').style('width'), 10)
         , width = width - margin.left - margin.right
@@ -31,7 +31,7 @@ function generateHistoryLine(data){
     var relx = d3.scale.linear()
                .range([0, width+margin.left+margin.right])
                .domain([0,100])
-               
+
     var rely = d3.scale.linear()
               .range([height+margin.top+margin.bottom, 0])
               .domain([0,100])
@@ -62,7 +62,7 @@ function generateHistoryLine(data){
 //             this.parentNode.appendChild(this);
 //         });
 //     }
-// 
+//
 //     d3.selection.prototype.moveToBack = function() {
 //         return this.each(function() {
 //             var firstChild = this.parentNode.firstChild;
@@ -315,7 +315,7 @@ function generateHistoryLine(data){
     focus.append("circle")
          .attr("r", 3)
          .attr("stroke","black")
-         
+
     focus.append("text")
          .attr("id","historyfocusyear")
          .attr("x", -5)
@@ -385,9 +385,9 @@ function generateHistoryLine(data){
     svg.append("text")
         .attr("id","historytitle")
         .attr("x", (width / 2))
-        .attr("y", 0 - (margin.top / 3))
+        .attr("y", 0 - (margin.top / 2))
         .attr("text-anchor", "middle")
-        .style("font-size", "16px")
+        .style( "font-size", "16px" )
         .style("text-decoration", "underline")
         .text("Average Points / Season");
 
@@ -395,7 +395,7 @@ function generateHistoryLine(data){
                         .attr("class","distribution_lines")
                         .attr("id","historyline")
                         .attr("d", area(groupavg.values))
-                        .attr("fill","steelblue")
+                        .attr("fill","lightblue")
                         .style("stroke","black")
                        .on("mouseover", function() {
                             focus.style("display", null);

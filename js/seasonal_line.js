@@ -11,7 +11,7 @@ function generateLineChart(data) {
     var color = d3.scale.category10();
 
 
-    var margin = { top: 15, right: 35, bottom: 55, left: 45 }
+    var margin = { top: 45, right: 35, bottom: 65, left: 45 }
 
         , width = parseInt(d3.select('.small-chart').style('width'), 10)
         , width = width - margin.left - margin.right
@@ -29,7 +29,7 @@ function generateLineChart(data) {
     var relx = d3.scale.linear()
                .range([0, width+margin.left+margin.right])
                .domain([0,100])
-               
+
     var y = d3.scale.linear()
               .range([height, 0]);
 
@@ -223,10 +223,15 @@ function generateLineChart(data) {
        .call(yAxis)
        .append("text")
        .attr("transform", "rotate(-90)")
-       .attr("y", -41)
-       .attr("x", -30)
-       .attr("dy", ".71em")
-       .style("text-anchor", "end")
+      .attr("y", 0 - margin.left)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      //  .attr("transform", "rotate(-90)")
+      //  .attr("y", -41)
+      //  .attr("x", -30)
+      //  .attr("dy", ".71em")
+      //  .style("text-anchor", "end")
        .text("Seasonal Fantasy Points");
 
       //  svg.append("text")
@@ -239,7 +244,7 @@ function generateLineChart(data) {
       //      .text("Per Season Fantasy Points");
 
 //  *****************************************************
-//  CIRCLES FOR DEATILS ON DEMANSD MOUSE HOVER
+//  CIRCLES FOR DETAILS ON DEMAND MOUSE HOVER
 // ******************************************************
     var focus = svg.append("g")
                    .attr("class", "focus")
@@ -286,25 +291,29 @@ function generateLineChart(data) {
     nameline.append("text")
             .attr("id","nameline")
             .attr("x", relx(0))
-            .attr("y", rely(17))
+            // .attr("y", rely(17))
+            .attr("y", rely(30))
             .style("font-size", "10px")
 
     yearline.append("text")
             .attr("id","yearline")
             .attr("x", relx(0))
-            .attr("y", rely(12))
+            // .attr("y", rely(12))
+            .attr("y", rely(25))
             .style("font-size", "10px")
 
     pointsline.append("text")
             .attr("id","pointsline")
             .attr("x", relx(1))
-              .attr("y", height+margin.bottom)
+              // .attr("y", height+margin.bottom)
+            .attr("y", 25)
             .style("font-size", "10px")
 
     averageline.append("text")
             .attr("id","averageline")
             .attr("x", relx(0))
-               .attr("y", rely(7))
+              //  .attr("y", rely(7))
+            .attr("y", rely(20))
               .style("font-size", "10px")
 
 //  *****************************************************
@@ -343,6 +352,9 @@ function generateLineChart(data) {
                             colorcheck = CheckColor(color_attr)
 //                             console.log(colorcheck)
                             var sel = d3.select(this);
+                            if (colorcheck == 'red') {
+                                    sel.style("stroke", "firebrick")
+                            }
                             if (colorcheck == 'blue') {
                                     sel.style("stroke", "cornflowerblue")
                             }
@@ -352,9 +364,10 @@ function generateLineChart(data) {
                             if (colorcheck == 'green') {
                                     sel.style("stroke", "limegreen")
                             }
-                            if (colorcheck == 'cornflowerblue' || 
+                            if (colorcheck == 'cornflowerblue' ||
                                 colorcheck == 'sandybrown' ||
-                                colorcheck == 'limegreen') {
+                                colorcheck == 'limegreen' ||
+                                colorcheck == 'firebrick') {
                                     sel.style("stroke", "whitesmoke")
                             }
                        })
@@ -365,10 +378,14 @@ function generateLineChart(data) {
 //                             console.log(color)
                             var sel = d3.select(this);
                             sel.moveToFront();
+                            sel.transition().duration(100)
+                                .ease("bounce")
+                                .style("stroke-width", "9px")
                             colorcheck = CheckColor(color_attr)
-                            if (!(colorcheck == 'cornflowerblue' || 
+                            if (!(colorcheck == 'cornflowerblue' ||
                                 colorcheck == 'sandybrown' ||
-                                colorcheck == 'limegreen')) {
+                                colorcheck == 'limegreen' ||
+                                colorcheck == 'firebrick')) {
                                     sel.style('stroke', color)                                
                             }
                         })
@@ -376,13 +393,16 @@ function generateLineChart(data) {
                             focus.style("display", "none");
 //                             iline.style("stroke","whitesmoke");
                             var sel = d3.select(this);
+                            sel.transition().duration(100)
+                                .ease("bounce").style("stroke-width", "2px")
                             color_attr = d3.select(this).style("stroke")
                             cfb= d3.rgb(selected_color)
                             rgb = color_attr.split("(")[1].split(")")[0].split(",")
                             colorcheck = CheckColor(color_attr)
-                            if (!(colorcheck == 'cornflowerblue' || 
+                            if (!(colorcheck == 'cornflowerblue' ||
                                 colorcheck == 'sandybrown' ||
-                                colorcheck == 'limegreen')) {
+                                colorcheck == 'limegreen' ||
+                                colorcheck == 'firebrick')) {
                                     sel.style('stroke', "whitesmoke")
                                     sel.moveToBack()
                             }
@@ -421,7 +441,7 @@ function generateLineChart(data) {
                             fullname = PGUID_TO_NAME_MAP[d.key][0]
                             focus.select("#focusname").text(fullname);
                             focus.select("#focusyear").text("Yr: "+year);
-                            focus.select("#focuspoints").text("Pts:"+pts);                            
+                            focus.select("#focuspoints").text("Pts:"+pts);
                             focus.moveToFront();
                             nameline.select("text").text("Name: " + fullname);
                             yearline.select("text").text("Years: " + totyears + "......  Total Points: " + totpts);
@@ -434,6 +454,13 @@ function generateLineChart(data) {
                         });
 
     });
+
+
+    // dispatch.on("lasso_seasonal", function(lassoed_items) {
+    //     if(lassoed_items.length > 0){
+    //         lassoed_items.forEach(function(d){
+    //             var item = d3.select('path#'+d.pguid)
+
 
     dispatch.on("lasso.seasonal", function() {
         if(selected_pguids.length > 0){
@@ -529,7 +556,7 @@ function generateLineChart(data) {
     b_height = height+margin.bottom+margin.top;
 
         var butgp = svg.append("g").attr("class","buttongroup")
-                       .attr("transform", "translate("+relx(45)+"," + rely(19.5) + ")");
+                       .attr("transform", "translate("+relx(45)+"," + rely(33) + ")");
 
         butgp.append("rect")
                   .attr("class","season_button")
@@ -548,7 +575,7 @@ function generateLineChart(data) {
                         d3.select("#avgbut").attr("fill",fillcol)
                         avgjoeline.active = active;
                      });
-            
+
         butgp.append("text")
              .attr("dx", relx(6))
              .attr("dy", rely(98))
@@ -573,7 +600,7 @@ function generateLineChart(data) {
                             d3.select("#goodbut").attr("fill",fillcol)
                             goodguyline.active = active;
                      });
-              
+
         butgp.append("text")
              .attr("dx", relx(6))
              .attr("dy", rely(93))
@@ -610,7 +637,7 @@ function generateLineChart(data) {
                         .attr("y", rely(100))
                          .style("font-size", "10px")
                         .text("Toggle Year")
-            
+
         var relbutton = svg.append("rect")
                   .attr("class","season_button")
                   .attr("id","relabs")
@@ -670,7 +697,8 @@ function generateLineChart(data) {
     svg.append("text")
         .attr("id","seasonaltitle")
         .attr("x", width/2)
-        .attr("y", rely(100))
+        // .attr("y", rely(100))
+        .attr("y", 0 - (margin.top / 2) - 10)
         .attr("text-anchor", "middle")
         .style("font-size", "16px")
         .style("text-decoration", "underline")
@@ -755,30 +783,23 @@ function updateSeasonalData(seasonal_data){
 }
 
 function CheckColor(color_attr){
-        blue = d3.rgb("#1f77b4")
-        orange = d3.rgb("#ff7f0e")
-        green = d3.rgb("#2ca02c")
-        ltblue = d3.rgb("#6495ed")
-        brown = d3.rgb("#f4a460")
-        lime = d3.rgb("#32cd32")
+    blue = d3.rgb("#1f77b4")
+    orange = d3.rgb("#ff7f0e")
+    green = d3.rgb("#2ca02c")
+    ltblue = d3.rgb("#6495ed")
+    brown = d3.rgb("#f4a460")
+    lime = d3.rgb("#32cd32")
+    red = d3.rgb("#d62728")
+    fire = d3.rgb("#b22222")
     rgb = color_attr.split("(")[1].split(")")[0].split(",")
-    if (+rgb[0]==blue.r && +rgb[1]==blue.g && rgb[2]==blue.b) {
-        return "blue"
-    }
-    if (+rgb[0]==orange.r && +rgb[1]==orange.g && rgb[2]==orange.b) {
-        return "orange"
-    }
-    if (+rgb[0]==green.r && +rgb[1]==green.g && rgb[2]==green.b) {
-        return "green"
-    }
-    if (+rgb[0]==ltblue.r && +rgb[1]==ltblue.g && rgb[2]==ltblue.b) {
-        return "cornflowerblue"
-    }
-    if (+rgb[0]==brown.r && +rgb[1]==brown.g && rgb[2]==brown.b) {
-        return "sandybrown"
-    }
-    if (+rgb[0]==lime.r && +rgb[1]==lime.g && rgb[2]==lime.b) {
-        return "limegreen"
-    }
+    
+    if (+rgb[0]==red.r && +rgb[1]==red.g && rgb[2]==red.b) { return "red"}
+    if (+rgb[0]==blue.r && +rgb[1]==blue.g && rgb[2]==blue.b) { return "blue" }
+    if (+rgb[0]==orange.r && +rgb[1]==orange.g && rgb[2]==orange.b) { return "orange" }
+    if (+rgb[0]==green.r && +rgb[1]==green.g && rgb[2]==green.b) { return "green" }
+    if (+rgb[0]==ltblue.r && +rgb[1]==ltblue.g && rgb[2]==ltblue.b) { return "cornflowerblue" }
+    if (+rgb[0]==brown.r && +rgb[1]==brown.g && rgb[2]==brown.b) { return "sandybrown" }
+    if (+rgb[0]==lime.r && +rgb[1]==lime.g && rgb[2]==lime.b) { return "limegreen" }
+    if (+rgb[0]==fire.r && +rgb[1]==fire.g && rgb[2]==fire.b) { return "firebrick" }
     return false
 }
