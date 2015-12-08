@@ -155,7 +155,7 @@
                 <div class="row">
 
                     <div class="col-sm-12 large-chart">
-                        <div class="row">
+                        <!-- <div class="row">
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle btn-xs" type="button" id="dropdown-lrg-1"
                                         data-toggle="dropdown">Large Section 1
@@ -169,14 +169,14 @@
                                     <li><a onclick="#">Parallel Coordinates</a></li>
                                 </ul>
                             </div>
-                        </div>
+                        </div> -->
                         <div id="lrg-sec-1"></div>
                     </div>
                 </div>
 
                 <hr>
 
-                <div class="row">
+                <!-- <div class="row">
                     <div class="dropdown">
                         <button class="btn btn-primary dropdown-toggle btn-xs" id="dropdown-lrg-2" type="button"
                                 data-toggle="dropdown">Large Section 2
@@ -190,7 +190,7 @@
                             <li><a onclick="#">Parallel Coordinates</a></li>
                         </ul>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="row">
                     <div class="col-sm-12 large-chart">
@@ -207,7 +207,7 @@
 
             <div class="col-sm-2">
 
-                <div class="row">
+                <!-- <div class="row">
                     <div class="dropdown">
                         <button class="btn btn-primary dropdown-toggle btn-xs" id="dropdown-sm-1" type="button"
                                 data-toggle="dropdown">Small Section 1
@@ -221,7 +221,7 @@
                             <li><a onclick="#">Parallel Coordinates</a></li>
                         </ul>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="row">
                     <div class="col-sm-12 small-chart">
@@ -231,7 +231,7 @@
 
                 <hr>
 
-                <div class="row">
+                <!-- <div class="row">
                     <div class="dropdown">
                         <button class="btn btn-primary dropdown-toggle btn-xs" id="dropdown-sm-2" type="button"
                                 data-toggle="dropdown">Small Section 2
@@ -245,7 +245,7 @@
                             <li><a onclick="#">Parallel Coordinates</a></li>
                         </ul>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="row">
                     <div class="col-sm-12 small-chart">
@@ -255,7 +255,7 @@
 
                 <hr>
 
-                <div class="row">
+                <!-- <div class="row">
                     <div class="dropdown">
                         <button class="btn btn-primary dropdown-toggle btn-xs" id="dropdown-sm-3" type="button"
                                 data-toggle="dropdown">Small Section 3
@@ -269,7 +269,7 @@
                             <li><a onclick="#">Parallel Coordinates</a></li>
                         </ul>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="row">
                     <div class="col-sm-12 small-chart">
@@ -336,7 +336,14 @@
     var colorScale = d3.scale.ordinal()
         .domain( [ "qb", "wr", "te", "rb"] )
         .range( [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"] );
+        // .range( [ '#6495ed', '#32cd32', '#f4a460', '#b22222'])
             // d3.scale.category10();
+
+    //         ltblue = d3.rgb("#6495ed")
+    // lime = d3.rgb("#32cd32")
+    // brown = d3.rgb("#f4a460")
+    // fire = d3.rgb("#b22222")
+
 
     // Adds the svg canvas
     var svg_scatter = d3.select( "#lrg-sec-2" )
@@ -528,11 +535,7 @@
      */
     function loadScatterPlot( playerArray )
     {
-        //TODO call this after adding more filters
-        //TODO call this when deleting filters
-        //TODO clear out old charts and graphs.
-//         var playerArray = filteredPlayers();
-
+  
         d3.select( "#lrg-sec-2" ).selectAll( ".dot" ).remove();
         var temp_svg = d3.select( "#lrg-sec-2 svg" );
         temp_svg.select( "#scatter_x_axis" ).remove();
@@ -632,7 +635,12 @@
                 } )
                 .attr( "id", function ( d, i )
                 {
-                    return "dot_" + d.pguid;
+                    var key_updated = d.pguid.toString();
+                    if(key_updated.indexOf('.') != -1) {
+                        key_updated = key_updated.replace('.', '');
+                        console.log("Key was updated: " + key_updated);
+                    }
+                    return "dot_" + key_updated;
                 } ) // added
                 .attr( "class", "dot" )
                 .style( "fill", function ( d )
@@ -743,6 +751,7 @@
                 bFilter: false,
                 bPaginate: false,
                 scrollY: '40vh',
+                scrollX: '40vh',
                 bAutoWidth: true,
                 bScrollCollapse: true,
                 data: filteredPlayers(),
@@ -761,8 +770,6 @@
     function updateSelectedScatterCircles(){
 
         // Clear them all first to make them small
-        // 
-        // console.log(lasso.items());
         d3.selectAll( ".dot" )
                 .transition().duration( dot_trans )
                 .attr( "stroke", "black" )
@@ -780,26 +787,17 @@
                 });
 
 
-        console.log(lasso.items());
-
-        // .classed( { "selected": false } )
-        // .transition().duration( dot_trans )
-        // .attr( "stroke", "black" )
-        // .attr( "stroke-width", 1 )
-        // .attr( "r", function ( d ) {
-        //     if( d.selected == false ) {
-        //         return dot_init_size;
-        //     } else {
-        //         return dot_hover_size;
-        //     }
-        // })
-        // .attr( "fill-opacity", function ( d ) {
-        //     return .7;
-        // });
+        // console.log(lasso.items());
 
         if(selected_pguids.length > 0){
             selected_pguids.forEach(function(d){
-                d3.select("#dot_" + d)
+
+                var key_updated = d.toString();
+                if(key_updated.indexOf('.') != -1) {
+                    key_updated = key_updated.replace('.', '');
+                    console.log("Key was updated for lasso selection: " + key_updated);
+                }
+                d3.select("#dot_" + key_updated)
                     // .attr("selected", true)
                     // .classed( { "selected": true } )
                         .transition().duration( dot_trans )
@@ -924,6 +922,14 @@
         body.removeClass("loading");
     }
 
+    function getUpdatedKey( original ) {
+        var updated = original;
+        if(updated.indexOf('.') != -1) {
+              updated = updated.replace('.', '');
+              console.log("Key was updated for selection: " + updated);
+        }
+        return updated;
+    }
 </script>
 
 </body>

@@ -149,7 +149,12 @@ function generateHistoryLine(data){
     svg.append("g")
        .attr("class", "x axis")
        .attr("transform", "translate(0," + height + ")")
-       .call(xAxis);
+       .call(xAxis)
+       .selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", "rotate(-65)" );
 
     svg.append("g")
        .attr("class", "y axis")
@@ -345,6 +350,14 @@ function generateHistoryLine(data){
 
 ;  //not sure what this is about
 } // Close function generateLineChart
+
+function updateHistoryLine( updatedData ){
+  d3.select(".distribution_lines").remove();
+  d3.select("#sm-sec-2 svg").remove();
+
+  generateHistoryLine( updatedData );
+
+}
 
 function convertData(history_data){
   var parseDate = d3.time.format("%Y").parse;

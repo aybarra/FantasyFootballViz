@@ -751,7 +751,7 @@ function generateCDF_D3Chart(data){
 //     if (+rgb[0]==fire.r && +rgb[1]==fire.g && rgb[2]==fire.b) { return "firebrick" }
 //     return false
 // }
-
+  var default_line_color = d3.hsl('#dddddd');
   var margin = { top: 45, right: 30, bottom: 50, left: 45 }
     , width = parseInt(d3.select('.large-chart').style('width'), 10)
     , width = width - margin.left - margin.right
@@ -807,18 +807,8 @@ var rely = d3.scale.linear()
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  // var selected_players = filteredPlayers();
-  // // console.log(selected_players);
-  // var filter_string = '?players=';
-  // selected_players.forEach(function (d){
-  //   filter_string += (','+d.pguid);
-  // });
-  // console.log(filter_string);
-
   var cdf_data_conv;
 
-  // d3.json('http://localhost:8000/seasons_subset/'+filter_string, function(error,cdf_data){
-  //   if (error) throw error;
 
     datalist = convertData(data);
     cdf_data_conv = datalist[0]
@@ -989,18 +979,13 @@ var rely = d3.scale.linear()
         .attr("class", "cdf_line")
         .attr("d", function(d) { return line(d.values); })
         .attr("id" , function(d){
-          var key_updated = d.key.toString();
-          if(key_updated.indexOf('.') != -1) {
-            console.log(key_updated);
-            key_updated = key_updated.replace('.', '');
-            console.log(key_updated);
-          }
-              // var key_updated = d.key.toString().replace('.', '');
-              // console.log(key_updated);
-              return 'path_' + key_updated;
+            // fetches the pguid with periods stripped out....
+            // won't work for all players, but most probably
+            var key_updated = getUpdatedKey(d.key.toString());
+            return 'path_' + key_updated;
         })
         .attr("stroke-linecap","round")
-        .style("stroke", function(d) { return d3.hsl('#dddddd') })
+        .style("stroke", function(d) { return default_line_color; })
            .on("click", function(d) {
                 var splice_index = selected_pguids.indexOf(d.key);
                 if(splice_index == -1){
@@ -1018,9 +1003,6 @@ var rely = d3.scale.linear()
                   selected_pguids.splice(splice_index, 1);
                   // console.log(selected_pguids);
                 }
-
-                // Notifies everyone else to highlight/unhighlight
-                dispatch.project_click();
 
                 color_attr = d3.select(this).style("stroke")
                 rgb = color_attr.split("(")[1].split(")")[0].split(",")
@@ -1045,7 +1027,9 @@ var rely = d3.scale.linear()
                     colorcheck == 'firebrick') {
                         sel.style("stroke", "whitesmoke")
                 }
-//                 d3.select("cdfavgjoeline").attr("d",function(d) { return line(d.values);
+
+                // Notifies everyone else to highlight/unhighlight
+                dispatch.project_click();
            })        
         .on('mouseover', function(d) {
             var line = d3.select(this);
@@ -1055,10 +1039,11 @@ var rely = d3.scale.linear()
 //             d3.select(this.nextSibling)
 //               .attr("opacity", "1")
 //         })
+            // line.attr("opacity", 1);
             focus.style("display", null);
             color_attr = d3.select(this).style("stroke")
             color = colorScale(PGUID_TO_NAME_MAP[d.key][1])
-//                             console.log(color)
+            // console.log(color)
             var sel = d3.select(this);
             sel.transition().duration(100)
                 .ease("bounce")
@@ -1085,17 +1070,16 @@ var rely = d3.scale.linear()
         var sel = d3.select(this);
         sel.transition().duration(100)
             .ease("bounce").style("stroke-width", "2px")
-        color_attr = d3.select(this).style("stroke")
-        rgb = color_attr.split("(")[1].split(")")[0].split(",")
-        colorcheck = CheckColor(color_attr)
+        var color_attr = d3.select(this).style("stroke")
+        var rgb = color_attr.split("(")[1].split(")")[0].split(",")
+        var colorcheck = CheckColor(color_attr)
         if (!(colorcheck == 'cornflowerblue' ||
             colorcheck == 'sandybrown' ||
             colorcheck == 'limegreen' ||
             colorcheck == 'firebrick')) {
-                sel.style('stroke', "whitesmoke")
-                sel.moveToBack()
-//             this.childNode.childNode.appendParent(this.childNode);
-//             d3.select("#cdfavgjoeline").attr("d",function(d) { return line(d.values);
+              sel.style('stroke', default_line_color);
+                // sel.moveToBack()
+              // this.childNode.childNode.appendParent(this.childNode);
 
         }
     })
@@ -1140,24 +1124,24 @@ var rely = d3.scale.linear()
 //     });
 
 
-        // Set them to not show at first
-        d3.selectAll(".cdf_line").style("opacity","0");
-        animateLines();
+    // Set them to not show at first
+    d3.selectAll(".cdf_line").style("opacity","0");
+    animateLines();
 
-    dispatch.on("lasso_cdf", function(lassoed_items) {
-      // console.log(lassoed_items);
-      if(lassoed_items.length > 0){
-        lassoed_items.forEach(function (d){
-          // console.log("Pguid is: " + d.pguid);
-          d3.select('#path_' + d.pguid)
-          .style('stroke-width','3.5px');
-        });
-      } else {
-        // var paths = d3.selectAll("*[id^='path']");
-        var paths = d3.selectAll(".cdf_line");
-        paths.style('stroke-width', '1.75px');
-      }
-    });
+    // dispatch.on("lasso_cdf", function(lassoed_items) {
+    //   // console.log(lassoed_items);
+    //   if(lassoed_items.length > 0){
+    //     lassoed_items.forEach(function (d){
+    //       // console.log("Pguid is: " + d.pguid);
+    //       d3.select('#path_' + d.pguid)
+    //       .style('stroke-width','3.5px');
+    //     });
+    //   } else {
+    //     // var paths = d3.selectAll("*[id^='path']");
+    //     var paths = d3.selectAll(".cdf_line");
+    //     paths.style('stroke-width', '1.75px');
+    //   }
+    // });
 
     player.append("text")
         .datum(function(d_sub) {
@@ -1205,12 +1189,7 @@ var rely = d3.scale.linear()
                               var sel = d3.select("body").transition();
 //                               console.log(cdf_data_conv)
                               cdf_data_conv.forEach(function(d){
-                                var key_updated = d.key.toString();
-                                if(key_updated.indexOf('.') != -1){
-//                                   console.log(key_updated);
-                                  key_updated = key_updated.replace('.', '');
-//                                   console.log(key_updated);
-                                }
+                                var key_updated = getUpdatedKey( d.key.toString() );
 //                                 d3.select("#path_"+key_updated)
 //                                     .attr("d",line(d.values))
 //                                     console.log(d)
@@ -1254,7 +1233,74 @@ var rely = d3.scale.linear()
                               });
                             }
                         });
-    // });
+
+    dispatch.on("lasso.cdf", function() {
+      // if(selected_pguids.length > 0){
+      //   selected_pguids.forEach(function (d){
+      //     // console.log("Pguid is: " + d.pguid);
+      //     var key_updated = getUpdatedKey(d.toString());
+
+      //     d3.select('#path_' + key_updated)
+      //     .style('stroke-width','10px');
+      //   });
+      // } else {
+      //   // var paths = d3.selectAll("*[id^='path']");
+      //   var paths = d3.selectAll(".cdf_line");
+      //   paths.style('stroke', default_line_color);
+
+      // }
+
+      if(selected_pguids.length > 0){
+        selected_pguids.forEach(function (d){
+          // TODO Do something about the name's T.J, etc...
+          var key_updated = getUpdatedKey(d.toString());
+          d3.select("#path_" + key_updated);
+          var position = PGUID_TO_NAME_MAP[d][1];
+          var correct_color;
+          if ( position == 'qb') {
+            correct_color = "cornflowerblue";
+          } else if ( position == 'wr') {
+            correct_color = "sandybrown";
+          } else if ( position == 'te') {
+            correct_color = "limegreen";
+          } else if ( position == 'rb') {
+            correct_color = "firebrick";
+          }
+          d3.select('#path_' + key_updated)
+            .style("stroke", correct_color);
+        });
+      } else {
+        var paths = d3.selectAll(".cdf_line");
+        paths.style('stroke', default_line_color);
+      }
+    });
+
+    dispatch.on("project_click.cdf", function(){
+      if(selected_pguids.length > 0){
+        selected_pguids.forEach(function (d){
+          // TODO Do something about the name's T.J, etc...
+          var key_updated = getUpdatedKey(d.toString());
+          d3.select("#path_" + key_updated);
+          var position = PGUID_TO_NAME_MAP[d][1];
+          var correct_color;
+          if ( position == 'qb') {
+            correct_color = "cornflowerblue";
+          } else if ( position == 'wr') {
+            correct_color = "sandybrown";
+          } else if ( position == 'te') {
+            correct_color = "limegreen";
+          } else if ( position == 'rb') {
+            correct_color = "firebrick";
+          }
+          d3.select('#path_' + key_updated)
+            .style("stroke", correct_color);
+        });
+      } else {
+        var paths = d3.selectAll(".cdf_line");
+        paths.style('stroke', default_line_color);
+      }
+    });
+
     
         cdf_svg.append("text")
         .attr("id","cdftitle")
@@ -1359,7 +1405,6 @@ var rely = d3.scale.linear()
             .attr("dy", rely(20))
               .style("font-size", "10px")
 
-
 }
 
 function animateLines()
@@ -1370,12 +1415,8 @@ function animateLines()
     d3.selectAll( ".cdf_line" ).each( function ( d, i )
     {
         // var key_updated = d.key.toString().replace( '.', '' );
-        var key_updated = d.key.toString();
-        if(key_updated.indexOf('.') != -1) {
-          console.log(key_updated);
-          key_updated = key_updated.replace('.', '');
-          console.log(key_updated);
-        }
+        var key_updated = getUpdatedKey(d.key.toString());
+
         // Get the length of each line in turn
         var totalLength = d3.select( "#path_" + key_updated ).node().getTotalLength();
 
@@ -1452,7 +1493,6 @@ function convertData(cdf_data){
           year: last_year
         });
       }
-//       console.log(lines[pguid])
     }
 
     for(var key_obj in lines){
@@ -1479,10 +1519,10 @@ function CheckColor(color_attr){
     blue = d3.rgb("#1f77b4")
     orange = d3.rgb("#ff7f0e")
     green = d3.rgb("#2ca02c")
-    ltblue = d3.rgb("#6495ed")
-    brown = d3.rgb("#f4a460")
-    lime = d3.rgb("#32cd32")
     red = d3.rgb("#d62728")
+    ltblue = d3.rgb("#6495ed")
+    lime = d3.rgb("#32cd32")
+    brown = d3.rgb("#f4a460")
     fire = d3.rgb("#b22222")
     rgb = color_attr.split("(")[1].split(")")[0].split(",")
     
