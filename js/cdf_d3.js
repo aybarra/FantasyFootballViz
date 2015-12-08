@@ -12,7 +12,7 @@ function generateCDF_D3Chart(data){
     var color = d3.scale.category10();
 
 
-    var margin = { top: 10, right: 30, bottom: 50, left: 45 }
+    var margin = { top: 45, right: 30, bottom: 50, left: 45 }
         , width = parseInt(d3.select('.large-chart').style('width'), 10)
         , width = width - margin.left - margin.right
         , height = parseInt(d3.select('.large-chart').style('height'), 10)
@@ -31,7 +31,7 @@ function generateCDF_D3Chart(data){
     var relx = d3.scale.linear()
                .range([0, width+margin.left+margin.right])
                .domain([0,100])
-               
+
     var rely = d3.scale.linear()
               .range([height+margin.top+margin.bottom, 0])
               .domain([0,100])
@@ -55,11 +55,12 @@ function generateCDF_D3Chart(data){
 
     svg.append("text")
         .attr("id","cdftitle")
-        .attr("x", (width / 2))             
-        .attr("y", rely(99))
-        .attr("text-anchor", "middle")  
-        .style("font-size", "16px") 
-        .style("text-decoration", "underline")  
+        .attr("x", (width / 2))
+        // .attr("y", rely(99))
+        .attr("y", 0 - (margin.top / 2) - 10)
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("text-decoration", "underline")
         .text("Player Points / Season");
 
 
@@ -266,7 +267,7 @@ function generateCDF_D3Chart(data){
                   .tickFormat(d3.format("d"))
                   .orient("left");
 
-    
+
 
     x.domain(d3.extent(cdf_dataset, function(d) { return d.year; }));
 //     y.domain(d3.extent(cdf_dataset, function(d) { return d.season_ff_pts; }));
@@ -287,10 +288,15 @@ function generateCDF_D3Chart(data){
        .call(yAxis)
        .append("text")
        .attr("transform", "rotate(-90)")
-       .attr("y", -42)
-       .attr("x", -150)
-       .attr("dy", ".71em")
-       .style("text-anchor", "end")
+      .attr("y", 0 - margin.left)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      //  .attr("transform", "rotate(-90)")
+      //  .attr("y", -42)
+      //  .attr("x", -150)
+      //  .attr("dy", ".71em")
+      //  .style("text-anchor", "end")
        .text("Seasonal Fantasy Points");
 
 //  *****************************************************
@@ -332,22 +338,22 @@ function generateCDF_D3Chart(data){
 
     statgroup.append("text")
             .attr("id","cdfnameline")
-            .style("font-size", "10px") 
+            .style("font-size", "10px")
 
     statgroup.append("text")
             .attr("id","cdfyearline")
             .attr("dy", 10)
-            .style("font-size", "10px") 
+            .style("font-size", "10px")
 
     statgroup.append("text")
             .attr("id","cdfpointsline")
             .attr("dy", 20)
-            .style("font-size", "10px") 
+            .style("font-size", "10px")
 
     statgroup.append("text")
             .attr("id","cdfavgline")
             .attr("dy", 30)
-            .style("font-size", "10px") 
+            .style("font-size", "10px")
 
 //  *****************************************************
 //  BUILD THE LINE CHART
@@ -376,7 +382,7 @@ function generateCDF_D3Chart(data){
                             if (colorcheck == 'green') {
                                     sel.style("stroke", "limegreen")
                             }
-                            if (colorcheck == 'cornflowerblue' || 
+                            if (colorcheck == 'cornflowerblue' ||
                                 colorcheck == 'sandybrown' ||
                                 colorcheck == 'limegreen' ||
                                 colorcheck == 'firebrick') {
@@ -443,7 +449,7 @@ function generateCDF_D3Chart(data){
                             fullname = PGUID_TO_NAME_MAP[d.key][0]
                             focus.select("#cdffocusname").text(fullname);
                             focus.select("#cdffocusyear").text("Yr: "+year);
-                            focus.select("#cdffocuspoints").text("Pts:"+pts);                            
+                            focus.select("#cdffocuspoints").text("Pts:"+pts);
                             focus.moveToFront();
                             statgroup.select("#cdfnameline").text("Name: " + fullname);
                             statgroup.select("#cdfyearline").text("Years: " + totyears);
@@ -455,12 +461,11 @@ function generateCDF_D3Chart(data){
                         });
 
     });
-    dispatch.on("lasso_cdf", function(lassoed_items) {
-      // console.log(lassoed_items);
-      if(lassoed_items.length > 0){
-        lassoed_items.forEach(function (d){
+    dispatch.on("lasso.cdf", function() {
+      if(selected_pguids.length > 0){
+        selected_pguids.forEach(function (d){
           // console.log("Pguid is: " + d.pguid);
-          d3.select('#path_' + d.pguid)
+          d3.select('#path_' + d)
           .style('stroke-width','3.5px');
         });
       } else {
@@ -469,6 +474,7 @@ function generateCDF_D3Chart(data){
         paths.style('stroke-width', '1.75px');
       }
     });
+
 //  *****************************************************
 //  BUILD THE REFERENCE LINES
 // ******************************************************
@@ -557,7 +563,7 @@ function generateCDF_D3Chart(data){
                         d3.select("#cdfavgbut").attr("fill",fillcol)
                         avgjoeline.active = active;
                      });
-            
+
         butgp.append("text")
              .attr("dx", relx(5.5))
              .attr("dy", rely(97))
@@ -582,7 +588,7 @@ function generateCDF_D3Chart(data){
                             d3.select("#cdfgoodbut").attr("fill",fillcol)
                             goodguyline.active = active;
                      });
-              
+
         butgp.append("text")
              .attr("dx", relx(20.4))
              .attr("dy", rely(97))
@@ -619,7 +625,7 @@ function generateCDF_D3Chart(data){
                         .attr("y", rely(100))
                          .style("font-size", "10px")
                         .text("Toggle Year")
-            
+
         var relbutton = svg.append("rect")
                   .attr("class","season_button")
                   .attr("id","relabs")
@@ -712,44 +718,44 @@ function CDFcheckColor(color_attr){
 }
 //   var absyear = false;
 //   var parseDate = d3.time.format("%Y").parse;
-// 
+//
 //   var xTime = d3.time.scale()
 //                   .range([0, cdf_width]);
-// 
+//
 //   var x = d3.scale.linear().range([0, cdf_width]);
 //   var y = d3.scale.linear().range([cdf_height, 0]);
-// 
+//
 //   var color = d3.scale.category10();
-// 
+//
 //   var xAxis = d3.svg.axis()
 //       .scale(x)
 //       .orient("bottom");
-// 
+//
 //   var yAxis = d3.svg.axis()
 //       .scale(y)
 //       .orient("left");
-// 
+//
 //   var line = d3.svg.line()
 //       .interpolate("basis")
 //       .x(function(d) {
 //         if (absyear == false){
 //           return x(d.x);
-//         } 
+//         }
 //           return xTime(d.year)
 //       })
 //       .y(function(d) {
 //             return y(d.y);
 //       });
-// 
+//
 //       // .x(function(d) { return x(d.x); })
 //       // .y(function(d) { return y(d.y); });
-// 
+//
 //   var cdf_svg = d3.select("#lrg-sec-1").append("svg")
 //       .attr("width", cdf_width + cdf_margin.left + cdf_margin.right)
 //       .attr("height", cdf_height + cdf_margin.top + cdf_margin.bottom)
 //       .append("g")
 //       .attr("transform", "translate(" + cdf_margin.left + "," + cdf_margin.top + ")");
-// 
+//
 //   // var selected_players = filteredPlayers();
 //   // // console.log(selected_players);
 //   // var filter_string = '?players=';
@@ -757,29 +763,29 @@ function CDFcheckColor(color_attr){
 //   //   filter_string += (','+d.pguid);
 //   // });
 //   // console.log(filter_string);
-// 
+//
 //   var cdf_data_conv;
-// 
+//
 //   // d3.json('http://localhost:8000/seasons_subset/'+filter_string, function(error,cdf_data){
 //   //   if (error) throw error;
-// 
+//
 //     cdf_data_conv = convertcdf_data(cdf_data);
-// 
+//
 //     var keys = d3.keys(cdf_data_conv);
 //     color.domain(d3.keys(cdf_data_conv));
-// 
+//
 //     x.domain([
 //       0,
 //       d3.max(cdf_data_conv, function(d) { return d.values.length; })  // Want the longest length career
 //     ]);
-// 
+//
 //     xTime.domain(d3.extent(cdf_data_conv, function(d) {return d.year;}));
-// 
+//
 //     y.domain([
 //       d3.min(cdf_data_conv, function(d) { return d3.min(d.values, function(v) { return v.y; }); }),
 //       d3.max(cdf_data_conv, function(d) { return d3.max(d.values, function(v) { return v.y; }); })
 //     ]);
-// 
+//
 //     cdf_svg.append("g")
 //         .attr("class", "x axis")
 //         .attr("transform", "translate(0," + cdf_height + ")")
@@ -788,7 +794,7 @@ function CDFcheckColor(color_attr){
 //           .attr("text-anchor", "middle")
 //           .attr("transform", "translate("+ (cdf_width/2) +","+cdf_height+")")
 //           .text("Years Played");
-// 
+//
 //     cdf_svg.append("g")
 //         .attr("class", "y axis")
 //         .call(yAxis)
@@ -798,12 +804,12 @@ function CDFcheckColor(color_attr){
 //         .attr("dy", ".71em")
 //         .style("text-anchor", "end")
 //         .text("Cumulative Fantasy Points");
-// 
+//
 //     var player = cdf_svg.selectAll(".player")
 //         .cdf_data(cdf_data_conv)
 //       .enter().append("g")
 //         .attr("class", "player");
-// 
+//
 //     player.append("path")
 //         // .attr("class", "line")
 //         .attr("class", "cdf_line")
@@ -831,11 +837,11 @@ function CDFcheckColor(color_attr){
 //             d3.select(this.nextSibling)
 //               .attr("opacity", "0")
 //         });
-// 
+//
 //         // Set them to not show at first
 //         d3.selectAll(".cdf_line").style("opacity","0");
 //         animateLines();
-// 
+//
 //     dispatch.on("lasso_cdf", function(lassoed_items) {
 //       // console.log(lassoed_items);
 //       if(lassoed_items.length > 0){
@@ -850,7 +856,7 @@ function CDFcheckColor(color_attr){
 //         paths.style('stroke-width', '1.75px');
 //       }
 //     });
-// 
+//
 //     player.append("text")
 //         .datum(function(d_sub) {
 //           // console.log("TEST STRING PRIOR");
@@ -860,7 +866,7 @@ function CDFcheckColor(color_attr){
 //         .attr("dy", ".35em")
 //         .text(function(d_sub) { return d_sub.name + ' (' + d_sub.value.y + ') ' ; })
 //         .attr("opacity", "0");
-// 
+//
 //         var cdfyrtog = cdf_svg.append("rect")
 //                           .attr("class","button")
 //                           .attr("id","elitebut")
@@ -910,18 +916,18 @@ function CDFcheckColor(color_attr){
 //                         });
 //     // });
 // }
-// 
+//
 // function animateLines()
 // {
 //     d3.selectAll( ".cdf_line" ).style( "opacity", "0.5" );
-// 
+//
 //     //Select All of the lines and process them one by one
 //     d3.selectAll( ".cdf_line" ).each( function ( d, i )
 //     {
 //         var key_updated = d.key.toString().replace( /\./g, '' );
 //         // Get the length of each line in turn
 //         var totalLength = d3.select( "#path_" + key_updated ).node().getTotalLength();
-// 
+//
 //         d3.selectAll( "#path_" + key_updated ).attr( "stroke-dasharray", totalLength + " " + totalLength )
 //             .attr( "stroke-dashoffset", totalLength )
 //             .transition()
@@ -931,19 +937,19 @@ function CDFcheckColor(color_attr){
 //             .attr( "stroke-dashoffset", 0 )
 //             .style( "stroke-width", 3 )
 //     } );
-// 
+//
 // }
-// 
+//
 // function updateCDFcdf_data(cdf_data){
-// 
+//
 //   d3.select(".x axis").remove();
 //   d3.select(".y axis").remove();
 //   d3.selectAll(".cdf_line").remove();
 //   d3.select("#lrg-sec-1 svg").remove();
-//   
+//
 //   generateCDF_D3Chart(cdf_data);
 // }
-// 
+//
 // // Returns an array of objects of the form:
 // //  [{
 // //      key: pguid
@@ -953,10 +959,10 @@ function CDFcheckColor(color_attr){
 // //  },...]
 // function convertcdf_data(cdf_data){
 //   var parseDate = d3.time.format("%Y").parse;
-// 
+//
 //   var lines = {};
 //   var plot_cdf_data = [];
-// 
+//
 //   if(cdf_data !== undefined && cdf_data.length > 0){
 //     var nameDict = {};
 //     for(var item in cdf_data){
@@ -971,7 +977,7 @@ function CDFcheckColor(color_attr){
 //         // lines[pguid] = {'values': [{x: 1, y: ff_pts, year: season_year}]};
 //         var temp = +season_year + 1
 //         lines[pguid]['values'].push({x: 1, y: ff_pts, year: parseDate(temp.toString())});
-// 
+//
 //       } else {
 //         var last = lines[pguid]['values'].length;
 //         console.log(last)
@@ -983,20 +989,20 @@ function CDFcheckColor(color_attr){
 //         lines[pguid]['values'].push({x: last++, y: ff_pts, year: parseDate(last_year.toString())});
 //       }
 //     }
-// 
+//
 //     for(var key_obj in lines){
-// 
+//
 //       // Update these to be cumsum
 //       var vals = lines[key_obj]['values'];
-// 
+//
 //       if(vals.length > 1){
 //         for(var i = 1; i < vals.length; i++){
 //           vals[i].y += vals[i-1].y;
 //         }
 //       }
-// 
+//
 //       plot_cdf_data.push({key: key_obj, values: vals});
-// 
+//
 //     }
 //   }
 //   // Otherwise the cdf_data's empty

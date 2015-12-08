@@ -135,8 +135,7 @@
                 <hr>
                 <div class="row">
                     <h4>Player Data Table</h4>
-                    <table class="table table-row-border table-hover" id="data_table" cellspacing="0" margin-top="750px"
-                           width="100%">
+                    <table class="table table-row-border table-hover" id="data_table" cellspacing="0" cellpadding = "0" margin-top="750px"                        width="100%">
                         <thead>
                         <tr class="header">
                             <th>Name</th>
@@ -155,10 +154,18 @@
 
                     <div class="col-sm-12 large-chart">
                         <div class="row">
-                            <button type="button" id="cdf_year_swap" class="btn-primary btn-xs">CHANGE AXIS</button>
-                            <button type="button" id="scatter_btn" class="btn-primary btn-xs"
-                                    onclick="transitionTo('scatter', '#lrg-sec-1', 'large-chart')">Scatter
-                            </button>
+                            <div class="dropdown">
+                              <button class="btn btn-primary dropdown-toggle btn-xs" type="button" id="dropdown-lrg-1" data-toggle="dropdown">Large Section 1
+                              <span class="caret"></span></button>
+                              <ul class="dropdown-menu">
+                                <li><a onclick="#">CDF</a></li>
+                                <li><a onclick="#">Scatterplot</a></li>
+                                <li><a onclick="#">Histogram</a></li>
+                                <li><a onclick="#">Average Points</a></li>
+                                <li><a onclick="#">Points</a></li>
+                                <li><a onclick="#">Parallel Coordinates</a></li>
+                              </ul>
+                            </div>
                         </div>
                         <div id="lrg-sec-1"></div>
                     </div>
@@ -167,19 +174,50 @@
                 <hr>
 
                 <div class="row">
+                    <div class="dropdown">
+                      <button class="btn btn-primary dropdown-toggle btn-xs" id="dropdown-lrg-2" type="button" data-toggle="dropdown">Large Section 2
+                      <span class="caret"></span></button>
+                      <ul class="dropdown-menu">
+                        <li><a onclick="#">CDF</a></li>
+                        <li><a onclick="#">Scatterplot</a></li>
+                        <li><a onclick="#">Histogram</a></li>
+                        <li><a onclick="#">Average Points</a></li>
+                        <li><a onclick="#">Points</a></li>
+                        <li><a onclick="#">Parallel Coordinates</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+                <div class="row">
                     <div class="col-sm-12 large-chart">
                         <div id="lrg-sec-2"></div>
                     </div>
                 </div>
 
-                <div class="row">
+                <!-- <div class="row">
                     <div class="parcoords stretch-chart">
                         <div id="str-sec"></div>
                     </div>
-                </div>
+                </div> -->
             </div>
 
             <div class="col-sm-2">
+
+              <div class="row">
+                  <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle btn-xs" id="dropdown-sm-1" type="button" data-toggle="dropdown">Small Section 1
+                    <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                      <li><a onclick="#">CDF</a></li>
+                      <li><a onclick="#">Scatterplot</a></li>
+                      <li><a onclick="#">Histogram</a></li>
+                      <li><a onclick="#">Average Points</a></li>
+                      <li><a onclick="#">Points</a></li>
+                      <li><a onclick="#">Parallel Coordinates</a></li>
+                    </ul>
+                  </div>
+              </div>
+
                 <div class="row">
                     <div class="col-sm-12 small-chart">
                         <div id="sm-sec-1"></div>
@@ -187,6 +225,21 @@
                 </div>
 
                 <hr>
+
+                <div class="row">
+                    <div class="dropdown">
+                      <button class="btn btn-primary dropdown-toggle btn-xs" id="dropdown-sm-2" type="button" data-toggle="dropdown">Small Section 2
+                      <span class="caret"></span></button>
+                      <ul class="dropdown-menu">
+                        <li><a onclick="#">CDF</a></li>
+                        <li><a onclick="#">Scatterplot</a></li>
+                        <li><a onclick="#">Histogram</a></li>
+                        <li><a onclick="#">Average Points</a></li>
+                        <li><a onclick="#">Points</a></li>
+                        <li><a onclick="#">Parallel Coordinates</a></li>
+                      </ul>
+                    </div>
+                </div>
 
                 <div class="row">
                     <div class="col-sm-12 small-chart">
@@ -197,12 +250,25 @@
                 <hr>
 
                 <div class="row">
+                    <div class="dropdown">
+                      <button class="btn btn-primary dropdown-toggle btn-xs" id="dropdown-sm-3" type="button" data-toggle="dropdown">Small Section 3
+                      <span class="caret"></span></button>
+                      <ul class="dropdown-menu">
+                        <li><a onclick="#">CDF</a></li>
+                        <li><a onclick="#">Scatterplot</a></li>
+                        <li><a onclick="#">Histogram</a></li>
+                        <li><a onclick="#">Average Points</a></li>
+                        <li><a onclick="#">Points</a></li>
+                        <li><a onclick="#">Parallel Coordinates</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+                <div class="row">
                     <div class="col-sm-12 small-chart">
                         <div id="sm-sec-3"></div>
                     </div>
                 </div>
-
-                <hr>
 
                 <!-- <div class="row">
                   <div class="parcoords col-sm-12 small-chart">
@@ -235,7 +301,21 @@
     // var PGUID_TO_NAME_MAP = {};
     var PGUID_TO_NAME_MAP = {};
 
-    var dispatch = d3.dispatch( "lasso_seasonal", "lasso_cdf" );
+    var dispatch = d3.dispatch( "lasso_seasonal", "lasso_cdf", "lasso", "cdf_click", "seasonal_click", "project_click");
+
+
+    // // Receive event in index and broadcast to the other charts
+    // dispatch.on('lasso', function(lassoed_items) {
+    //     dispatch.project_click()
+    // });
+
+    // dispatch.on('cdf_click', function(clicked_item) {
+
+    // });
+
+    // dispatch.on('seasonal_click', function(clicked_item) {
+
+    // });
 
     var yearFormat = d3.time.format( '%Y' );
 
@@ -244,6 +324,9 @@
     var data = [];
     var lassoed_items = [];
 
+    // Should be an array of pguids
+    var selected_pguids = new Array();
+
     //CONSTANTS
 
     // var scatter_margin = { top: 10, right: 30, bottom: 33, left: 45 };
@@ -251,7 +334,7 @@
     // var scatter_height = 400 - scatter_margin.top - scatter_margin.bottom;
     // var scatter_padding = 100;
 
-    var scatter_margin = { top: 40, right: 30, bottom: 33, left: 45 }
+    var scatter_margin = { top: 50, right: 30, bottom: 33, left: 45 }
             , width = parseInt( d3.select( '.large-chart' ).style( 'width' ), 10 )
             , scatter_width = width - scatter_margin.left - scatter_margin.right
             , height = parseInt( d3.select( '.large-chart' ).style( 'height' ), 10 )
@@ -261,9 +344,9 @@
     // var cdf_width = 900 - cdf_margin.right - cdf_margin.left;
     // var cdf_height = 400 - cdf_margin.top - cdf_margin.bottom;
 
-    var cdf_margin = { top: 40, right: 30, bottom: 33, left: 45 }
-            , cdf_width = width - cdf_margin.right - cdf_margin.left
-            , cdf_height = height - cdf_margin.top - cdf_margin.bottom;
+    // var cdf_margin = { top: 50, right: 30, bottom: 33, left: 45 }
+    //         , cdf_width = width - cdf_margin.right - cdf_margin.left
+    //         , cdf_height = height - cdf_margin.top - cdf_margin.bottom;
 
     // var swap_sound = new Audio('sounds/whip_crack.mp3');
 
@@ -273,9 +356,10 @@
     var tooltip_trans_in = 200;
     var tooltip_trans_out = 400;
 
-    var colorScale = //d3.scale.ordinal().domain( [ "QB", "RB", "WR", "TE" ] )
-        //.range( [ "red", "green", "blue", "gray" ] );
-            d3.scale.category10();
+    var colorScale = d3.scale.ordinal()
+        .domain( [ "qb", "rb", "wr", "te" ] )
+        .range( [ "blue", "orange", "green", "red" ] );
+            // d3.scale.category10();
 
     // Adds the svg canvas
     var svg_scatter = d3.select( "#lrg-sec-2" )
@@ -381,12 +465,21 @@
             return d.selected === true
         } ).data();
 
-        // console.log(lassoed_items);
+        if(lassoed_items.length > 0){
+            // For each of the lassoed items loop to create simple objects containing pguids
+            lassoed_items.forEach(function(l_item){
+                if(selected_pguids.indexOf(l_item.pguid) == -1){
+                    selected_pguids.push(l_item.pguid);
+                }
+            });
+        } else {
+            // If the scatterplot clicks away empty out the selected pguids
+            selected_pguids = new Array();
+        }
 
-        dispatch.lasso_cdf( lassoed_items );
-        dispatch.lasso_seasonal( lassoed_items );
+        // Notify anyone listening that the lassoed items have changed
+        dispatch.lasso();
         refreshPlayerDataTable( lassoed_items );
-
     };
 
     // Create the area where the lasso event can be triggered
@@ -421,6 +514,12 @@
     //Initial calls to load data and setup page.
     drawSelectionFilter();
 
+    // Listen for other ppl's updates
+    dispatch.on('project_click.scatter', function() {
+        // console.log("UPDATE CIRCLE DISPATCH GOING FORWARD");
+        updateSelectedScatterCircles();
+    });
+
     /**
      *
      */
@@ -434,7 +533,7 @@
         d3.select("#lrg-sec-2").selectAll(".dot").remove();
         var temp_svg = d3.select("#lrg-sec-2 svg");
         temp_svg.select("#scatter_x_axis").remove();
-        temp_svg.select("#scatter_y_axis").remove();        
+        temp_svg.select("#scatter_y_axis").remove();
 
         playerArray.forEach( function ( x )
         {
@@ -530,7 +629,7 @@
                 } )
                 .attr( "id", function ( d, i )
                 {
-                    return "dot_" + i;
+                    return "dot_" + d.pguid;
                 } ) // added
                 .attr( "class", "dot" )
                 .style( "fill", function ( d )
@@ -608,15 +707,18 @@
                 .attr( "id", "scatter_y_axis")
                 .call( yAxis )
                 .append( "text" )
-                .attr( "text-anchor", "middle" )
-                .attr( "transform", "translate(" + 10 + "," + (scatter_height / 2) + ")rotate(-90)" )
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - scatter_margin.left)
+                .attr("x",0 - (scatter_height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
                 .text( "Fantasy Points" );
 
         svg_scatter.append( "text" )
                 .attr( "id", "title" )
-                .attr( "x", 150 )
-                .attr( "y", 0 - (scatter_margin.top / 3) )
-                .attr( "text-anchor", "middle" )
+                .attr("x", (scatter_width / 2))
+                .attr("y", 0 - (scatter_margin.top / 2))
+                .attr("text-anchor", "middle")
                 .style( "font-size", "16px" )
                 .style( "text-decoration", "underline" )
                 .text( "Fantasy Points / Win Percentage" );
@@ -625,7 +727,6 @@
         svg_scatter.call( lasso );
 
         lasso.items( d3.selectAll( ".dot" ) );
-
     }
 
     function createTable()
@@ -638,8 +739,9 @@
                 bLengthChange: false,
                 bFilter: false,
                 bPaginate: false,
-                scrollY: '50vh',
-                scrollCollapse: true,
+                scrollY: '40vh',
+                bAutoWidth: true,
+                bScrollCollapse: true,
                 data: filteredPlayers(),
                 columns: [
                     { data: "player_name" },
@@ -651,6 +753,37 @@
 
         } );
 
+    }
+
+    function updateSelectedScatterCircles(){
+        // Clear them all first to make them small
+        d3.selectAll( ".dot" )
+        .attr("selected", false)
+        .transition().duration( dot_trans )
+        .attr( "stroke", "black" )
+        .attr( "stroke-width", 1 )
+        .attr( "r", function ( d ) {
+            if( d.selected == false ) {
+                return dot_init_size;
+            } else {
+                return dot_hover_size;
+            }
+        })
+        .attr( "fill-opacity", function ( d ) {
+            return .7;
+        });
+
+        if(selected_pguids.length > 0){
+            selected_pguids.forEach(function(d){
+                d3.select("#dot_" + d)
+                .attr("selected", true)
+                .transition().duration( dot_trans )
+                .attr( "stroke", "black" )
+                .attr( "stroke-width", 2 )
+                .attr( "r", dot_hover_size )
+                .attr( "fill-opacity", 1 );
+            });
+        }
     }
 
     function updateDetails( player )

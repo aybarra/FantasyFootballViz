@@ -19,7 +19,7 @@ body {
 
 .small-chart{
   width: 550px;
-  height: 250px;
+  height: 240px;
 }
 
 .stretch-chart{
@@ -123,8 +123,12 @@ div.tooltip p {
   fill:#EC888C;
 }
 
-.dataTables tbody tr {
-    height: 100px;
+.dataTables tbody{
+    height: 80px;
+}
+
+.dataTables tr{
+    height: 20px;
 }
 
 #events {
