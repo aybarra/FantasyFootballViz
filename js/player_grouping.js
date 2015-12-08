@@ -85,19 +85,19 @@ function deletePlayerObject( playerGuidToDelete )
                 //TODO remove below function call.
                 //Remove player from careers, season, season_subset, redraw.
                 //Reload all of the tables because a filter item was added
-                //reloadAllChartData();
+                reloadAllChartData();
 
-                season_data = season_data.filter( function ( item )
-                {
-                    return item[ 'pguid' ] === playerGuidToDelete;
-                } );
-
-                season_subset_data = season_subset_data.filter( function ( item )
-                {
-                    return item[ 'season_guid' ].indexOf( playerGuidToDelete ) > -1;
-                } );
-                showLoading();
-                redrawAllCharts();
+                //season_data = season_data.filter( function ( item )
+                //{
+                //    return item[ 'pguid' ] === playerGuidToDelete;
+                //} );
+                //
+                //season_subset_data = season_subset_data.filter( function ( item )
+                //{
+                //    return item[ 'season_guid' ].indexOf( playerGuidToDelete ) > -1;
+                //} );
+                //showLoading();
+                //redrawAllCharts();
             }
 
             //return false to break out of the each loop
