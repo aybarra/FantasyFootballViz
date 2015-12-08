@@ -134,6 +134,7 @@
                     </div>
                 </div>
                 <hr>
+                
                 <div class="row">
                     <h4>Player Data Table</h4>
                     <table class="table table-row-border table-hover" id="data_table" cellspacing="0" cellpadding="0"
@@ -148,6 +149,8 @@
                         </thead>
                     </table>
                 </div>
+                
+
             </div>
 
             <div class="col-sm-6">
@@ -746,7 +749,7 @@
         {
 
             data_table = $( "#data_table" ).DataTable( {
-                select: true,
+                select: false,
                 bLengthChange: false,
                 bFilter: false,
                 bPaginate: false,
