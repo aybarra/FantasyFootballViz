@@ -847,6 +847,36 @@ function generateCDF_D3Chart(data){
         .style("text-anchor", "end")
         .text("Cumulative Fantasy Points");
 
+//  *****************************************************
+//  CIRCLES FOR DETAILS ON DEMAND MOUSE HOVER
+// ******************************************************
+    var focus = cdf_svg.append("g")
+                   .attr("class", "focus")
+                   .style("display", "none");
+
+    focus.append("circle")
+         .attr("r", 4.5);
+
+    focus.append("text")
+         .attr("id","focusname")
+         .attr("x", 9)
+         .attr("dy", "-1.5em")
+         .style("font-size", "10px")
+
+    focus.append("text")
+         .attr("id","focusyear")
+         .attr("x", 9)
+         .attr("dy", "-.5em")
+         .style("font-size", "10px")
+
+    focus.append("text")
+         .attr("id","focuspoints")
+         .attr("x", 9)
+         .attr("dy", ".5em")
+         .style("font-size", "10px")
+
+
+
     var player = cdf_svg.selectAll(".player")
         .data(cdf_data_conv)
       .enter().append("g")
@@ -869,22 +899,147 @@ function generateCDF_D3Chart(data){
         })
         .attr("stroke-linecap","round")
         .style("stroke", function(d) { return d3.hsl('#dddddd') })
+           .on("click", function() {
+                var splice_index = selected_pguids.indexOf(d3.select(this).key);
+                if(splice_index == -1){
+                  // Add it because you clicked it
+                  console.log("Added from cdf");
+                  selected_pguids.push(d3.select(this).key);
+                } else {
+                  // Remove it because you double clicked it
+                  // console.log("Removing pguid: " + d.key);
+                  // console.log(selected_pguids);
+                  // console.log("Removing index: " + splice_index);
+                  // console.log(splice_index);
+                  console.log("Removed from cdf");
+                  selected_pguids.splice(splice_index, 1);
+                  // console.log(selected_pguids);
+                }
+
+                // Notifies everyone else to highlight/unhighlight
+                dispatch.project_click();
+
+                color_attr = d3.select(this).style("stroke")
+                rgb = color_attr.split("(")[1].split(")")[0].split(",")
+                colorcheck = CheckColor(color_attr)
+//                             console.log(colorcheck)
+                var sel = d3.select(this);
+                if (colorcheck == 'red') {
+                        sel.style("stroke", "firebrick")
+                }
+                if (colorcheck == 'blue') {
+                        sel.style("stroke", "cornflowerblue")
+                }
+                if (colorcheck == 'orange') {
+                        sel.style("stroke", "sandybrown")
+                }
+                if (colorcheck == 'green') {
+                        sel.style("stroke", "limegreen")
+                }
+                if (colorcheck == 'cornflowerblue' ||
+                    colorcheck == 'sandybrown' ||
+                    colorcheck == 'limegreen' ||
+                    colorcheck == 'firebrick') {
+                        sel.style("stroke", "whitesmoke")
+                }
+           })        
         .on('mouseover', function(d) {
             var line = d3.select(this);
-            line.style('stroke', colorScale(PGUID_TO_NAME_MAP[d.key][1]))
-            // line.style('stroke', d3.hsl('#33b9ff'));
-            this.parentNode.parentNode.appendChild(this.parentNode);
-            d3.select(this.nextSibling)
-              .attr("opacity", "1")
+//             line.style('stroke', colorScale(PGUID_TO_NAME_MAP[d.key][1]))
+//             // line.style('stroke', d3.hsl('#33b9ff'));
+//             this.parentNode.parentNode.appendChild(this.parentNode);
+//             d3.select(this.nextSibling)
+//               .attr("opacity", "1")
+//         })
+            focus.style("display", null);
+            color_attr = d3.select(this).style("stroke")
+            color = colorScale(PGUID_TO_NAME_MAP[d.key][1])
+//                             console.log(color)
+            var sel = d3.select(this);
+            sel.moveToFront();
+            sel.transition().duration(100)
+                .ease("bounce")
+                .style("stroke-width", "9px")
+            colorcheck = CheckColor(color_attr)
+            if (!(colorcheck == 'cornflowerblue' ||
+                colorcheck == 'sandybrown' ||
+                colorcheck == 'limegreen' ||
+                colorcheck == 'firebrick')) {
+                    sel.style('stroke', color)                                
+            }
         })
         .on('mouseout', function(d) {
-            // console.log(d);
-            var line = d3.select(this);
-            line.style('stroke', d3.hsl('#dddddd'));
-            // line.moveToBack();
-            d3.select(this.nextSibling)
-              .attr("opacity", "0")
-        });
+//             console.log(d);
+//             var line = d3.select(this);
+//             line.style('stroke', d3.hsl('#dddddd'));
+//             line.moveToBack();
+//             d3.select(this.nextSibling)
+//               .attr("opacity", "0")
+//         });
+        focus.style("display", "none");
+//                             iline.style("stroke","whitesmoke");
+        var sel = d3.select(this);
+        sel.transition().duration(100)
+            .ease("bounce").style("stroke-width", "2px")
+        color_attr = d3.select(this).style("stroke")
+        rgb = color_attr.split("(")[1].split(")")[0].split(",")
+        colorcheck = CheckColor(color_attr)
+        if (!(colorcheck == 'cornflowerblue' ||
+            colorcheck == 'sandybrown' ||
+            colorcheck == 'limegreen' ||
+            colorcheck == 'firebrick')) {
+                sel.style('stroke', "whitesmoke")
+                sel.moveToBack()
+        }
+    })
+//       .on("mousemove", function(){
+//             if (absyear == true) {
+//                 var rawX = xTime.invert(d3.mouse(this)[0])
+//                 var year = rawX.getFullYear()
+//                 relyear = year - d.values[0].real_year.getFullYear()
+//                 var pts = d.values[relyear].season_ff_pts
+//                 var yr_date = parseDate(year.toString())
+//             } else {
+//                 var rawX = x.invert(d3.mouse(this)[0])
+//                 var year = Math.round(rawX)
+//                 var pts = d.values[year-1].season_ff_pts
+//             }
+//             var totpts = 0
+//             var totyears = d.values.length
+//             var bestyr = -10000
+//             var worstyr = 10000
+//             for (var i = 0; i < totyears; i++) {
+//                 totpts += d.values[i].season_ff_pts
+//                 if (d.values[i].season_ff_pts > bestyr) {
+//                     bestyr = d.values[i].season_ff_pts
+//                 }
+//                 if (d.values[i].season_ff_pts < worstyr) {
+//                     worstyr = d.values[i].season_ff_pts
+//                 }
+//             }
+//             var avg = Math.round(totpts/totyears)
+//             if (absyear == true) {
+//                 focus.attr("transform", "translate(" + xTime(yr_date) + "," + y(pts) + ")")
+//             } else {
+//                 focus.attr("transform", "translate(" + x(year) + "," + y(pts) + ")")
+//             }
+//             fullname = PGUID_TO_NAME_MAP[d.key][0]
+//             focus.select("#focusname").text(fullname);
+//             focus.select("#focusyear").text("Yr: "+year);
+//             focus.select("#focuspoints").text("Pts:"+pts);
+//             focus.moveToFront();
+//             nameline.select("text").text("Name: " + fullname);
+//             yearline.select("text").text("Years: " + totyears + "......  Total Points: " + totpts);
+//     //                             pointsline.select("text").text("Total Points: " + totpts);
+//             averageline.select("text").text("Average/Season: " + avg + " (Best: "+bestyr+", Worst: " + worstyr+")");
+//             d3.select("#nameline").moveToFront()
+//             d3.select("#yearline").moveToFront()
+//             d3.select("#pointsline").moveToFront()
+//             d3.select("#averageline").moveToFront()
+//         });
+
+//     });
+
 
         // Set them to not show at first
         d3.selectAll(".cdf_line").style("opacity","0");
@@ -1024,7 +1179,7 @@ function animateLines()
         d3.selectAll( "#path_" + key_updated ).attr( "stroke-dasharray", totalLength + " " + totalLength )
             .attr( "stroke-dashoffset", totalLength )
             .transition()
-            .duration( 2000 )
+            .duration( 1000 )
             .delay( 10 * i )
             .ease( "quad" ) //Try linear, quad, bounce... see other examples here - http://bl.ocks.org/hunzy/9929724
             .attr( "stroke-dashoffset", 0 )
@@ -1110,4 +1265,26 @@ function convertData(cdf_data){
   // Otherwise the cdf_data's empty
   // console.log(plot_cdf_data);
   return plot_cdf_data;
+}
+
+function CheckColor(color_attr){
+    blue = d3.rgb("#1f77b4")
+    orange = d3.rgb("#ff7f0e")
+    green = d3.rgb("#2ca02c")
+    ltblue = d3.rgb("#6495ed")
+    brown = d3.rgb("#f4a460")
+    lime = d3.rgb("#32cd32")
+    red = d3.rgb("#d62728")
+    fire = d3.rgb("#b22222")
+    rgb = color_attr.split("(")[1].split(")")[0].split(",")
+    
+    if (+rgb[0]==red.r && +rgb[1]==red.g && rgb[2]==red.b) { return "red"}
+    if (+rgb[0]==blue.r && +rgb[1]==blue.g && rgb[2]==blue.b) { return "blue" }
+    if (+rgb[0]==orange.r && +rgb[1]==orange.g && rgb[2]==orange.b) { return "orange" }
+    if (+rgb[0]==green.r && +rgb[1]==green.g && rgb[2]==green.b) { return "green" }
+    if (+rgb[0]==ltblue.r && +rgb[1]==ltblue.g && rgb[2]==ltblue.b) { return "cornflowerblue" }
+    if (+rgb[0]==brown.r && +rgb[1]==brown.g && rgb[2]==brown.b) { return "sandybrown" }
+    if (+rgb[0]==lime.r && +rgb[1]==lime.g && rgb[2]==lime.b) { return "limegreen" }
+    if (+rgb[0]==fire.r && +rgb[1]==fire.g && rgb[2]==fire.b) { return "firebrick" }
+    return false
 }
