@@ -333,9 +333,9 @@
     var tooltip_trans_out = 400;
 
     var colorScale = d3.scale.ordinal()
-            .domain( [ "qb", "rb", "wr", "te" ] )
-            .range( [ "blue", "orange", "green", "red" ] );
-    // d3.scale.category10();
+        .domain( [ "qb", "rb", "wr", "te" ] )
+        .range( [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"] );
+            // d3.scale.category10();
 
     // Adds the svg canvas
     var svg_scatter = d3.select( "#lrg-sec-2" )
