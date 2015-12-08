@@ -306,20 +306,6 @@
 
     var dispatch = d3.dispatch( "lasso_seasonal", "lasso_cdf", "lasso", "cdf_click", "seasonal_click", "project_click");
 
-
-    // // Receive event in index and broadcast to the other charts
-    // dispatch.on('lasso', function(lassoed_items) {
-    //     dispatch.project_click()
-    // });
-
-    // dispatch.on('cdf_click', function(clicked_item) {
-
-    // });
-
-    // dispatch.on('seasonal_click', function(clicked_item) {
-
-    // });
-
     var yearFormat = d3.time.format( '%Y' );
 
     var data_table;
@@ -331,27 +317,15 @@
     var selected_pguids = new Array();
 
     //CONSTANTS
-
-    // var scatter_margin = { top: 10, right: 30, bottom: 33, left: 45 };
-    // var scatter_width = 900 - scatter_margin.right - scatter_margin.left;
-    // var scatter_height = 400 - scatter_margin.top - scatter_margin.bottom;
-    // var scatter_padding = 100;
-
     var scatter_margin = { top: 40, right: 30, bottom: 33, left: 45 }
             , width = parseInt( d3.select( '.large-chart' ).style( 'width' ), 10 )
             , scatter_width = width - scatter_margin.left - scatter_margin.right
             , height = parseInt( d3.select( '.large-chart' ).style( 'height' ), 10 )
             , scatter_height = height - scatter_margin.top - scatter_margin.bottom;
 
-    // var cdf_margin = { top: 10, right: 30, bottom: 33, left: 45 };
-    // var cdf_width = 900 - cdf_margin.right - cdf_margin.left;
-    // var cdf_height = 400 - cdf_margin.top - cdf_margin.bottom;
-
     var cdf_margin = { top: 40, right: 30, bottom: 33, left: 45 }
             , cdf_width = width - cdf_margin.right - cdf_margin.left
             , cdf_height = height - cdf_margin.top - cdf_margin.bottom;
-
-    // var swap_sound = new Audio('sounds/whip_crack.mp3');
 
     var dot_init_size = 3;
     var dot_hover_size = 7;
@@ -516,11 +490,32 @@
     //Initial calls to load data and setup page.
     drawSelectionFilter();
 
-    // Listen for other ppl's updates
+    // Listen for other ppl's updates, and update scatterplot circles
     dispatch.on('project_click.scatter', function() {
-        // console.log("UPDATE CIRCLE DISPATCH GOING FORWARD");
         updateSelectedScatterCircles();
     });
+
+
+    function addSelected( pguidArray ) {
+        pguidArray.forEach(function(pguid){
+            if(selected_pguids.indexOf(pguid) == -1){
+                selected_pguids.push(pguid);
+                console.log("ADDED " + pguid);
+            }
+        });
+    }
+
+    function removeSelected( pguidArray ) {
+        pguidArray.forEach(function(pguid){
+            var splice_index = selected_pguids.indexOf(pguid);
+            if(splice_index != -1){
+                selected_pguids.splice(splice_index, 1);
+                console.log("REMOVED " + pguid);
+            } else {
+                console.log("SOMETHING WENT WRONG REMOVING " + pguid);
+            }
+        });
+    }
 
     /**
      *
@@ -754,13 +749,16 @@
     }
 
     function updateSelectedScatterCircles(){
+
         // Clear them all first to make them small
+        // 
+        // console.log(lasso.items());
         d3.selectAll( ".dot" )
-        .attr("selected", false)
         .transition().duration( dot_trans )
         .attr( "stroke", "black" )
         .attr( "stroke-width", 1 )
         .attr( "r", function ( d ) {
+            d.selected = false;
             if( d.selected == false ) {
                 return dot_init_size;
             } else {
@@ -771,14 +769,36 @@
             return .7;
         });
 
+
+        console.log(lasso.items());
+
+        // .classed( { "selected": false } )
+        // .transition().duration( dot_trans )
+        // .attr( "stroke", "black" )
+        // .attr( "stroke-width", 1 )
+        // .attr( "r", function ( d ) {
+        //     if( d.selected == false ) {
+        //         return dot_init_size;
+        //     } else {
+        //         return dot_hover_size;
+        //     }
+        // })
+        // .attr( "fill-opacity", function ( d ) {
+        //     return .7;
+        // });
+
         if(selected_pguids.length > 0){
             selected_pguids.forEach(function(d){
                 d3.select("#dot_" + d)
-                .attr("selected", true)
+                // .attr("selected", true)
+                // .classed( { "selected": true } )
                 .transition().duration( dot_trans )
                 .attr( "stroke", "black" )
                 .attr( "stroke-width", 2 )
-                .attr( "r", dot_hover_size )
+                .attr( "r", function(d_inner){
+                    d_inner.selected = true;
+                    return dot_hover_size;
+                })
                 .attr( "fill-opacity", 1 );
             });
         } 

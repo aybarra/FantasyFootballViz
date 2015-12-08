@@ -360,6 +360,19 @@ function generateCDF_D3Chart(data){
                        .attr("fill","none")
                        .style("stroke", "whitesmoke")
                        .on("click", function() {
+                            var splice_index = selected_pguids.indexOf(d.key);
+                            if(splice_index == -1){
+                              // Add it because you clicked it
+                              console.log("Added from cdf");
+                              selected_pguids.push(d.key);
+                            } else {
+                              // Remove it because you double clicked it
+                              selected_pguids.splice(splice_index, 1);
+                            }
+
+                            // Notifies everyone else to highlight/unhighlight
+                            dispatch.project_click();
+
                             color_attr = d3.select(this).style("stroke")
                             rgb = color_attr.split("(")[1].split(")")[0].split(",")
                             colorcheck = CheckColor(color_attr)
@@ -450,6 +463,7 @@ function generateCDF_D3Chart(data){
                         });
 
     });
+
     dispatch.on("lasso.cdf", function() {
       if(selected_pguids.length > 0){
         selected_pguids.forEach(function (d){
@@ -460,7 +474,21 @@ function generateCDF_D3Chart(data){
       } else {
         // var paths = d3.selectAll("*[id^='path']");
         var paths = d3.selectAll(".cdf_line");
-        paths.style('stroke-width', '1.75px');
+        paths.style('stroke', "whitesmoke");
+
+      }
+    });
+
+    dispatch.on("project_click.cdf", function(){
+      if(selected_pguids.length > 0){
+        selected_pguids.forEach(function (d){
+          // TODO Do something about the name's T.J, etc...
+          d3.select('#path_' + d)
+            .style("stroke", colorScale(PGUID_TO_NAME_MAP[d][1]))
+        });
+      } else {
+        var paths = d3.selectAll(".cdf_line");
+        paths.style('stroke', "whitesmoke");
       }
     });
 

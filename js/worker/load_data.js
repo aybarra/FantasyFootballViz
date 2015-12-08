@@ -110,6 +110,9 @@ function finalize_update()
     {
         updateCDFData( season_subset_data );
         loadScatterPlot( filteredPlayers() );
+        updateSeasonalData( season_subset_data );
+        // updateHistogramData( filteredPlayers(), season_subset_data );
+        // updateHistoryLineData( season_subset_data );
     } );
 }
 
