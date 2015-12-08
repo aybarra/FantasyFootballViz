@@ -43,6 +43,9 @@ function getSeasonAndSeasonSubsetWebRequests()
     var ajaxRequests = [], payloadSize = 100;
     var players = filteredPlayersPguids();
 
+    season_subset_data = [];
+    season_data = [];
+
     //Should always have something.
     while ( players.length > 0 )
     {
@@ -56,7 +59,7 @@ function getSeasonAndSeasonSubsetWebRequests()
                 success: function ( data )
                 {
                     //Get the result array
-                    season_subset_data = data[ 'results' ];
+                    $.merge( season_subset_data, data[ 'results' ] );
                 }
             }
         ) );
@@ -75,11 +78,50 @@ function getSeasonAndSeasonSubsetWebRequests()
                 success: function ( data )
                 {
                     //Get the result array
-                    season_data = data[ 'results' ];
+                    $.merge( season_data, data[ 'results' ] );
                 }
             }
         ) );
     }
+
+    return ajaxRequests;
+}
+
+/**
+ * Call to return an array of ajax requests for seasons and season subsets for a SINGLE PLAYER
+ * @returns {Array}
+ */
+function getSingularPlayerSeasonAndSeasonSubsetWebRequests( pguid )
+{
+    var ajaxRequests = [];
+    ajaxRequests.push( $.ajax( {
+            url: 'http://localhost:8000/seasons_subset/?players=' + pguid,
+            error: function ()
+            {
+                alert( "ERROR MAKING WEB REQUEST FOR PLAYER KEYS" )
+            }
+            ,
+            success: function ( data )
+            {
+                //Get the result array
+                season_subset_data.push( data[ 'results' ][ 0 ] );
+            }
+        }
+    ) );
+
+    ajaxRequests.push( $.ajax( {
+            url: 'http://localhost:8000/seasons/?players=' + pguid,
+            error: function ()
+            {
+                alert( "ERROR MAKING WEB REQUEST FOR PLAYER KEYS" )
+            },
+            success: function ( data )
+            {
+                //Get the result array
+                season_data.push( data[ 'results' ][ 0 ] );
+            }
+        }
+    ) );
 
     return ajaxRequests;
 }
@@ -98,6 +140,7 @@ function finalize_load()
 //     drawPCChart( filteredPlayers(), season_data );
         generateLineChart( season_subset_data );
         generateHistoryLine( season_subset_data );
+        hideLoading();
     } );
 }
 
@@ -108,9 +151,18 @@ function finalize_update()
 {
     $.when.apply( null, getSeasonAndSeasonSubsetWebRequests() ).done( function ()
     {
-        updateCDFData( season_subset_data );
-        loadScatterPlot( filteredPlayers() );
+        //updateCDFData( season_subset_data );
+        //loadScatterPlot( filteredPlayers() );
+        redrawAllCharts();
     } );
+}
+
+function redrawAllCharts()
+{
+    updateCDFData( season_subset_data );
+    loadScatterPlot( filteredPlayers() );
+    updateSeasonalData( season_subset_data );
+    hideLoading();
 }
 
 /**
@@ -118,7 +170,18 @@ function finalize_update()
  */
 function loadPageWithAllChartData()
 {
+    showLoading();
     getCareerDataWebRequest().then( finalize_load );
+}
+
+function loadPlayerDataAndRefresh( pguid )
+{
+    showLoading();
+    $.when.apply( null, getSingularPlayerSeasonAndSeasonSubsetWebRequests( pguid ) ).done( function ()
+    {
+        redrawAllCharts();
+    } );
+
 }
 
 /**
@@ -126,5 +189,6 @@ function loadPageWithAllChartData()
  */
 function reloadAllChartData()
 {
+    showLoading();
     getCareerDataWebRequest().then( finalize_update );
 }

@@ -145,6 +145,10 @@ function generateCDF_D3Chart(data){
             }
             avgpoints[numyears-1] += d.season_ff_pts
             avgcnt[numyears-1] += 1
+            if(  yearlist == null || yearlist === undefined || (numyears - 1 >= yearlist.length ) )
+            {
+                console.log( d.guid );
+            }
             yearlist[numyears-1].push(d.season_ff_pts)
         }
     }); //end cdf_data loading
@@ -366,6 +370,19 @@ function generateCDF_D3Chart(data){
                        .attr("fill","none")
                        .style("stroke", "whitesmoke")
                        .on("click", function() {
+                            var splice_index = selected_pguids.indexOf(d.key);
+                            if(splice_index == -1){
+                              // Add it because you clicked it
+                              console.log("Added from cdf");
+                              selected_pguids.push(d.key);
+                            } else {
+                              // Remove it because you double clicked it
+                              selected_pguids.splice(splice_index, 1);
+                            }
+
+                            // Notifies everyone else to highlight/unhighlight
+                            dispatch.project_click();
+
                             color_attr = d3.select(this).style("stroke")
                             rgb = color_attr.split("(")[1].split(")")[0].split(",")
                             colorcheck = CDFcheckColor(color_attr)
@@ -393,8 +410,8 @@ function generateCDF_D3Chart(data){
                        .on("mouseover", function() {
                             focus.style("display", null);
                             color_attr = d3.select(this).style("stroke")
-                            color = colorScale(PGUID_TO_NAME_MAP[d.key][1])
-//                             console.log(color_attr)
+                            color = colorScale( getPlayerInformationFromPguidMap(d.key)[1] )
+//                             console.log(color)
                             var sel = d3.select(this);
                             sel.moveToFront();
                             sel.transition().duration(100)
@@ -446,7 +463,7 @@ function generateCDF_D3Chart(data){
                             } else {
                                 focus.attr("transform", "translate(" + x(year) + "," + y(pts) + ")")
                             }
-                            fullname = PGUID_TO_NAME_MAP[d.key][0]
+                            fullname = getPlayerInformationFromPguidMap(d.key)[0];
                             focus.select("#cdffocusname").text(fullname);
                             focus.select("#cdffocusyear").text("Yr: "+year);
                             focus.select("#cdffocuspoints").text("Pts:"+pts);
@@ -461,6 +478,7 @@ function generateCDF_D3Chart(data){
                         });
 
     });
+
     dispatch.on("lasso.cdf", function() {
       if(selected_pguids.length > 0){
         selected_pguids.forEach(function (d){
@@ -471,7 +489,21 @@ function generateCDF_D3Chart(data){
       } else {
         // var paths = d3.selectAll("*[id^='path']");
         var paths = d3.selectAll(".cdf_line");
-        paths.style('stroke-width', '1.75px');
+        paths.style('stroke', "whitesmoke");
+
+      }
+    });
+
+    dispatch.on("project_click.cdf", function(){
+      if(selected_pguids.length > 0){
+        selected_pguids.forEach(function (d){
+          // TODO Do something about the name's T.J, etc...
+          d3.select('#path_' + d)
+            .style("stroke", colorScale(PGUID_TO_NAME_MAP[d][1]))
+        });
+      } else {
+        var paths = d3.selectAll(".cdf_line");
+        paths.style('stroke', "whitesmoke");
       }
     });
 

@@ -54,7 +54,8 @@ $( document ).ready( function ()
                 addPlayerToPguidMap( data.data );
 
                 //Reload all of the tables because a filter item was added
-                reloadAllChartData();
+                //reloadAllChartData();
+                loadPlayerDataAndRefresh( data.data );
             }
             else
             {

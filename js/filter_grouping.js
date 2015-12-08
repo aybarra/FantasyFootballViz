@@ -2,7 +2,8 @@ var yearsSelectionText = '';
 var pointsSelectionText = '';
 var positionsSelectionText = '';
 var statusSelectionText = '';
-var FILTER_CHARTS_GROUP = "date_filter_group";
+var DATE_FILTER_CHARTS_GROUP = "date_filter_group";
+var POINTS_FILTER_CHARTS_GROUP = "points_filter_group";
 
 //Selected Values
 var minDate = null;
@@ -37,6 +38,7 @@ function drawSelectionFilter()
         onPlayerStatusToggled();
     } );
 
+    //Get a reference to the menu trigger
     var menuTrigger = $( "#menu-trigger" );
 
     //Setup apply filter onclick button
@@ -76,7 +78,7 @@ function drawSelectionFilter()
                 //Loop through the array and get all of the player pks
                 $.each( data, function ( index, player )
                 {
-                    //
+                    //Add each of the new players to the pguid map for caching reference.
                     addPlayerToPguidMap( player );
 
                     filterObject.players.push( player );
@@ -247,7 +249,7 @@ function onPositionToggled()
  */
 function onPlayerStatusToggled()
 {
-     statusSelectionText = '<b>Statuses:</b> ';
+    statusSelectionText = '<b>Statuses:</b> ';
 
     //Clear out the statuses array
     statuses = [];
@@ -290,8 +292,12 @@ function drawFilterStatus()
 function clearVariables()
 {
     //Clear out charts.
-    dc.filterAll( "date_filter_group" );
-    dc.redrawAll( "date_filter_group" );
+    dc.filterAll( DATE_FILTER_CHARTS_GROUP );
+    dc.redrawAll( DATE_FILTER_CHARTS_GROUP );
+
+    dc.filterAll( POINTS_FILTER_CHARTS_GROUP );
+    dc.redrawAll( POINTS_FILTER_CHARTS_GROUP );
+
     $( "#filter_position" ).find( ":checkbox" ).attr( "checked", false );
     $( "#filter_active_inactive" ).find( ":checkbox" ).attr( "checked", false );
 
@@ -320,70 +326,58 @@ function clearVariables()
 function drawFilterYearsChart()
 {
     //Create the Year Filter Graph with Average Fantasy point values as Y values.
-    dateSelectionChart = dc.barChart( "#filter_years", "date_filter_group" );
-    $.ajax( {
-        url: 'http://localhost:8000/season-ffpt-averages/',
-        type: 'GET',
-        data: {
-            format: 'json'
-        },
-        error: function ()
+    dateSelectionChart = dc.barChart( "#filter_years", DATE_FILTER_CHARTS_GROUP );
+    d3.csv( "data/year_data.csv", function ( error, data )
+    {
+        //Format the Year AND convert the fantasy points values to numbers.
+        data.forEach( function ( x )
         {
-            console.log( "Error populating Filter Years selection table." )
-        },
-        success: function ( data )
+            x.year = yearFormat.parse( x.year + "" );
+            x.ff_pt_average = +x.ff_pt_average;
+        } );
+
+        //Create a multi-dimensional dataset for crossfilter use
+        var groupingCrossFilter = crossfilter( data );
+
+        //Get the min and max year for use as x-axis
+        var maxYear = d3.max( data, function ( d )
         {
-            //Format the Year AND convert the fantasy points values to numbers.
-            data = data[ 'results' ];
-            data.forEach( function ( x )
-            {
-                x.year = yearFormat.parse( x.year + "" );
-                x.ff_pt_average = +x.ff_pt_average;
-            } );
+            return d.year;
+        } );
+        var minYear = d3.min( data, function ( d )
+        {
+            return d.year;
+        } );
 
-            //Create a multi-dimensional dataset for crossfilter use
-            var groupingCrossFilter = crossfilter( data );
+        //Create a dimension (Y) for points
+        var pointsDimension = groupingCrossFilter.dimension( function ( d )
+        {
+            return d.year;
+        } );
 
-            //Get the min and max year for use as x-axis
-            var maxYear = d3.max( data, function ( d )
-            {
-                return d.year;
-            } );
-            var minYear = d3.min( data, function ( d )
-            {
-                return d.year;
-            } );
+        //Create a grouping (X) for points
+        var pointsGroup = pointsDimension.group().reduceSum( function ( d )
+        {
+            return +d.ff_pt_average;
+        } );
 
-            //Create a dimension (Y) for points
-            var pointsDimension = groupingCrossFilter.dimension( function ( d )
-            {
-                return d.year;
-            } );
+        //Add a callback for when the chart selection is changed
+        dateSelectionChart.on( "filtered", onDateChartFiltered );
 
-            //Create a grouping (X) for points
-            var pointsGroup = pointsDimension.group().reduceSum( function ( d )
-            {
-                return +d.ff_pt_average;
-            } );
+        //Generate the Chart
+        dateSelectionChart.width( 500 )
+            .height( 40 )
+            .margins( { top: 0, right: 50, bottom: 20, left: 40 } )
+            .dimension( pointsDimension )
+            .group( pointsGroup )
+            .centerBar( true )
+            .x( d3.time.scale().domain( [ minYear, maxYear ] ) )
+            .round( d3.time.year.round )
+            .xUnits( d3.time.year )/*to get thicker lines function(){return 10;} but it throws off handles..*/
+            .yAxis().ticks( 0 );
 
-            //Add a callback for when the chart selection is changed
-            dateSelectionChart.on( "filtered", onDateChartFiltered );
-
-            //Generate the Chart
-            dateSelectionChart.width( 500 )
-                .height( 40 )
-                .margins( { top: 0, right: 50, bottom: 20, left: 40 } )
-                .dimension( pointsDimension )
-                .group( pointsGroup )
-                .centerBar( true )
-                .x( d3.time.scale().domain( [ minYear, maxYear ] ) )
-                .round( d3.time.year.round )
-                .xUnits( d3.time.year )/*to get thicker lines function(){return 10;} but it throws off handles..*/
-                .yAxis().ticks( 0 );
-
-            //Only render charts in the current group.
-            dc.renderAll( FILTER_CHARTS_GROUP );
-        }
+        //Only render charts in the current group.
+        dc.renderAll( DATE_FILTER_CHARTS_GROUP );
     } );
 }
 
@@ -393,7 +387,7 @@ function drawFilterYearsChart()
 function drawFilterPointsChart()
 {
     //Create the Fantasy Point Range Chart with Y being # of players with that career fantasy points
-    fantasyPointSelectionChart = dc.barChart( "#filter_dates", "date_filter_group" );
+    fantasyPointSelectionChart = dc.barChart( "#filter_dates", POINTS_FILTER_CHARTS_GROUP );
     d3.csv( "data/fantasy_points_test_data2.csv", function ( error, data )
     {
         //Format the data to numbers
@@ -442,7 +436,7 @@ function drawFilterPointsChart()
             .yAxis().ticks( 0 );
 
         //Only render charts in the current group.
-        dc.renderAll( FILTER_CHARTS_GROUP );
+        dc.renderAll( POINTS_FILTER_CHARTS_GROUP );
     } );
 }
 
@@ -466,7 +460,7 @@ function drawCurrentFilterTable()
     {
         //Only allow delete of filter object if we have more than the minimum count. We dont want them to have no filters.
         //If you change this logic, change it in deleteFilterObject as well.
-        if( filterObjects.length > minFilterObjectCount)
+        if( filterObjects.length > minFilterObjectCount )
         {
             //Remove from the Table
             $( this ).parent().parent().remove();
@@ -481,7 +475,7 @@ function drawCurrentFilterTable()
 function deleteFilterObject( index )
 {
     //Only allow delete of filter object if we have more than the minimum count. We dont want them to have no filters.
-    if( filterObjects.length > minFilterObjectCount)
+    if( filterObjects.length > minFilterObjectCount )
     {
         //remove from array
         filterObjects.splice( index, 1 );

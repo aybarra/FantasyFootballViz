@@ -335,12 +335,13 @@ function generateLineChart(data) {
                               selected_pguids.push(d.key);
                             } else {
                               // Remove it because you double clicked it
-                              console.log("Removing pguid: " + d.key);
-                              console.log(selected_pguids);
-                              console.log("Removing index: " + splice_index);
-                              console.log(splice_index);
+                              // console.log("Removing pguid: " + d.key);
+                              // console.log(selected_pguids);
+                              // console.log("Removing index: " + splice_index);
+                              // console.log(splice_index);
+                              console.log("Removed from seasonal");
                               selected_pguids.splice(splice_index, 1);
-                              console.log(selected_pguids);
+                              // console.log(selected_pguids);
                             }
 
                             // Notifies everyone else to highlight/unhighlight
@@ -466,6 +467,19 @@ function generateLineChart(data) {
             selected_pguids.forEach(function(d){
                 var item = d3.select('path#'+d);
                 item.style("stroke", selected_color);
+                item.moveToFront();
+            });
+        } else {
+                d3.selectAll('path.playerlines')
+                  .style("stroke", "whitesmoke");
+        }
+    });
+
+    dispatch.on("project_click.seasonal", function() {
+        if(selected_pguids.length > 0){
+            selected_pguids.forEach(function(d){
+                var item = d3.select('path#'+d);
+                item.style("stroke", colorScale(PGUID_TO_NAME_MAP[d][1]));
                 item.moveToFront();
             });
         } else {
@@ -756,6 +770,16 @@ function Handleseasonal_data(seasonal_data) {
         }
     }); //end seasonal_data loading
     return [season_seasonal_dataset, yeartuples, avgcnt, avgpoints, yearlist]
+}
+
+function updateSeasonalData(seasonal_data){
+
+  d3.select(".x axis").remove();
+  d3.select(".y axis").remove();
+  d3.selectAll(".playerlines").remove();
+  d3.select("#sm-sec-3 svg").remove();
+
+  generateLineChart( seasonal_data );
 }
 
 function CheckColor(color_attr){
