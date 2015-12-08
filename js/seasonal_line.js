@@ -319,6 +319,24 @@ function generateLineChart(data) {
                        .style('stroke-width', 3)
                        .style("stroke", "whitesmoke")
                        .on("click", function() {
+                            var splice_index = selected_pguids.indexOf(d.key);
+                            if(splice_index == -1){
+                              // Add it because you clicked it
+                              console.log("Added from seasonal");
+                              selected_pguids.push(d.key);
+                            } else {
+                              // Remove it because you double clicked it
+                              console.log("Removing pguid: " + d.key);
+                              console.log(selected_pguids);
+                              console.log("Removing index: " + splice_index);
+                              console.log(splice_index);
+                              selected_pguids.splice(splice_index, 1);
+                              console.log(selected_pguids);
+                            }
+
+                            // Notifies everyone else to highlight/unhighlight
+                            dispatch.project_click();
+
                             color_attr = d3.select(this).style("stroke")
                             rgb = color_attr.split("(")[1].split(")")[0].split(",")
                             colorcheck = CheckColor(color_attr)
@@ -416,14 +434,12 @@ function generateLineChart(data) {
 
     });
 
-    dispatch.on("lasso_seasonal", function(lassoed_items) {
-        if(lassoed_items.length > 0){
-            lassoed_items.forEach(function(d){
-                var item = d3.select('path#'+d.pguid)
-                
+    dispatch.on("lasso.seasonal", function() {
+        if(selected_pguids.length > 0){
+            selected_pguids.forEach(function(d){
+                var item = d3.select('path#'+d);
                 item.style("stroke", selected_color);
                 item.moveToFront();
-
             });
         } else {
                 d3.selectAll('path.playerlines')

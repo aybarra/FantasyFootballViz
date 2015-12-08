@@ -233,7 +233,21 @@
     // var PGUID_TO_NAME_MAP = {};
     var PGUID_TO_NAME_MAP = {};
 
-    var dispatch = d3.dispatch( "lasso_seasonal", "lasso_cdf" );
+    var dispatch = d3.dispatch( "lasso_seasonal", "lasso_cdf", "lasso", "cdf_click", "seasonal_click", "project_click");
+
+
+    // // Receive event in index and broadcast to the other charts
+    // dispatch.on('lasso', function(lassoed_items) {
+    //     dispatch.project_click()
+    // });
+
+    // dispatch.on('cdf_click', function(clicked_item) {
+
+    // });
+
+    // dispatch.on('seasonal_click', function(clicked_item) {
+
+    // });
 
     var yearFormat = d3.time.format( '%Y' );
 
@@ -241,6 +255,9 @@
 
     var data = [];
     var lassoed_items = [];
+
+    // Should be an array of pguids
+    var selected_pguids = new Array();
 
     //CONSTANTS
 
@@ -379,12 +396,21 @@
             return d.selected === true
         } ).data();
 
-        // console.log(lassoed_items);
-
-        dispatch.lasso_cdf( lassoed_items );
-        dispatch.lasso_seasonal( lassoed_items );
+        if(lassoed_items.length > 0){
+            // For each of the lassoed items loop to create simple objects containing pguids
+            lassoed_items.forEach(function(l_item){
+                if(selected_pguids.indexOf(l_item.pguid) == -1){
+                    selected_pguids.push(l_item.pguid);
+                }
+            });
+        } else {
+            // If the scatterplot clicks away empty out the selected pguids
+            selected_pguids = new Array();
+        }
+        
+        // Notify anyone listening that the lassoed items have changed
+        dispatch.lasso();
         refreshPlayerDataTable( lassoed_items );
-
     };
 
     // Create the area where the lasso event can be triggered
@@ -418,6 +444,12 @@
 
     //Initial calls to load data and setup page.
     drawSelectionFilter();
+
+    // Listen for other ppl's updates
+    dispatch.on('project_click.scatter', function() {
+        // console.log("UPDATE CIRCLE DISPATCH GOING FORWARD");
+        updateSelectedScatterCircles();
+    });
 
     /**
      *
@@ -528,7 +560,7 @@
                 } )
                 .attr( "id", function ( d, i )
                 {
-                    return "dot_" + i;
+                    return "dot_" + d.pguid;
                 } ) // added
                 .attr( "class", "dot" )
                 .style( "fill", function ( d )
@@ -623,7 +655,6 @@
         svg_scatter.call( lasso );
 
         lasso.items( d3.selectAll( ".dot" ) );
-        
     }
 
     function createTable()
@@ -649,6 +680,37 @@
 
         } );
 
+    }
+
+    function updateSelectedScatterCircles(){
+        // Clear them all first to make them small
+        d3.selectAll( ".dot" )
+        .attr("selected", false)
+        .transition().duration( dot_trans )
+        .attr( "stroke", "black" )
+        .attr( "stroke-width", 1 )
+        .attr( "r", function ( d ) {
+            if( d.selected == false ) {
+                return dot_init_size;
+            } else {
+                return dot_hover_size;
+            }
+        })
+        .attr( "fill-opacity", function ( d ) {
+            return .7;
+        });
+
+        if(selected_pguids.length > 0){
+            selected_pguids.forEach(function(d){
+                d3.select("#dot_" + d)
+                .attr("selected", true)
+                .transition().duration( dot_trans )
+                .attr( "stroke", "black" )
+                .attr( "stroke-width", 2 )
+                .attr( "r", dot_hover_size )
+                .attr( "fill-opacity", 1 );
+            });
+        } 
     }
 
     function updateDetails( player )
@@ -716,30 +778,6 @@
           // }
 
     }
-
-//    function loadPageWithAllChartData()
-//    {
-//        loadPageData();
-//        loadScatterPlot(); //Loads from filters
-//        generateCDF_D3Chart( season_subset_data );
-//        generateHistogram(filteredPlayers(), season_subset_data);
-//        createTable(); //Not a chart
-//        drawPCChart(filteredPlayers(), season_data);
-//        generateLineChart(season_subset_data);
-//        generateHistoryLine(season_subset_data);
-//    }
-
-//    function reloadAllChartData()
-//    {
-////        w = new Worker("load_data.js");
-////        w.onmessage = function(event)
-////        {
-////
-////        };
-//        loadPageData();
-//        updateCDFData( season_subset_data );
-//
-//    }
 
     function addPlayerToPguidMap(player)
     {

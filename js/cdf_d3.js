@@ -443,12 +443,11 @@ function generateCDF_D3Chart(data){
                         });
 
     });
-    dispatch.on("lasso_cdf", function(lassoed_items) {
-      // console.log(lassoed_items);
-      if(lassoed_items.length > 0){
-        lassoed_items.forEach(function (d){
+    dispatch.on("lasso.cdf", function() {
+      if(selected_pguids.length > 0){
+        selected_pguids.forEach(function (d){
           // console.log("Pguid is: " + d.pguid);
-          d3.select('#path_' + d.pguid)
+          d3.select('#path_' + d)
           .style('stroke-width','3.5px');
         });
       } else {
@@ -457,6 +456,7 @@ function generateCDF_D3Chart(data){
         paths.style('stroke-width', '1.75px');
       }
     });
+
 //  *****************************************************
 //  BUILD THE REFERENCE LINES
 // ******************************************************
