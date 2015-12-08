@@ -987,10 +987,10 @@ var rely = d3.scale.linear()
             color = colorScale(PGUID_TO_NAME_MAP[d.key][1])
 //                             console.log(color)
             var sel = d3.select(this);
-            sel.moveToFront();
             sel.transition().duration(100)
                 .ease("bounce")
                 .style("stroke-width", "9px")
+            sel.moveToFront();
             colorcheck = CheckColor(color_attr)
             if (!(colorcheck == 'cornflowerblue' ||
                 colorcheck == 'sandybrown' ||
@@ -1320,7 +1320,7 @@ function convertData(cdf_data){
           year: last_year
         });
       }
-      console.log(lines[pguid])
+//       console.log(lines[pguid])
     }
 
     for(var key_obj in lines){
