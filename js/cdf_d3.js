@@ -751,7 +751,7 @@ function generateCDF_D3Chart(data){
 //     if (+rgb[0]==fire.r && +rgb[1]==fire.g && rgb[2]==fire.b) { return "firebrick" }
 //     return false
 // }
-
+  var default_line_color = d3.hsl('#dddddd');
   var margin = { top: 45, right: 30, bottom: 50, left: 45 }
     , width = parseInt(d3.select('.large-chart').style('width'), 10)
     , width = width - margin.left - margin.right
@@ -771,6 +771,7 @@ function generateCDF_D3Chart(data){
 
   var xAxis = d3.svg.axis()
       .scale(x)
+      .tickFormat(d3.format("d"))
       .orient("bottom");
 
   var yAxis = d3.svg.axis()
@@ -780,10 +781,8 @@ function generateCDF_D3Chart(data){
   var line = d3.svg.line()
       .interpolate("basis")
       .x(function(d) {
-        if (absyear == false){
-          return x(d.x);
-        }
-        return xTime(d.year)
+          if (absyear == false) { return x(d.x); }
+          return x(d.year)
       })
       .y(function(d) {
             return y(d.y);
@@ -801,8 +800,10 @@ function generateCDF_D3Chart(data){
   var cdf_data_conv;
 
 
-    cdf_data_conv = convertData(data);
-
+    datalist = convertData(data);
+    cdf_data_conv = datalist[0]
+    var min = datalist[1]
+    var max = datalist[2]
     var keys = d3.keys(cdf_data_conv);
     color.domain(d3.keys(cdf_data_conv));
 
@@ -865,6 +866,23 @@ function generateCDF_D3Chart(data){
          .attr("dy", ".5em")
          .style("font-size", "10px")
 
+//  *****************************************************
+//  MOVE SVG ITEM TO FRONT AND BACK
+// ******************************************************
+    d3.selection.prototype.moveToFront = function() {
+        return this.each(function(){
+            this.parentNode.appendChild(this);
+        });
+    }
+
+    d3.selection.prototype.moveToBack = function() {
+        return this.each(function() {
+            var firstChild = this.parentNode.firstChild;
+                if (firstChild) {
+                    this.parentNode.insertBefore(this, firstChild);
+                }
+        });
+    };
 
 
     var player = cdf_svg.selectAll(".player")
@@ -877,24 +895,20 @@ function generateCDF_D3Chart(data){
         .attr("class", "cdf_line")
         .attr("d", function(d) { return line(d.values); })
         .attr("id" , function(d){
-          var key_updated = d.key.toString();
-          if(key_updated.indexOf('.') != -1) {
-            console.log(key_updated);
-            key_updated = key_updated.replace('.', '');
-            console.log(key_updated);
-          }
-              // var key_updated = d.key.toString().replace('.', '');
-              // console.log(key_updated);
-              return 'path_' + key_updated;
+            // fetches the pguid with periods stripped out....
+            // won't work for all players, but most probably
+            var key_updated = getUpdatedKey(d.key.toString());
+            return 'path_' + key_updated;
         })
         .attr("stroke-linecap","round")
-        .style("stroke", function(d) { return d3.hsl('#dddddd') })
-           .on("click", function() {
-                var splice_index = selected_pguids.indexOf(d3.select(this).key);
+        .style("stroke", function(d) { return default_line_color; })
+           .on("click", function(d) {
+                var splice_index = selected_pguids.indexOf(d.key);
                 if(splice_index == -1){
                   // Add it because you clicked it
                   console.log("Added from cdf");
-                  selected_pguids.push(d3.select(this).key);
+                  selected_pguids.push(d.key);
+                  console.log(d3.select(this))
                 } else {
                   // Remove it because you double clicked it
                   // console.log("Removing pguid: " + d.key);
@@ -937,15 +951,16 @@ function generateCDF_D3Chart(data){
             var line = d3.select(this);
 //             line.style('stroke', colorScale(PGUID_TO_NAME_MAP[d.key][1]))
 //             // line.style('stroke', d3.hsl('#33b9ff'));
-//             this.parentNode.parentNode.appendChild(this.parentNode);
+            // this.parentNode.parentNode.appendChild(this.parentNode);
 //             d3.select(this.nextSibling)
 //               .attr("opacity", "1")
 //         })
             // line.attr("opacity", 1);
+            console.log("COLOR INSIDE MOUSEOVER IS: " + line.style("stroke"));
             focus.style("display", null);
             color_attr = d3.select(this).style("stroke")
             color = colorScale(PGUID_TO_NAME_MAP[d.key][1])
-//                             console.log(color)
+            // console.log(color)
             var sel = d3.select(this);
             sel.moveToFront();
             sel.transition().duration(100)
@@ -972,48 +987,28 @@ function generateCDF_D3Chart(data){
         var sel = d3.select(this);
         sel.transition().duration(100)
             .ease("bounce").style("stroke-width", "2px")
-        color_attr = d3.select(this).style("stroke")
-        rgb = color_attr.split("(")[1].split(")")[0].split(",")
-        colorcheck = CheckColor(color_attr)
+        var color_attr = d3.select(this).style("stroke")
+        var rgb = color_attr.split("(")[1].split(")")[0].split(",")
+        var colorcheck = CheckColor(color_attr)
         if (!(colorcheck == 'cornflowerblue' ||
             colorcheck == 'sandybrown' ||
             colorcheck == 'limegreen' ||
             colorcheck == 'firebrick')) {
-                sel.style('stroke', "whitesmoke")
-                sel.moveToBack()
+              sel.style('stroke', default_line_color);
+                // sel.moveToBack()
+              // this.childNode.childNode.appendParent(this.childNode);
+
         }
     })
-//       .on("mousemove", function(){
-//             if (absyear == true) {
-//                 var rawX = xTime.invert(d3.mouse(this)[0])
-//                 var year = rawX.getFullYear()
-//                 relyear = year - d.values[0].real_year.getFullYear()
-//                 var pts = d.values[relyear].season_ff_pts
-//                 var yr_date = parseDate(year.toString())
-//             } else {
-//                 var rawX = x.invert(d3.mouse(this)[0])
-//                 var year = Math.round(rawX)
-//                 var pts = d.values[year-1].season_ff_pts
-//             }
+//       .on("mousemove", function(d, i){
+//             console.log(d)
+//             var rawX = Math.round(x.invert(d3.mouse(this)[0]))
+// 
+//             var rawY = Math.round(y(d3.mouse(this)[0]))
+//             console.log(rawX, rawY)
+//             var pts = d.values[i].y
 //             var totpts = 0
 //             var totyears = d.values.length
-//             var bestyr = -10000
-//             var worstyr = 10000
-//             for (var i = 0; i < totyears; i++) {
-//                 totpts += d.values[i].season_ff_pts
-//                 if (d.values[i].season_ff_pts > bestyr) {
-//                     bestyr = d.values[i].season_ff_pts
-//                 }
-//                 if (d.values[i].season_ff_pts < worstyr) {
-//                     worstyr = d.values[i].season_ff_pts
-//                 }
-//             }
-//             var avg = Math.round(totpts/totyears)
-//             if (absyear == true) {
-//                 focus.attr("transform", "translate(" + xTime(yr_date) + "," + y(pts) + ")")
-//             } else {
-//                 focus.attr("transform", "translate(" + x(year) + "," + y(pts) + ")")
-//             }
 //             fullname = PGUID_TO_NAME_MAP[d.key][0]
 //             focus.select("#focusname").text(fullname);
 //             focus.select("#focusyear").text("Yr: "+year);
@@ -1061,11 +1056,12 @@ function generateCDF_D3Chart(data){
         .attr("dy", ".35em")
         .text(function(d_sub) { return d_sub.name + ' (' + d_sub.value.y + ') ' ; })
         .attr("opacity", "0");
+        
 
         var cdfyrtog = cdf_svg.append("rect")
                           .attr("class","button")
                           .attr("id","elitebut")
-                          .attr("x", width-margin.right-30)
+                          .attr("x", 30)
                           .attr("y", 10)
                           .attr("rx",width/30)
                           .attr("ry",height/30)
@@ -1076,35 +1072,36 @@ function generateCDF_D3Chart(data){
                           .on("click",function(){
                             absyear = !absyear;
                             // absyear = absyear ? false : true;
-                            if (absyear) {
-                              cdfyrtog.text("Relative")
-                            xTime.domain(d3.extent(cdf_data_conv, function(d) {return d.year;}));
-                              xAxis.scale(xTime);
+                            
+                            if (absyear == true) {
+                              x.domain([min,max])
+                              xAxis.scale(x);
                               cdf_svg.select("g .x.axis")
                                  .call(xAxis);
                               var sel = d3.select("body").transition();
-                              console.log(cdf_data_conv)
+//                               console.log(cdf_data_conv)
                               cdf_data_conv.forEach(function(d){
-                                var key_updated = d.key.toString();
-                                if(key_updated.indexOf('.') != -1){
-                                  console.log(key_updated);
-                                  key_updated = key_updated.replace('.', '');
-                                  console.log(key_updated);
-                                }
+                                var key_updated = getUpdatedKey( d.key.toString() );
+//                                 d3.select("#path_"+key_updated)
+//                                     .attr("d",line(d.values))
+//                                     console.log(d)
                                 // console.log(d.values);
                                 // var temp = sel.select("#path_"+key_updated);
                                 // console.log(temp);
                                 console.log(sel.select("#path_"+key_updated))
-                                console.log(d.values)
+//                                 console.log(d.values)
                                 sel.select("#path_"+key_updated)
-//                                    .duration(1500)
+                                    .transition().duration(1000).ease("quad")
                                    .attr("d", line(d.values));
                               });
                             } else {
                               cdfyrtog.text("Years")
+                        x.domain([0, d3.max(cdf_data_conv, function(d) { return d.values.length; })]);
+
                               xAxis.scale(x);
                               cdf_svg.select("g .x.axis")
                                  .call(xAxis);
+
                               var sel = d3.select("body").transition();
                               cdf_data_conv.forEach(function(d){
 
@@ -1113,7 +1110,13 @@ function generateCDF_D3Chart(data){
                                   console.log(key_updated);
                                   key_updated = key_updated.replace('.', '');
                                   console.log(key_updated);
+
                                 }
+                                                                   
+                                d3.select("#path_"+key_updated)
+                                    .transition().duration(1000).ease("quad")
+                                    .attr("d",line(d.values))
+
                                 // sel.select("#path_"+key_updated)
                                 //    .duration(1500)
                                 //    .attr("d", line(d.values));
@@ -1125,13 +1128,15 @@ function generateCDF_D3Chart(data){
       if(selected_pguids.length > 0){
         selected_pguids.forEach(function (d){
           // console.log("Pguid is: " + d.pguid);
-          d3.select('#path_' + d)
+          var key_updated = getUpdatedKey(d.toString());
+
+          d3.select('#path_' + key_updated)
           .style('stroke-width','10px');
         });
       } else {
         // var paths = d3.selectAll("*[id^='path']");
         var paths = d3.selectAll(".cdf_line");
-        paths.style('stroke', "whitesmoke");
+        paths.style('stroke', default_line_color);
 
       }
     });
@@ -1140,13 +1145,13 @@ function generateCDF_D3Chart(data){
       if(selected_pguids.length > 0){
         selected_pguids.forEach(function (d){
           // TODO Do something about the name's T.J, etc...
-          console.log(d);
-          d3.select('#path_' + d)
+          var key_updated = getUpdatedKey(d.toString());
+          d3.select('#path_' + key_updated)
             .style("stroke", colorScale(PGUID_TO_NAME_MAP[d][1]))
         });
       } else {
         var paths = d3.selectAll(".cdf_line");
-        paths.style('stroke', "whitesmoke");
+        paths.style('stroke', default_line_color);
       }
     });
 }
@@ -1159,12 +1164,8 @@ function animateLines()
     d3.selectAll( ".cdf_line" ).each( function ( d, i )
     {
         // var key_updated = d.key.toString().replace( '.', '' );
-        var key_updated = d.key.toString();
-        if(key_updated.indexOf('.') != -1) {
-          console.log(key_updated);
-          key_updated = key_updated.replace('.', '');
-          console.log(key_updated);
-        }
+        var key_updated = getUpdatedKey(d.key.toString());
+
         // Get the length of each line in turn
         var totalLength = d3.select( "#path_" + key_updated ).node().getTotalLength();
 
@@ -1202,7 +1203,8 @@ function convertData(cdf_data){
 
   var lines = {};
   var plot_cdf_data = [];
-
+  var min = 10000
+  var max = -10000
   if(cdf_data !== undefined && cdf_data.length > 0){
     var nameDict = {};
     for(var item in cdf_data){
@@ -1210,18 +1212,19 @@ function convertData(cdf_data){
       var player_name;
       // console.log(player_name);
       var season_year = cdf_data[item].season_guid.split("_")[1];
+      if (+season_year < min) { min = +season_year}
       var ff_pts = cdf_data[item].season_ff_pts;
       if(!(pguid in lines)){
         // Store the start year for the first entry
         lines[pguid] = {'values': [{x: 0, 
-          y: 0
-         // year: parseDate(season_year)
+          y: 0,
+         year: +season_year
        }]};
-        // lines[pguid] = {'values': [{x: 1, y: ff_pts, year: season_year}]};
+//         lines[pguid] = {'values': [{x: 1, y: ff_pts, year: season_year]};
         var temp = +season_year + 1
         lines[pguid]['values'].push({x: 1, 
-          y: ff_pts 
-          // year: parseDate(temp.toString())
+          y: ff_pts,
+          year: +season_year + 1
         });
 
       } else {
@@ -1232,11 +1235,14 @@ function convertData(cdf_data){
         // last_year = last_year.getFullYear();
         // last_year++;
         // last_year = +last_year;
+        last_year = lines[pguid]['values'][0].year + last
+        if (last_year > max) { max = last_year }
         lines[pguid]['values'].push({x: last++, 
-          y: ff_pts 
-          // year: parseDate(last_year.toString())
+          y: ff_pts ,
+          year: last_year
         });
       }
+      // console.log(lines[pguid])
     }
 
     for(var key_obj in lines){
@@ -1256,7 +1262,7 @@ function convertData(cdf_data){
   }
   // Otherwise the cdf_data's empty
   // console.log(plot_cdf_data);
-  return plot_cdf_data;
+  return [plot_cdf_data, min, max];
 }
 
 function CheckColor(color_attr){
@@ -1280,3 +1286,4 @@ function CheckColor(color_attr){
     if (+rgb[0]==fire.r && +rgb[1]==fire.g && rgb[2]==fire.b) { return "firebrick" }
     return false
 }
+

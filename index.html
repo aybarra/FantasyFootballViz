@@ -628,7 +628,12 @@
                 } )
                 .attr( "id", function ( d, i )
                 {
-                    return "dot_" + d.pguid;
+                    var key_updated = d.pguid.toString();
+                    if(key_updated.indexOf('.') != -1) {
+                        key_updated = key_updated.replace('.', '');
+                        console.log("Key was updated: " + key_updated);
+                    }
+                    return "dot_" + key_updated;
                 } ) // added
                 .attr( "class", "dot" )
                 .style( "fill", function ( d )
@@ -775,11 +780,17 @@
                 });
 
 
-        console.log(lasso.items());
+        // console.log(lasso.items());
 
         if(selected_pguids.length > 0){
             selected_pguids.forEach(function(d){
-                d3.select("#dot_" + d)
+
+                var key_updated = d.toString();
+                if(key_updated.indexOf('.') != -1) {
+                    key_updated = key_updated.replace('.', '');
+                    console.log("Key was updated for lasso selection: " + key_updated);
+                }
+                d3.select("#dot_" + key_updated)
                     // .attr("selected", true)
                     // .classed( { "selected": true } )
                         .transition().duration( dot_trans )
@@ -904,6 +915,14 @@
         body.removeClass("loading");
     }
 
+    function getUpdatedKey( original ) {
+        var updated = original;
+        if(updated.indexOf('.') != -1) {
+              updated = updated.replace('.', '');
+              console.log("Key was updated for selection: " + updated);
+        }
+        return updated;
+    }
 </script>
 
 </body>
