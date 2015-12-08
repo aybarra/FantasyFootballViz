@@ -80,7 +80,7 @@ function generateHistogram( careers, season_subset_data )
     // A formatter for counts.
     var formatCount = d3.format( ",.0f" );
 
-    var margin = { top: 20, right: 30, bottom: 33, left: 45 }
+    var margin = { top: 50, right: 30, bottom: 33, left: 45 }
         , width = parseInt( d3.select( '.small-chart' ).style( 'width' ), 10 )
         , width = width - margin.left - margin.right
         , height = parseInt( d3.select( '.small-chart' ).style( 'height' ), 10 )
@@ -112,7 +112,7 @@ function generateHistogram( careers, season_subset_data )
     var relx = d3.scale.linear()
                .range([0, width+margin.left+margin.right])
                .domain([0,100])
-               
+
     var rely = d3.scale.linear()
               .range([parseInt( d3.select( '.small-chart' ).style( 'height' ), 10 ), 0])
               .domain([0,100])
@@ -132,8 +132,8 @@ function generateHistogram( careers, season_subset_data )
 
         svg.append("text")
             .attr("id","histogramtitle")
-            .attr("x", width/2)
-            .attr("y", 0)
+            .attr("x", (width / 2))
+            .attr("y", 0 - (margin.top / 2) - 10)
             .attr("text-anchor", "middle")
             .style("font-size", "16px")
             .style("text-decoration", "underline")
@@ -185,12 +185,12 @@ function generateHistogram( careers, season_subset_data )
 //     var dropDown = d3.select( "#histogram" )
 //         .append( "select" )
 //         .attr( "name", "years" );
-// 
+//
 //     var options = dropDown.selectAll( "option" )
 //         .data( years )
 //         .enter()
 //         .append( "option" );
-// 
+//
 //     options.text( function ( d, i )
 //     {
 //         return d;
@@ -199,7 +199,7 @@ function generateHistogram( careers, season_subset_data )
 //         {
 //             return d;
 //         } )
-// 
+//
 //     dropDown.on( "change", menuChanged );
 
 //     function menuChanged()
@@ -216,28 +216,28 @@ function generateHistogram( careers, season_subset_data )
 //                 {
 //                     return d;
 //                 } ) ] )
-// 
+//
 //                 var updatebar = d3.select( "#histogram" ).selectAll( "g.bar" )
 //                     .data( binList );
-// 
+//
 //                 updatebar.attr( "transform", function ( d, i )
 //                 {
 //                     return "translate(" + x( i * binsize ) + "," + y( d ) + ")";
 //                 } );
-// 
+//
 //                 updatebar.selectAll( "rect" )
 //                     .attr( "width", x( binsize ) - 1 )
 //                     .attr( "height", function ( d )
 //                     {
 //                         return height - y( d );
 //                     } )
-// 
+//
 //                 updatebar.selectAll( "text" )
 //                     .text( function ( d )
 //                     {
 //                         return formatCount( d );
 //                     } );
-// 
+//
 //             }
 //         }
 //     }
