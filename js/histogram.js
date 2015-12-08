@@ -15,7 +15,7 @@ function generateHistogram( careers, season_subset_data )
     var numbins = 9
     var binning = [ 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000 ]
     var binsize = 500
-
+    var binclicks = [false, false, false, false, false, false, false, false, false, false]
 // Generate a Bates distribution of 10 random variables.
     var careerlist = []
     var players = []
@@ -43,7 +43,6 @@ function generateHistogram( careers, season_subset_data )
         });
     };
 
-
     hgram_careers.forEach( function ( d, i )
     {
         players.push([d.ff_pts,d])
@@ -55,26 +54,6 @@ function generateHistogram( careers, season_subset_data )
         }
     } );
 
-    hgram_season_subset_data.forEach( function ( d )
-    {
-        if( d.year != 2015 )
-        {
-            d.guid = d.season_guid.split( "_" )[ 0 ]
-            if( d.guid.indexOf( '.' ) != -1 )
-            {
-                d.guid = d.guid.replace( '.', '' );
-            }
-            d.year = +d.season_guid.split( "_" )[ 1 ]
-            yeartuples.push( [ d.year, d.season_ff_pts ] );
-        }
-    } );
-
-    yeartuples.sort( function ( a, b )
-    {
-        a = a[ 0 ];
-        b = b[ 0 ];
-        return a < b ? -1 : (a > b ? 1 : 0);
-    } );
     players.sort( function ( a, b )
     {
         a = a[ 0 ];
@@ -86,24 +65,6 @@ function generateHistogram( careers, season_subset_data )
     var years = []
     var yearlist = []
     var templist = []
-    for ( var i = 0; i < yeartuples.length; i++ )
-    {
-        if( curyear != yeartuples[ i ][ 0 ] )
-        {
-            curyear = yeartuples[ i ][ 0 ]
-            years.push( curyear )
-            if( templist.length > 0 )
-            {
-                yearlist.push( templist );
-            }
-            templist = []
-        }
-        else
-        {
-            templist.push( yeartuples[ i ][ 1 ] )
-        }
-    }
-    yearlist.push( templist )
 
     // A formatter for counts.
     var formatCount = d3.format( ",.0f" );
@@ -113,8 +74,6 @@ function generateHistogram( careers, season_subset_data )
         , width = width - margin.left - margin.right
         , height = parseInt( d3.select( '.small-chart' ).style( 'height' ), 10 )
         , height = height - margin.top - margin.bottom;
-
-
 
     maxscore = d3.max(careerlist)
     maxrnd = Math.ceil(maxscore / 100) * 100
@@ -194,6 +153,24 @@ function generateHistogram( careers, season_subset_data )
       .value(function(d) { return d; })
       .sort(null);
 
+    var path = svg.selectAll('path')
+        .append("g")
+        .attr("width", width)
+        .attr("height",height)
+        .attr("transform","translate(-20,20)")
+ 
+    path.append("circle")
+        .attr("r",10)
+        .attr("strike","black")
+    path
+      .data(pie(totals))
+      .enter()
+      .append('path')
+      .attr('d', arc)
+      .attr('fill', function(d, i) { 
+        return piecolor(i);
+      });
+
     var bar = svg.selectAll( ".bar" )
         .data( playerbins )
         .enter().append( "g" )
@@ -215,6 +192,27 @@ function generateHistogram( careers, season_subset_data )
         } )
         .attr( "stroke", "black" )
         .attr( "fill", "lightgray")
+        .on("click", function(d, i) {
+            var active = d.active ? false : true
+            var pguidList = []
+            console.log(active, d.active)
+            for (var i = 0; i < d.length; i++){
+                var temp = d[i][1].pguid.replace('.','')
+                pguidList.push( temp)
+            }
+            if (active == true) {
+                d3.select(this).style("stroke","yellow").style("stroke-width","3px")    
+                addSelected( pguidList )
+                dispatch.project_click()
+            } else {
+                d3.select(this).style("stroke","black").style("stroke-width","1px")    
+                removeSelected( pguidList )
+                dispatch.project_click()
+                console.log(pguidList)
+            }
+            d.active = active
+            console.log(active, d.active)
+        })
         .on("mouseover", function (d, i) {
             d3.select(this).style("stroke","red").style("stroke-width","3px")
             var next = d3.select(this).node().nextSibling
@@ -319,16 +317,8 @@ function generateHistogram( careers, season_subset_data )
         
     console.log(svg.select("#mainpie"))
 
-    var path = svg.selectAll('path')
-        .append("g")
-        .attr("translate","transform (50,70)")
-      .data(pie(totals))
-      .enter()
-      .append('path')
-      .attr('d', arc)
-      .attr('fill', function(d, i) { 
-        return piecolor(i);
-      });
+      
+    path.attr("translate","transform (-20,10)")
 
 
     svg.append( "g" )
@@ -440,5 +430,4 @@ function CalcPlayerBins( datalist, binnum, binsize )
     }
     return bin_list
 }
-
 
