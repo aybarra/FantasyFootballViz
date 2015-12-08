@@ -1162,19 +1162,43 @@ var rely = d3.scale.linear()
                         });
 
     dispatch.on("lasso.cdf", function() {
+      // if(selected_pguids.length > 0){
+      //   selected_pguids.forEach(function (d){
+      //     // console.log("Pguid is: " + d.pguid);
+      //     var key_updated = getUpdatedKey(d.toString());
+
+      //     d3.select('#path_' + key_updated)
+      //     .style('stroke-width','10px');
+      //   });
+      // } else {
+      //   // var paths = d3.selectAll("*[id^='path']");
+      //   var paths = d3.selectAll(".cdf_line");
+      //   paths.style('stroke', default_line_color);
+
+      // }
+
       if(selected_pguids.length > 0){
         selected_pguids.forEach(function (d){
-          // console.log("Pguid is: " + d.pguid);
+          // TODO Do something about the name's T.J, etc...
           var key_updated = getUpdatedKey(d.toString());
-
+          d3.select("#path_" + key_updated);
+          var position = PGUID_TO_NAME_MAP[d][1];
+          var correct_color;
+          if ( position == 'qb') {
+            correct_color = "cornflowerblue";
+          } else if ( position == 'wr') {
+            correct_color = "sandybrown";
+          } else if ( position == 'te') {
+            correct_color = "limegreen";
+          } else if ( position == 'rb') {
+            correct_color = "firebrick";
+          }
           d3.select('#path_' + key_updated)
-          .style('stroke-width','10px');
+            .style("stroke", correct_color);
         });
       } else {
-        // var paths = d3.selectAll("*[id^='path']");
         var paths = d3.selectAll(".cdf_line");
         paths.style('stroke', default_line_color);
-
       }
     });
 
