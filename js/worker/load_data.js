@@ -151,12 +151,13 @@ function finalize_update()
 {
     $.when.apply( null, getSeasonAndSeasonSubsetWebRequests() ).done( function ()
     {
-        //updateCDFData( season_subset_data );
-        //loadScatterPlot( filteredPlayers() );
         redrawAllCharts();
     } );
 }
 
+/**
+ * Actually redraws the charts.
+ */
 function redrawAllCharts()
 {
     updateCDFData( season_subset_data );
