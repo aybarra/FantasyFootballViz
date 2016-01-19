@@ -136,7 +136,7 @@
                 <hr>
                 
                 <div class="row">
-                    <h4>Player Data Table</h4>
+                    <h4>Lassoed Players</h4>
                     <table class="table table-row-border table-hover" id="data_table" cellspacing="0" cellpadding="0"
                            margin-top="750px" width="100%">
                         <thead>
@@ -154,7 +154,6 @@
             </div>
 
             <div class="col-sm-6">
-
                 <div class="row">
 
                     <div class="col-sm-12 large-chart">
@@ -494,7 +493,7 @@
     // svg_scatter.call( lasso );
 
     //Add Default Filter
-    var defaultFilterObject = new FilterObject( 2010, 2012, 100, 10000, null, [ 2 ] );
+    var defaultFilterObject = new FilterObject( 2000, 2015, 100, 4000, ['qb'], null );
     filterObjects.push( defaultFilterObject );
 
     //Draw the current filter table with the default filter applied.

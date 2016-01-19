@@ -218,24 +218,24 @@ function onPositionToggled()
         //Something was Checked, append text values to string
         if( $( "#filter_running_back" ).is( ":checked" ) )
         {
-            positions.push( "RB" );
+            positions.push( "rb" );
             positionsSelectionText += " RB ";
         }
         if( $( "#filter_quarter_back" ).is( ":checked" ) )
         {
-            positions.push( "QB" );
+            positions.push( "qb" );
             positionsSelectionText += " QB ";
         }
 
         if( $( "#filter_wr" ).is( ":checked" ) )
         {
-            positions.push( "WR" );
+            positions.push( "wr" );
             positionsSelectionText += " WR ";
         }
 
         if( $( "#filter_te" ).is( ":checked" ) )
         {
-            positions.push( "TE" );
+            positions.push( "te" );
             positionsSelectionText += " TE ";
         }
     }

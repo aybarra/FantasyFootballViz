@@ -183,7 +183,7 @@ function generateHistogram( careers, season_subset_data )
                 pguidList.push( d[i][1].pguid );
             }
             if (active == true) {
-                d3.select(this).style("stroke","yellow").style("stroke-width","3px")    
+                d3.select(this).style("stroke","red").style("stroke-width","3px")    
                 addSelected( pguidList )
                 dispatch.project_click()
             } else {

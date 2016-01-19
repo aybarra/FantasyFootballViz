@@ -138,7 +138,7 @@ function finalize_load()
         generateHistogram( filteredPlayers(), season_subset_data );
         createTable(); //Not a chart
 //     drawPCChart( filteredPlayers(), season_data );
-        generateLineChart( season_subset_data );
+        // generateLineChart( season_subset_data );
         generateHistoryLine( season_subset_data );
         hideLoading();
     } );
@@ -163,7 +163,7 @@ function redrawAllCharts()
     updateCDFData( season_subset_data );
     loadScatterPlot( filteredPlayers() );
     updateHistoryLine( season_subset_data );
-    updateSeasonalData( season_subset_data );
+    // updateSeasonalData( season_subset_data );
     hideLoading();
 }
 

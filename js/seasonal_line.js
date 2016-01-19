@@ -819,7 +819,8 @@ function Handleseasonal_data(seasonal_data) {
             }
             avgpoints[numyears-1] += d.season_ff_pts
             avgcnt[numyears-1] += 1
-            yearlist[numyears-1].push(d.season_ff_pts)
+            if (d.season_ff_pts !== undefined && d.season_ff_pts !== NaN)
+              yearlist[numyears-1].push(d.season_ff_pts)
         }
     }); //end seasonal_data loading
     return [season_seasonal_dataset, yeartuples, avgcnt, avgpoints, yearlist]
